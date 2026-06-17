@@ -15,10 +15,12 @@ auxo/
 ├── src/
 │   ├── app/
 │   │   ├── api/
+│   │   │   ├── checkout/
+│   │   │   │   └── route.ts    <-- POST: creates a Stripe Checkout Session
 │   │   │   └── compile/
-│   │   │       └── route.ts    <-- POST handler triggering prompt parsing
-│   │   │   layout.tsx          <-- Global typography and metadata layout
-│   │   │   page.tsx            <-- Minimalist, premium grid landing page
+│   │   │       └── route.ts    <-- POST: verifies payment & triggers prompt compiler
+│   │   ├── layout.tsx          <-- Global typography and metadata layout
+│   │   ├── page.tsx            <-- Minimalist, premium grid landing page
 │   │   └── room/
 │   │       └── [id]/
 │   │           └── page.tsx    <-- Collaborative workspace viewport
@@ -28,7 +30,7 @@ auxo/
 │   └── lib/
 │       ├── prompt-compiler.ts  <-- Software 3.0 3-pass compiler logic
 │       ├── supabase.ts         <-- Safe Supabase client configuration
-│       └── tech-resolver.ts    <-- [NEXT STEP] Live tech stack package resolver
+│       └── tech-resolver.ts    <-- Live tech stack package resolver
 ```
 
 ## 2. Core Functional Pillars
@@ -37,3 +39,5 @@ auxo/
 *   **Ephemeral Sandbox Sync:** Syncs markdown keystrokes and builder presence in real-time using **Supabase Broadcast & Presence**, executing entirely in client memory with zero database footprint (enforcing B2B intellectual property safety).
 *   **Software 3.0 Context Matrix:** Processes raw notes into a multi-file matrix designed to keep agent context windows highly scoped, preventing "lost-in-the-middle" attention degradation.
 *   **Client-Side ZIP Bundling:** Uses `JSZip` to compile the generated context structure and initiate downloads of the exact file structure required by Cursor and Claude Code.
+*   **Zero-Auth Monetisation:** Stripe Checkout gates compilation behind a one-time payment. The active `roomId` is passed as `client_reference_id`; on redirect back the workspace auto-compiles and downloads without any login requirement.
+*   **LocalStorage Crash Safety:** Scratchpad content is continuously mirrored to `localStorage` by Room UUID, restoring the user's work automatically on refresh or accidental tab close.

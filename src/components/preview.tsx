@@ -70,7 +70,7 @@ export function Preview({ compiledFiles, activeFile, onActiveFileChange }: Previ
           <AlertCircle className="w-6 h-6 text-zinc-600 mb-3" />
           <h3 className="text-xs font-mono tracking-wider text-zinc-400 uppercase">Awaiting Compilation</h3>
           <p className="max-w-xs mt-2 text-xs font-sans text-zinc-500 leading-relaxed">
-            Outlines from your scratchpad will be split-parsed into clean files. Click <strong className="text-zinc-300">"Compile Agent Pack"</strong> above to run the prompt engine.
+            Outlines from your scratchpad will be split-parsed into clean files. Click <strong className="text-zinc-300">&quot;Compile Agent Pack&quot;</strong> above to run the prompt engine.
           </p>
         </div>
       ) : (

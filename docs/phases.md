@@ -43,3 +43,19 @@
 - [x] **Step 8.3:** Add an "Export ZIP" (Download Pack) button inside the header bar, which is enabled only after a compilation has run.
 - [x] **Step 8.4:** Verify the shortcut triggers compilation and the separate download operates correctly, and document the completion.
 - [x] **Step 8.5:** Integrate OS-specific keyboard shortcut badges inside action buttons and map full workspace keyboard navigation (Cmd+S, Cmd+Shift+C, Escape).
+
+## Phase 9: Zero-Auth Monetization (Stripe & Ephemeral Safety)
+- [x] **Step 9.1:** Implement LocalStorage mirroring inside the workspace editor so that scratchpad content is cached locally by room ID and restored on accidental refreshes.
+- [x] **Step 9.2:** Set up a Stripe Checkout API endpoint (`/api/checkout`) to initialize Checkout Sessions with the active Room UUID embedded as `client_reference_id`.
+- [x] **Step 9.3:** Connect the "Compile" action in the UI to redirect to Stripe Checkout when no verified `session_id` is present; post-payment redirect auto-compiles and triggers ZIP download.
+- [ ] **Step 9.4 (deferred):** Create a Stripe Webhook receiver (`/api/webhooks/stripe`) to listen for `checkout.session.completed` and email the `.zip` to the billing address via Resend/SendGrid — deferred until Phase 10 auth is in place.
+- [ ] **Step 9.5 (deferred):** End-to-end Stripe CLI test + email delivery verification — to be completed alongside 9.4.
+
+> ✅ **Build verified:** `npm run lint && npm run build` passing with zero errors as of 2026-06-17.
+
+## Phase 10: Scale & Expansion (Auth & Persistent Database Storage)
+- [ ] **Step 10.1:** Define a structured database schema using Supabase for user profiles, workspace rooms, and historical prompt compiles.
+- [ ] **Step 10.2:** Integrate Supabase Auth on the client, introducing a minimalist glassmorphic Login/Signup modal to allow users to authenticate.
+- [ ] **Step 10.3:** Refactor the Supabase client helpers to associate compiled prompt matrices and scratchpad histories with the authenticated user ID.
+- [ ] **Step 10.4:** Implement a premium sidebar or room dashboard explorer to allow users to view, search, and restore their historical compiled blueprints.
+- [ ] **Step 10.5:** Configure strict Supabase Row-Level Security (RLS) policies to protect proprietary developer blueprints and database queries.

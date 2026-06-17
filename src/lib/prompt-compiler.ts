@@ -137,15 +137,6 @@ function localMockCompile(rawMarkdown: string, techSignatures: TechSignature[]):
   const titleMatch = rawMarkdown.match(/^#\s+(.+)$/m);
   const projectName = titleMatch ? titleMatch[1].trim() : 'Project Auxo';
 
-  const lines = rawMarkdown.split('\n');
-  const bullets = lines
-    .filter(l => l.trim().startsWith('-') || l.trim().startsWith('*'))
-    .map(l => l.replace(/^[-*]\s*/, '').trim())
-    .slice(0, 8);
-
-  const bulletsText = bullets.length > 0 
-    ? bullets.map(b => `- ${b}`).join('\n')
-    : '- Collaborative real-time workspace\n- Custom prompt context engine';
 
   const signaturesText = techSignatures.length > 0
     ? techSignatures.map(sig => `- **${sig.packageName} (v${sig.latestVersion})**: ${sig.architecturalInvariant}`).join('\n')

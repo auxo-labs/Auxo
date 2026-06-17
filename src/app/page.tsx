@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
-import { Sparkles, ArrowRight, Shield, RefreshCw, Cpu, Layers } from 'lucide-react';
+import { ArrowRight, Shield, RefreshCw, Cpu, Layers } from 'lucide-react';
 
 export default function Home() {
   const router = useRouter();
@@ -66,15 +66,12 @@ export default function Home() {
 
         {/* Headline with high-contrast serif font (Refero style) */}
         <h1 className="text-4xl font-normal tracking-tight sm:text-7xl text-zinc-100 max-w-4xl leading-[1.08] selection:bg-zinc-800 font-serif">
-          The Greenfield Spec Engine for Coding Agents.
+          Build Codebases Post-Scarcity.
         </h1>
 
         {/* Subtitle */}
         <p className="max-w-2xl mx-auto mt-6 text-sm sm:text-base text-zinc-400 font-sans leading-relaxed">
-          Dump chaotic thoughts, outlines, and stack rules together. Instant client-side compile into optimized 
-          <code className="text-zinc-200 bg-white/5 px-1 py-0.5 rounded mx-1 font-mono text-xs">AGENTS.md</code>, 
-          <code className="text-zinc-200 bg-white/5 px-1 py-0.5 rounded mx-1 font-mono text-xs">CLAUDE.md</code>, and Cursor 
-          <code className="text-zinc-200 bg-white/5 px-1 py-0.5 rounded mx-1 font-mono text-xs">.mdc</code> rule matrices.
+          Turn chaotic, conversational product roadmaps into perfectly optimized context frameworks for 2026 AI IDEs (Cursor, Claude Code, Aider) in 60 seconds.
         </p>
 
         {/* Action Button Section with fine line borders */}
@@ -90,19 +87,16 @@ export default function Home() {
               <>
                 <span>CREATE ANONYMOUS SANDBOX</span>
                 <ArrowRight className="w-3.5 h-3.5 ml-2 transition-transform duration-150 group-hover:translate-x-0.5" />
-                <span className="ml-3 px-1.5 py-0.5 rounded bg-zinc-800 border border-zinc-700/50 text-[9px] font-mono text-zinc-400 font-medium">
-                  ↵ Enter
-                </span>
               </>
             )}
           </button>
           
           <div className="flex items-center gap-2.5 text-[10px] font-mono text-zinc-500 uppercase tracking-widest mt-1">
-            <span>No Signup</span>
+            <span>Instant Sandbox</span>
             <span className="w-1 h-1 bg-zinc-700 rounded-full" />
-            <span>Disposable Url</span>
+            <span>Frictionless Design</span>
             <span className="w-1 h-1 bg-zinc-700 rounded-full" />
-            <span>Zero-Data Logs</span>
+            <span>Accounts Coming Soon</span>
           </div>
         </div>
 
@@ -112,14 +106,14 @@ export default function Home() {
           {/* Card 1 */}
           <div className="p-6 rounded-lg border border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.02] transition-all duration-150 relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-3 text-[10px] font-mono text-zinc-700 font-bold group-hover:text-zinc-600 transition-colors">
-              01 // EPHEMERAL
+              01 // SPEED
             </div>
             <div className="flex items-center justify-center w-8 h-8 rounded border border-white/10 bg-white/[0.02] text-zinc-400 mb-6">
               <Shield className="w-4 h-4" />
             </div>
-            <h3 className="text-xs font-mono tracking-widest text-zinc-200 uppercase font-bold">Absolute IP Protection</h3>
+            <h3 className="text-xs font-mono tracking-widest text-zinc-200 uppercase font-bold">Frictionless Quick Start</h3>
             <p className="mt-2 text-xs text-zinc-400 leading-relaxed font-sans">
-              No database log, no user retention, no profile tracking. Sandbox channels exist only in client memory. All data wipes instantly on tab close.
+              Start editing and compiling context packs instantly without jumping through account setup or email verification hoops. Save blueprints locally, with cloud workspace dashboards arriving in our next phase.
             </p>
           </div>
 
@@ -147,7 +141,7 @@ export default function Home() {
             </div>
             <h3 className="text-xs font-mono tracking-widest text-zinc-200 uppercase font-bold">Ready-to-Feed Zip</h3>
             <p className="mt-2 text-xs text-zinc-400 leading-relaxed font-sans">
-              Press "Compile Pack" to download the exact file directory expected by Cursor, Aider, and Claude Code. Start coding with perfect context alignment.
+              Press &quot;Compile Pack&quot; to download the exact file directory expected by Cursor, Aider, and Claude Code. Start coding with perfect context alignment.
             </p>
           </div>
 
