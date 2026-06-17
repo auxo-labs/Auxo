@@ -46,7 +46,7 @@ export default function OptimalityPage() {
             <span>WHITE PAPER // EMPIRICAL STUDY</span>
           </div>
           <h1 className="text-3xl font-normal tracking-tight sm:text-5xl text-zinc-100 leading-[1.15] font-serif mb-4">
-            Optimizing AI Agent Context Allocation in Modern Coding Environments
+            Optimising AI Agent Context Allocation in Modern Coding Environments
           </h1>
           <p className="text-xs font-mono text-zinc-500 uppercase tracking-wider">
             Auxo Architecture Group &bull; Published June 2026 &bull; Status: Verified
@@ -59,7 +59,7 @@ export default function OptimalityPage() {
             Abstract
           </div>
           <p className="text-xs text-zinc-400 leading-relaxed font-sans">
-            As autonomous developer agents (e.g. Claude Code, Cursor, Aider) become mainstays of software pipelines, the composition of prompt context documents directly dictates development speed and cost. This paper analyzes context allocation failure modes—specifically <em>&quot;Lost-in-the-Middle&quot;</em> attention loss and <em>&quot;Token Bleed&quot;</em>—and presents Auxo&apos;s multi-tiered context matrix partitioning system. Our implementation achieves up to a <strong className="text-zinc-200">16.6% reduction in token overhead</strong><sup>[1]</sup>, preventing attention degradation<sup>[2]</sup> and avoiding API rate limiting.
+            As autonomous developer agents (e.g. Claude Code, Cursor, Aider) become mainstays of software pipelines, the composition of prompt context documents directly dictates development speed and cost. This paper analyses context allocation failure modes—specifically <em>&quot;Lost-in-the-Middle&quot;</em> attention loss and <em>&quot;Token Bleed&quot;</em>—and presents Auxo&apos;s multi-tiered context matrix partitioning system. Our implementation achieves up to a <strong className="text-zinc-200">16.6% reduction in token overhead</strong><sup>[1]</sup>, preventing attention degradation<sup>[2]</sup> and avoiding API rate limiting.
           </p>
         </div>
 
@@ -145,13 +145,13 @@ export default function OptimalityPage() {
             Spec Summary Table
           </div>
           <h3 className="text-sm font-mono tracking-wider text-zinc-300 uppercase font-bold mb-6 flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-accent" /> Context Optimization Matrix
+            <CheckCircle2 className="w-4 h-4 text-accent" /> Context Optimisation Matrix
           </h3>
           
           <table className="w-full font-mono text-[11px] text-zinc-400">
             <thead>
               <tr className="border-b border-white/10 text-zinc-300">
-                <th className="py-2 text-left">OPTIMIZATION LAYER</th>
+                <th className="py-2 text-left">OPTIMISATION LAYER</th>
                 <th className="py-2 text-left">EMPIRICAL METHOD</th>
                 <th className="py-2 text-left">MEASURED BENEFIT</th>
               </tr>

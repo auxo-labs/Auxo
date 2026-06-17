@@ -78,7 +78,7 @@ export default function Home() {
 
         {/* Subtitle */}
         <p className="max-w-2xl mx-auto mt-6 text-sm sm:text-base text-zinc-400 font-sans leading-relaxed">
-          Turn chaotic, conversational product roadmaps into perfectly optimized context frameworks for 2026 AI IDEs (Cursor, Claude Code, Aider) in 60 seconds.
+          Turn chaotic, conversational product roadmaps into perfectly optimised context frameworks for 2026 AI IDEs (Cursor, Claude Code, Aider) in 60 seconds.
         </p>
 
         {/* Action Button Section with fine line borders */}
