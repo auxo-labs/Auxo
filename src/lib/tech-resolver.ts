@@ -1,4 +1,4 @@
-'use client'; // Note: This file contains pure async logic and runs on both environments, but it will be executed server-side.
+// Live Tech Resolver module - executed server-side
 
 export interface TechSignature {
   packageName: string;

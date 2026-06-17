@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Copy, Check, Play, ShieldAlert, Users, Network, Wifi, WifiOff } from 'lucide-react';
+import { ArrowLeft, Copy, Check, Play, ShieldAlert, Users, Network, Wifi, WifiOff, Download } from 'lucide-react';
 import { Editor } from '@/components/editor';
 import { Preview } from '@/components/preview';
 import { CompiledPack } from '@/lib/prompt-compiler';
@@ -27,10 +27,19 @@ export default function RoomPage({ params }: PageProps) {
   const [activeFile, setActiveFile] = React.useState<string>('AGENTS.md');
   const [copiedLink, setCopiedLink] = React.useState(false);
   const [isCompiling, setIsCompiling] = React.useState(false);
+  const [isDownloading, setIsDownloading] = React.useState(false);
+  const [isMac, setIsMac] = React.useState(true);
   
   // Realtime Sync indicators
   const [usersCount, setUsersCount] = React.useState<number>(1);
   const [connectionStatus, setConnectionStatus] = React.useState<'connecting' | 'connected' | 'disconnected'>('connecting');
+
+  // Detect OS for correct keyboard label renderings (⌘ vs Ctrl)
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setIsMac(navigator.platform.toUpperCase().indexOf('MAC') >= 0);
+    }
+  }, []);
 
   const handleCopyLink = async () => {
     try {
@@ -43,10 +52,10 @@ export default function RoomPage({ params }: PageProps) {
   };
 
   const handleCompile = async () => {
+    if (isCompiling) return;
     try {
       setIsCompiling(true);
-
-      // 1. Call custom Next.js API Route for Software 3.0 Context Compilation
+      
       const response = await fetch('/api/compile', {
         method: 'POST',
         headers: {
@@ -63,25 +72,33 @@ export default function RoomPage({ params }: PageProps) {
       setCompiledFiles(files);
       setActiveFile('AGENTS.md');
 
-      // 2. Generate ZIP file structure containing the dynamic file matrix
+    } catch (error) {
+      console.error('Compilation failure:', error);
+      alert('Failed to compile context blueprint. Inspect server logs.');
+    } finally {
+      setIsCompiling(false);
+    }
+  };
+
+  const handleDownload = async () => {
+    if (!compiledFiles || isDownloading) return;
+    try {
+      setIsDownloading(true);
       const zip = new JSZip();
 
-      // Set root-level agent standard configurations
-      if (files.agentsMd) zip.file('AGENTS.md', files.agentsMd);
-      if (files.claudeMd) zip.file('CLAUDE.md', files.claudeMd);
+      zip.file('AGENTS.md', compiledFiles.agentsMd);
+      zip.file('CLAUDE.md', compiledFiles.claudeMd);
 
-      // Build nested rule definitions (.cursor/rules/)
       const cursorFolder = zip.folder('.cursor');
       if (cursorFolder) {
         const rulesFolder = cursorFolder.folder('rules');
         if (rulesFolder) {
-          Object.entries(files.cursorRules).forEach(([name, content]) => {
+          Object.entries(compiledFiles.cursorRules).forEach(([name, content]) => {
             rulesFolder.file(name, content);
           });
         }
       }
 
-      // 3. Trigger immediate client-side package download
       const blob = await zip.generateAsync({ type: 'blob' });
       const url = URL.createObjectURL(blob);
       
@@ -94,12 +111,68 @@ export default function RoomPage({ params }: PageProps) {
       URL.revokeObjectURL(url);
 
     } catch (error) {
-      console.error('Compilation and zipping failure:', error);
-      alert('Failed to compile context blueprint. Inspect server logs for details.');
+      console.error('Zipping failed:', error);
+      alert('Failed to generate ZIP download.');
     } finally {
-      setIsCompiling(false);
+      setIsDownloading(false);
     }
   };
+
+  // React refs to prevent event handler stale closure thrashing
+  const compileRef = React.useRef(handleCompile);
+  const downloadRef = React.useRef(handleDownload);
+  const copyLinkRef = React.useRef(handleCopyLink);
+  const hasCompiledRef = React.useRef(compiledFiles !== null);
+
+  React.useEffect(() => {
+    compileRef.current = handleCompile;
+    downloadRef.current = handleDownload;
+    copyLinkRef.current = handleCopyLink;
+    hasCompiledRef.current = compiledFiles !== null;
+  });
+
+  // Global Keyboard listener bindings
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const isCmd = e.metaKey || e.ctrlKey;
+      
+      // 1. Compile: Cmd + Enter
+      if (isCmd && e.key === 'Enter') {
+        e.preventDefault();
+        compileRef.current();
+        return;
+      }
+
+      // 2. Download Pack: Cmd + S (if files compiled)
+      if (isCmd && e.key === 's') {
+        if (hasCompiledRef.current) {
+          e.preventDefault();
+          downloadRef.current();
+        }
+        return;
+      }
+
+      // 3. Copy Link: Cmd + Shift + C
+      if (isCmd && e.shiftKey && e.key.toLowerCase() === 'c') {
+        e.preventDefault();
+        copyLinkRef.current();
+        return;
+      }
+
+      // 4. Back Home: Escape (only when typing scratchpad is NOT active)
+      if (e.key === 'Escape') {
+        const focused = document.activeElement;
+        if (focused && (focused.tagName === 'TEXTAREA' || focused.tagName === 'INPUT')) {
+          return;
+        }
+        e.preventDefault();
+        router.push('/');
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [router]);
 
   const getConnectionIcon = () => {
     switch (connectionStatus) {
@@ -135,8 +208,8 @@ export default function RoomPage({ params }: PageProps) {
         <div className="flex items-center gap-4">
           <button 
             onClick={() => router.push('/')}
-            className="flex items-center justify-center w-7 h-7 rounded border border-white/5 hover:border-white/10 hover:bg-white/[0.02] transition-all text-zinc-400 hover:text-zinc-200"
-            title="Go to landing page"
+            className="flex items-center justify-center w-7 h-7 rounded border border-white/5 hover:border-white/10 hover:bg-white/[0.02] transition-all text-zinc-400 hover:text-zinc-200 cursor-pointer"
+            title="Go to landing page (Esc)"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
           </button>
@@ -174,7 +247,7 @@ export default function RoomPage({ params }: PageProps) {
           {/* Copy invite URL */}
           <button
             onClick={handleCopyLink}
-            className="flex items-center justify-center gap-1.5 h-8 px-3 rounded border border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.03] text-[10px] font-mono font-semibold tracking-wider text-zinc-300 transition-colors"
+            className="flex items-center justify-center gap-2 h-8 px-3 rounded border border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.03] text-[10px] font-mono font-semibold tracking-wider text-zinc-300 transition-colors cursor-pointer"
           >
             {copiedLink ? (
               <>
@@ -183,8 +256,11 @@ export default function RoomPage({ params }: PageProps) {
               </>
             ) : (
               <>
-                <Copy className="w-3 h-3" />
-                <span>INVITE PARTNER</span>
+                <Copy className="w-3 h-3 text-zinc-400" />
+                <span>INVITE</span>
+                <span className="px-1 py-0.5 rounded bg-zinc-800 border border-zinc-700/50 text-[8px] font-mono text-zinc-500 font-medium">
+                  {isMac ? '⌘⇧C' : 'Ctrl+Shift+C'}
+                </span>
               </>
             )}
           </button>
@@ -194,16 +270,41 @@ export default function RoomPage({ params }: PageProps) {
             onClick={handleCompile}
             disabled={isCompiling}
             className="flex items-center justify-center gap-2 h-8 px-4 rounded bg-zinc-100 hover:bg-zinc-200 text-zinc-950 text-[10px] font-mono font-semibold tracking-wider transition-all disabled:opacity-50 disabled:pointer-events-none active:scale-95 shadow-sm cursor-pointer"
+            title="Compile markdown"
           >
             {isCompiling ? (
               <div className="w-3 h-3 border border-zinc-950 border-t-transparent rounded-full animate-spin" />
             ) : (
               <>
                 <Play className="w-2.5 h-2.5 fill-current" />
-                <span>COMPILE AGENT PACK</span>
+                <span>COMPILE</span>
+                <span className="px-1 py-0.5 rounded bg-zinc-200 border border-zinc-300 text-[8px] font-mono text-zinc-600 font-medium">
+                  {isMac ? '⌘↵' : 'Ctrl+↵'}
+                </span>
               </>
             )}
           </button>
+
+          {/* Export ZIP Button */}
+          {compiledFiles && (
+            <button
+              onClick={handleDownload}
+              disabled={isDownloading}
+              className="flex items-center justify-center gap-2 h-8 px-3 rounded border border-white/10 bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.05] text-[10px] font-mono font-semibold tracking-wider text-zinc-200 transition-all active:scale-95 cursor-pointer animate-fade-in"
+            >
+              {isDownloading ? (
+                <div className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <>
+                  <Download className="w-3.5 h-3.5 text-zinc-400" />
+                  <span>DOWNLOAD PACK</span>
+                  <span className="px-1 py-0.5 rounded bg-zinc-800 border border-zinc-700/50 text-[8px] font-mono text-zinc-500 font-medium">
+                    {isMac ? '⌘S' : 'Ctrl+S'}
+                  </span>
+                </>
+              )}
+            </button>
+          )}
         </div>
       </header>
 

@@ -36,3 +36,10 @@
 - [x] **Step 7.2:** Create a helper at `src/lib/tech-resolver.ts` to query keyless developer APIs (NPM Registry for versions, and a free web search/documentation query).
 - [x] **Step 7.3:** Integrate the tech resolver into `src/app/api/compile/route.ts` to inject live registry resolutions and conventions into the LLM prompt.
 - [x] **Step 7.4:** Verify compiled outputs to confirm that latest versions and strict software engineering contracts are auto-injected.
+
+## Phase 8: Workspace Usability Enhancements
+- [x] **Step 8.1:** Set up a global keyboard listener (for both Mac `Meta + Enter` and Windows `Ctrl + Enter`) in `src/app/room/[id]/page.tsx` to compile the notes from the scratchpad without manual mouse clicks.
+- [x] **Step 8.2:** Update the `handleCompile` logic in `src/app/room/[id]/page.tsx` to only call the `/api/compile` API and update the preview UI state (removing the automatic `.zip` trigger).
+- [x] **Step 8.3:** Add an "Export ZIP" (Download Pack) button inside the header bar, which is enabled only after a compilation has run.
+- [x] **Step 8.4:** Verify the shortcut triggers compilation and the separate download operates correctly, and document the completion.
+- [x] **Step 8.5:** Integrate OS-specific keyboard shortcut badges inside action buttons and map full workspace keyboard navigation (Cmd+S, Cmd+Shift+C, Escape).

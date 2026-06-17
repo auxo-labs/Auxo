@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Sparkles, ArrowRight, Shield, RefreshCw, Cpu, Layers } from 'lucide-react';
 
 export default function Home() {
@@ -9,10 +9,28 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleCreateRoom = () => {
+    if (isLoading) return;
     setIsLoading(true);
     const roomId = crypto.randomUUID();
     router.push(`/room/${roomId}`);
   };
+
+  // Keyboard shortcut listener for Enter
+  const handleCreateRoomRef = useRef(handleCreateRoom);
+  useEffect(() => {
+    handleCreateRoomRef.current = handleCreateRoom;
+  });
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        handleCreateRoomRef.current();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   return (
     <div className="relative flex flex-col min-h-screen bg-background overflow-hidden selection:bg-zinc-800 selection:text-zinc-100">
@@ -72,6 +90,9 @@ export default function Home() {
               <>
                 <span>CREATE ANONYMOUS SANDBOX</span>
                 <ArrowRight className="w-3.5 h-3.5 ml-2 transition-transform duration-150 group-hover:translate-x-0.5" />
+                <span className="ml-3 px-1.5 py-0.5 rounded bg-zinc-800 border border-zinc-700/50 text-[9px] font-mono text-zinc-400 font-medium">
+                  ↵ Enter
+                </span>
               </>
             )}
           </button>

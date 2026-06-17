@@ -40,8 +40,8 @@ export function Preview({ compiledFiles, activeFile, onActiveFileChange }: Previ
   // Resolve current active file content
   const getCurrentContent = (): string => {
     if (!compiledFiles) return '';
-    if (activeFile === 'AGENTS.md') return compiledFiles.agentsMd;
-    if (activeFile === 'CLAUDE.md') return compiledFiles.claudeMd;
+    if (activeFile === 'AGENTS.md') return compiledFiles.agentsMd || '';
+    if (activeFile === 'CLAUDE.md') return compiledFiles.claudeMd || '';
     return compiledFiles.cursorRules[activeFile] || '';
   };
 
