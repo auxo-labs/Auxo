@@ -1,16 +1,18 @@
 'use client';
 
 import * as React from 'react';
-import { FileText, Folder, FolderOpen, Terminal, Eye, Sparkles, AlertCircle, Copy, Check } from 'lucide-react';
+import { FileText, Folder, FolderOpen, Terminal, Eye, Sparkles, AlertCircle, Copy, Check, Maximize2, Minimize2 } from 'lucide-react';
 import { CompiledPack } from '@/lib/prompt-compiler';
 
 interface PreviewProps {
   compiledFiles: CompiledPack | null;
   activeFile: string;
   onActiveFileChange: (fileName: string) => void;
+  isExpanded?: boolean;
+  onToggleExpand?: () => void;
 }
 
-export function Preview({ compiledFiles, activeFile, onActiveFileChange }: PreviewProps) {
+export function Preview({ compiledFiles, activeFile, onActiveFileChange, isExpanded, onToggleExpand }: PreviewProps) {
   const [expandedFolders, setExpandedFolders] = React.useState<Record<string, boolean>>({
     root: true,
     cursor: true,
@@ -42,8 +44,8 @@ export function Preview({ compiledFiles, activeFile, onActiveFileChange }: Previ
     if (!compiledFiles) return '';
     if (activeFile === 'AGENTS.md') return compiledFiles.agentsMd || '';
     if (activeFile === 'CLAUDE.md') return compiledFiles.claudeMd || '';
-    if (activeFile === 'prompt.md') return compiledFiles.promptMd || '';
     if (activeFile === 'phases.md') return compiledFiles.phasesMd || '';
+    if (activeFile === 'README.md') return compiledFiles.readmeMd || '';
     return compiledFiles.cursorRules[activeFile] || '';
   };
 
@@ -57,9 +59,20 @@ export function Preview({ compiledFiles, activeFile, onActiveFileChange }: Previ
     <div className="flex flex-col h-full overflow-hidden bg-[#0a0a0c]/80 border-t lg:border-t-0 lg:border-l border-white/[0.03]">
       {/* Header bar */}
       <div className="flex items-center justify-between px-6 h-10 border-b border-white/[0.03] bg-zinc-950/40">
-        <span className="text-[10px] font-mono tracking-widest text-zinc-500 uppercase flex items-center gap-1.5">
-          <Eye className="w-3.5 h-3.5 text-zinc-500" /> 02 // compiled_agent_pack
-        </span>
+        <div className="flex items-center gap-3">
+          <span className="text-[10px] font-mono tracking-widest text-zinc-500 uppercase flex items-center gap-1.5">
+            <Eye className="w-3.5 h-3.5 text-zinc-500" /> 02 // compiled_agent_pack
+          </span>
+          {onToggleExpand && (
+            <button
+              onClick={onToggleExpand}
+              className="flex items-center justify-center w-5 h-5 rounded border border-white/5 hover:border-white/10 hover:bg-white/[0.02] text-zinc-500 hover:text-zinc-300 transition-all cursor-pointer"
+              title={isExpanded ? "Exit Fullscreen" : "Fullscreen"}
+            >
+              {isExpanded ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+            </button>
+          )}
+        </div>
         {hasFiles && (
           <span className="text-[10px] text-accent/80 font-mono flex items-center gap-1">
             <Sparkles className="w-3 h-3 animate-pulse" /> compiled
@@ -91,6 +104,15 @@ export function Preview({ compiledFiles, activeFile, onActiveFileChange }: Previ
               {expandedFolders.root && (
                 <div className="pl-4 ml-1.5 border-l border-white/[0.03] space-y-1.5 py-1">
                   
+                  {/* README.md file */}
+                  <div 
+                    onClick={() => onActiveFileChange('README.md')}
+                    className={`flex items-center gap-2 py-1 px-1.5 rounded cursor-pointer transition-colors ${activeFile === 'README.md' ? 'bg-white/[0.03] text-zinc-100 border-l border-white' : 'hover:bg-white/[0.02]'}`}
+                  >
+                    <FileText className="w-3.5 h-3.5 text-zinc-500" />
+                    <span>README.md</span>
+                  </div>
+
                   {/* AGENTS.md file */}
                   <div 
                     onClick={() => onActiveFileChange('AGENTS.md')}
@@ -107,15 +129,6 @@ export function Preview({ compiledFiles, activeFile, onActiveFileChange }: Previ
                   >
                     <FileText className="w-3.5 h-3.5 text-zinc-500" />
                     <span>CLAUDE.md</span>
-                  </div>
-
-                  {/* prompt.md file */}
-                  <div 
-                    onClick={() => onActiveFileChange('prompt.md')}
-                    className={`flex items-center gap-2 py-1 px-1.5 rounded cursor-pointer transition-colors ${activeFile === 'prompt.md' ? 'bg-white/[0.03] text-zinc-100 border-l border-white' : 'hover:bg-white/[0.02]'}`}
-                  >
-                    <FileText className="w-3.5 h-3.5 text-zinc-500" />
-                    <span>prompt.md</span>
                   </div>
 
                   {/* phases.md file */}

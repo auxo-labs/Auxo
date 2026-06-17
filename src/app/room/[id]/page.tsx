@@ -24,13 +24,14 @@ function RoomContent({ roomId }: { roomId: string }) {
     `## Goals\nBuild a zero-auth real-time markdown playground for founders to collaborate.`
   );
   const [compiledFiles, setCompiledFiles] = React.useState<CompiledPack | null>(null);
-  const [activeFile, setActiveFile] = React.useState<string>('AGENTS.md');
+  const [activeFile, setActiveFile] = React.useState<string>('README.md');
   const [copiedLink, setCopiedLink] = React.useState(false);
   const [isCompiling, setIsCompiling] = React.useState(false);
   const [isDownloading, setIsDownloading] = React.useState(false);
   const [isMac, setIsMac] = React.useState(true);
   const [usersCount, setUsersCount] = React.useState<number>(1);
   const [connectionStatus, setConnectionStatus] = React.useState<'connecting' | 'connected' | 'disconnected'>('connecting');
+  const [expandedPanel, setExpandedPanel] = React.useState<'none' | 'editor' | 'preview'>('none');
   const isMountedRef = React.useRef(false);
 
   // ── Simple mount effects ───────────────────────────────────────────────────
@@ -47,7 +48,9 @@ function RoomContent({ roomId }: { roomId: string }) {
   React.useEffect(() => {
     const savedText = localStorage.getItem(`auxo-room-${roomId}`);
     if (savedText) {
-      setMarkdownText(savedText);
+      setTimeout(() => {
+        setMarkdownText(savedText);
+      }, 0);
     }
     const timer = setTimeout(() => {
       isMountedRef.current = true;
@@ -105,7 +108,7 @@ function RoomContent({ roomId }: { roomId: string }) {
 
       const files: CompiledPack = await response.json();
       setCompiledFiles(files);
-      setActiveFile('AGENTS.md');
+      setActiveFile('README.md');
       return files;
     } catch (error) {
       console.error('Compilation failure:', error);
@@ -123,8 +126,8 @@ function RoomContent({ roomId }: { roomId: string }) {
       const zip = new JSZip();
       zip.file('AGENTS.md', targetFiles.agentsMd);
       zip.file('CLAUDE.md', targetFiles.claudeMd);
-      zip.file('prompt.md', targetFiles.promptMd);
       zip.file('phases.md', targetFiles.phasesMd);
+      zip.file('README.md', targetFiles.readmeMd);
 
       const cursorFolder = zip.folder('.cursor');
       if (cursorFolder) {
@@ -327,21 +330,31 @@ function RoomContent({ roomId }: { roomId: string }) {
       </header>
 
       {/* Main split-panel layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 flex-1 overflow-hidden h-[calc(100vh-3.5rem)]">
+      <div className={`grid flex-1 overflow-hidden h-[calc(100vh-3.5rem)] ${
+        expandedPanel === 'none' ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1'
+      }`}>
 
-        <Editor
-          roomId={roomId}
-          value={markdownText}
-          onChange={setMarkdownText}
-          onUsersChange={setUsersCount}
-          onStatusChange={setConnectionStatus}
-        />
+        {expandedPanel !== 'preview' && (
+          <Editor
+            roomId={roomId}
+            value={markdownText}
+            onChange={setMarkdownText}
+            onUsersChange={setUsersCount}
+            onStatusChange={setConnectionStatus}
+            isExpanded={expandedPanel === 'editor'}
+            onToggleExpand={() => setExpandedPanel(prev => prev === 'editor' ? 'none' : 'editor')}
+          />
+        )}
 
-        <Preview
-          compiledFiles={compiledFiles}
-          activeFile={activeFile}
-          onActiveFileChange={setActiveFile}
-        />
+        {expandedPanel !== 'editor' && (
+          <Preview
+            compiledFiles={compiledFiles}
+            activeFile={activeFile}
+            onActiveFileChange={setActiveFile}
+            isExpanded={expandedPanel === 'preview'}
+            onToggleExpand={() => setExpandedPanel(prev => prev === 'preview' ? 'none' : 'preview')}
+          />
+        )}
 
       </div>
     </div>

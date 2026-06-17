@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { supabase } from '@/lib/supabase';
+import { Maximize2, Minimize2 } from 'lucide-react';
 
 interface EditorProps {
   roomId: string;
@@ -9,9 +10,11 @@ interface EditorProps {
   onChange: (value: string) => void;
   onUsersChange: (count: number) => void;
   onStatusChange: (status: 'connected' | 'connecting' | 'disconnected') => void;
+  isExpanded?: boolean;
+  onToggleExpand?: () => void;
 }
 
-export function Editor({ roomId, value, onChange, onUsersChange, onStatusChange }: EditorProps) {
+export function Editor({ roomId, value, onChange, onUsersChange, onStatusChange, isExpanded, onToggleExpand }: EditorProps) {
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
   const channelRef = React.useRef<ReturnType<typeof supabase.channel> | null>(null);
 
@@ -89,9 +92,20 @@ export function Editor({ roomId, value, onChange, onUsersChange, onStatusChange 
     <div className="flex flex-col flex-1 h-full overflow-hidden bg-background">
       {/* Fine-border panel header */}
       <div className="flex items-center justify-between px-6 h-10 border-b border-white/[0.03] bg-zinc-950/40">
-        <span className="text-[10px] font-mono tracking-widest text-zinc-500 uppercase">
-          01 // scratchpad.md
-        </span>
+        <div className="flex items-center gap-3">
+          <span className="text-[10px] font-mono tracking-widest text-zinc-500 uppercase">
+            01 // scratchpad.md
+          </span>
+          {onToggleExpand && (
+            <button
+              onClick={onToggleExpand}
+              className="flex items-center justify-center w-5 h-5 rounded border border-white/5 hover:border-white/10 hover:bg-white/[0.02] text-zinc-500 hover:text-zinc-300 transition-all cursor-pointer"
+              title={isExpanded ? "Exit Fullscreen" : "Fullscreen"}
+            >
+              {isExpanded ? <Minimize2 className="w-3 h-3" /> : <Maximize2 className="w-3 h-3" />}
+            </button>
+          )}
+        </div>
         <span className="text-[10px] text-zinc-600 font-mono">
           {wordCount} words &bull; {characterCount} chars
         </span>

@@ -5,8 +5,8 @@ import { TechSignature } from './tech-resolver';
 export interface CompiledPack {
   agentsMd: string;      // root AGENTS.md: Global taste guardrails
   claudeMd: string;      // root CLAUDE.md: CLI execution and shortcuts
-  promptMd: string;      // root prompt.md: Karpathy-style AI system prompt instructing the agent to adopt a context-specific persona (e.g. Senior Software Architect & Investment Banker/Accountant/etc.) and outlining the overall project plan.
   phasesMd: string;      // root phases.md: Structured breakdown of the project plan into multiple logical phases (e.g. Planning, Scaffold, Feature implementation, Verification) with specific sub-steps.
+  readmeMd: string;      // root README.md: AI-optimized README / System North Star
   cursorRules: Record<string, string>; // .cursor/rules/[filename].mdc
 }
 
@@ -45,44 +45,43 @@ Your job is to take raw, chaotic software specifications and compile them into a
 
 You must return a raw JSON object matching this TypeScript interface:
 {
-  "agentsMd": string,  // Root AGENTS.md: Enforces simplicity, taste, contrast, context budgets
-  "claudeMd": string,  // Root CLAUDE.md: Claude Code CLI permissions, tests, builds
-  "promptMd": string,  // Root prompt.md: A Karpathy-style AI system prompt detailing the project's overall context, architectural decisions, and an expert persona instruction.
-  "phasesMd": string,  // Root phases.md: A detailed development roadmap outlining phases and sub-steps with checkboxes.
+  "agentsMd": string,  // Root AGENTS.md: The global constitution. Defines Stack versions, coding standards (DRY/KISS, SOLID, JSDoc), context budgets, and absolute project constraints.
+  "claudeMd": string,  // Root CLAUDE.md: Claude Code CLI runtime permissions. Lists build, test, lint, and dev command shortcuts.
+  "phasesMd": string,  // Root phases.md: A clean step-by-step checklist of development phases and sub-steps (all checkboxes unchecked by default with \`- [ ]\`).
+  "readmeMd": string,  // Root README.md: The System North Star. Establishes the Product Thesis & Vision, Core Functional Pillars, Ubiquitous Domain Vocabulary, and Scoped References directory map.
   "cursorRules": {
-    "tech-stack.mdc": string, // Scoped rule for all files (*). Defines tech stack invariants
-    "api.mdc": string,       // Scoped rule for src/app/api/**/*
-    "ui.mdc": string        // Scoped rule for components/styles src/components/**/*
+    "ui-theme.mdc": string, // Path rule scoped to components and frontend files. Defines UI aesthetics, colors, layouts, and typography.
+    "logic-api.mdc": string // Path rule scoped to services and API routes. Defines mock fallback switch logic, math precision, and external services boundaries.
   }
 }
 
 ### Ground Truth Grounding Data (Live Tech Resolutions):
 ${signaturesText}
 
-### Instructions for generating "prompt.md" (AI Session Context):
-- Must start with a header block notice:
-  "> Share this file at the start of every new AI session. It contains everything needed to write correct code immediately.
-  > For full detail, reference the other docs in \`/docs/\` only when needed for a specific task."
-- Section "What This App Is": Describe the application goals, target users, and UI style (e.g., dense terminal grids, monospaced fonts, dark aesthetics, or standard elegant flows based on notes).
-- Section "AI System Persona & Role": Analyze the niche/domain of the project from the notes (e.g. stock portfolio/trading/crypto/ledgers -> "Senior Software Architect & Investment Banker", accounting/ledgers/billing/tax -> "Senior Software Architect & Accountant", farming/crop/livestock -> "Senior Software Architect & Agricultural Operations Analyst", medical/patient/clinical/hipaa -> "Senior Software Architect & Clinical Informatics Specialist", default -> "Senior Software Architect & System Designer"). Explicitly instruct the AI agent to adopt this persona, thinking like an expert in that specific industry sector, ensuring calculations are mathematically verified and compliant with industry practices.
-- Section "Current Phase": Set to "Phase 1: Planning and Setup".
-- Section "Tech Stack (Decisions are Final)": List resolved NPM packages, framework details, state management, and CSS configurations.
-- Section "Pages & Routes": A markdown table of page paths and their purpose.
-- Section "TypeScript Types (Source of Truth)": Standard baseline TypeScript types/interfaces representing the core domain models derived from raw notes.
-- Section "Key File Locations": Tree representation of directories and files.
-- Section "Architectural Rules (Must Follow)": Explicit lists of codebase architecture boundaries (e.g., "No business logic in components", "All types live in types/", "All API calls go through services/").
-- Section "Key Environment Variables": Bash block of required environment variables.
-- Section "Reference Docs": Markdown table linking files (e.g., docs/phases.md, docs/api_contracts.md, etc.) and when to read them.
+### Specific Instructions for "README.md" (The System North Star):
+- Establish the business domain and user context.
+- **Section 1: Product Thesis & Vision**: Outline the high-level application vision, why this project exists, and the core problem it solves (derived from the notes).
+- **Section 2: Core Functional Pillars**: List the launch execution vectors (pillars) to protect product scope boundaries.
+- **Section 3: Ubiquitous Domain Vocabulary**: A markdown table mapping Human Term | Code Property (standardized camelCase) | Context Definition to ensure naming uniformity across the codebase (e.g. mapping human term "Ticker" to code property "ticker", "Average Cost" to "averagePrice", etc. depending on notes).
+- **Section 4: Context Matrix Directory Map**: Direct pointers to scoped context files (e.g., AGENTS.md for constitutions, CLAUDE.md for CLI flags, docs/phases.md for checking tasks, and README.md for System North Star). **DO NOT** list the whole file directory tree here.
 
-### Instructions for generating "phases.md" (Development Phases):
-- Standardized multi-phase format using checkboxes.
-- Must include:
-  - **Phase 1: Planning and Setup** (with sub-steps for docs, dependencies, config)
-  - **Phase 2: Core UI Scaffold & Theming** (with layout, provider, and navigation sub-steps)
-  - **Phase 3: State Management & Mock Prototype Logic** (with types, stores, mock data, primitives sub-steps)
-  - **Phase 4: Core Implementation & Real Data Integration** (with API services, endpoints, integration sub-steps)
-  - **Phase 5: Verification, Polish & Stability** (with testing, fixing edge-cases, linter audits)
-- Mark completed initial steps as complete (e.g., with ✅ COMPLETE or [x] checkboxes for Step 1.1 / Phase 1 setup if they were already described in raw notes, or leave as [ ] if they are future work).
+### Specific Instructions for "AGENTS.md" (The Constitution):
+- Focus strictly on high-level stack declarations, global constraints, coding philosophies (e.g. Karpathy simplicity guidelines), and absolute constraints (e.g. no clerk auth, no database write permissions).
+- **DO NOT** dump database schemas or TypeScript types here—agents read the files directly.
+
+### Specific Instructions for "CLAUDE.md" (CLI Runtime Executive):
+- List explicit safe commands for starting the dev server, building, linting, and testing.
+
+### Specific Instructions for "phases.md" (The State Roadmap):
+- Create a clean 5-phase project roadmap. Use checkboxes (\`- [ ]\`). Do not pre-check any checkboxes by default.
+
+### Specific Instructions for Path-Scoped Rules under "cursorRules" (The Context Scalpels):
+- **ui-theme.mdc:**
+  - Description: YAML frontmatter with \`description: Enforces the UI theme, aesthetics, and layout parameters\` and \`globs: ["src/components/**/*", "src/app/**/*.tsx"]\`.
+  - Content: Define aesthetic constraints based on the notes (e.g. true-black Bloomberg terminal for finance notes; clean sterile layouts with banners for medical; green earthy layouts for agriculture). Include a strict rule: "Never write calculation/business logic in UI components; delegate to service layers."
+- **logic-api.mdc (Rename file dynamically if appropriate, e.g. "finance-api.mdc", "ledger-rules.mdc", "systems-api.mdc"):**
+  - Description: YAML frontmatter with \`description: Logic validation for services and API routing layers\` and \`globs: ["src/lib/services/**/*", "src/app/api/**/*"]\`.
+  - Content: Define core system logic invariants (e.g. mock swappability checking \`NEXT_PUBLIC_USE_MOCK_DATA\`, calculations precision, external service boundaries, database protocols).
 
 ### Strict Coding Style Rules to AUTO-INJECT into AGENTS.md and MDC files:
 1. **DRY & KISS:** Explicitly command the agent to prefer "vanilla over clever." Forbid premature optimization, deeply nested conditions, and excessive abstractions.
@@ -92,10 +91,7 @@ ${signaturesText}
 5. **No Placeholders:** Prohibit leaving commented placeholders, incomplete functions, or TODO notes in generated code.
 
 ### Frontmatter Rules:
-- All values in "cursorRules" MUST start with YAML frontmatter specifying "description" and "globs".
-- "tech-stack.mdc" should target globs: "*".
-- "api.mdc" should target globs: "src/app/api/**/*".
-- "ui.mdc" should target globs: "src/components/**/*".`;
+- All values in "cursorRules" MUST start with YAML frontmatter specifying "description" and "globs".`;
 }
 
 async function callOpenAI(apiKey: string, markdown: string, techSignatures: TechSignature[]): Promise<CompiledPack> {
@@ -202,309 +198,231 @@ ${signaturesText}
 - **Local Testing:** \`npm test\`
 - **Linter Checks:** \`npm run lint\``;
 
-  // Determine industry context/persona based on rawMarkdown keywords
-  let persona = 'Senior Software Architect & System Designer';
-  let targetIndustry = 'General Web Application';
-  let projectGoal = 'Build a scalable, robust, and simplicity-aligned application workspace.';
-  let uiStyle = 'Minimalist modern workspace, clean visual layout components, typography styling.';
-  let envCode = `NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key`;
-  let typesCode = `interface DataModel {
-  id: string;
-  name: string;
-  createdAt: string;
-}`;
-  let fileTreeCode = `src/
-├── app/
-│   ├── layout.tsx
-│   └── page.tsx
-├── components/
-│   └── ui/
-│       └── Button.tsx
-├── lib/
-│   └── utils/
-│       └── cn.ts
-└── types/
-    └── index.ts`;
-  let rulesCode = `1. **No business logic in components.** Maintain pure rendering modules.
-2. **All types live in \`src/types/\`.** Avoid inline typescript declarations.
-3. **No Placeholders.** Ensure code generation is complete.`;
-
   const rawLower = rawMarkdown.toLowerCase();
+
+  // Dynamic path rules based on persona/niche context
+  let uiThemeRules = '';
+  let logicRules = '';
+  let logicFileName = 'logic-api.mdc';
+
   if (/crypto|stock|portfolio|trade|finance|wealth|broker/i.test(rawLower)) {
-    persona = 'Senior Software Architect & Investment Banker';
-    targetIndustry = 'Financial Technology & Asset Management';
-    projectGoal = 'Build a real-time Bloomberg-terminal-style portfolio tracker and analytical canvas for crypto and stocks.';
-    uiStyle = 'High-density Bloomberg Terminal aesthetic: true-black theme, neon accents (#10B981 green, #F59E0B amber), monospaced fonts, dense HTML data tables.';
-    envCode = `NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-NEXT_PUBLIC_USE_MOCK_DATA=true`;
-    typesCode = `interface Holding {
-  ticker: string;
-  name: string;
-  quantity: number;
-  averagePrice: number;
-  currentPrice: number;
-  pnlValue: number;
-  pnlPercent: number;
-  totalValue: number;
-}
+    logicFileName = 'finance-api.mdc';
+    uiThemeRules = `---
+description: Enforces the high-density Bloomberg Terminal aesthetic for frontend components
+globs: ["src/components/**/*", "src/app/**/*.tsx"]
+---
+# Bloomberg UI Styling Rules
+- **Theme:** Strict true-black layout (#000000). Never use slate or zinc grays.
+- **Accents:** Neon green (#10B981) for positive tickers, neon amber (#F59E0B) for warnings/neutral.
+- **Typography:** Strictly monospaced layout elements, high-density HTML data tables.
+- **Rule:** Never write business/calculation logic inside these components. Use services instead.`;
 
-interface MarketSnapshot {
-  symbol: string;
-  label: string;
-  price: number;
-  change: number;
-  changePercent: number;
-  asOf: string;
-}`;
-    fileTreeCode = `src/
-├── app/
-│   ├── layout.tsx
-│   └── dashboard/
-│       └── page.tsx
-├── components/
-│   ├── dashboard/
-│   │   ├── HoldingsTable.tsx
-│   │   └── MacroPillars.tsx
-│   └── ui/
-│       ├── Table.tsx
-│       └── Badge.tsx
-├── lib/
-│   ├── services/
-│   │   └── yahooFinance.service.ts
-│   └── utils/
-│       └── formatters.ts
-└── types/
-    └── holdings.ts`;
-    rulesCode = `1. **No business logic in components.** Components render data; parsing and calculation reside in services.
-2. **True-black theme.** Styling must adhere strictly to dense, dark, monospaced layout contracts.
-3. **Mock Switch.** positions and rates must honor NEXT_PUBLIC_USE_MOCK_DATA flags.`;
+    logicRules = `---
+description: Logic validation for data mapping and asset management API layers
+globs: ["src/lib/services/**/*", "src/app/api/**/*"]
+---
+# Financial Engineering Rules
+- **Mock Enforcement:** Respect the \`NEXT_PUBLIC_USE_MOCK_DATA\` flag. If true, bypass external network requests and fetch mock structures instantly.
+- **Calculation Integrity:** Always double-check floating-point arithmetic. Wrap currency and percentage deltas through \`src/lib/utils/formatters.ts\`.
+- **Database Boundary:** Supabase connections must remain transient via Realtime Broadcast/Presence channels. No persistent stateful writes unless explicit.`;
   } else if (/account|billing|invoice|ledger|audit|tax/i.test(rawLower)) {
-    persona = 'Senior Software Architect & Certified Public Accountant';
-    targetIndustry = 'Accounting, Invoicing & Financial Operations';
-    projectGoal = 'Build a high-integrity ledger system enforcing auditability, double-entry safety, and transaction logging.';
-    uiStyle = 'Sober, high-contrast grid layouts. Clear tabular ledger books, strict alignment, distinct status colors for unpaid/overdue.';
-    envCode = `DATABASE_URL=postgres://...
-ENCRYPTION_SECRET=your_key`;
-    typesCode = `interface TransactionEntry {
-  id: string;
-  accountId: string;
-  type: 'DEBIT' | 'CREDIT';
-  amount: number;
-  description: string;
-}
+    logicFileName = 'ledger-rules.mdc';
+    uiThemeRules = `---
+description: Sober, high-contrast accounting layouts and spreadsheet grids
+globs: ["src/components/**/*", "src/app/**/*.tsx"]
+---
+# Accounting UI Grid Rules
+- **Grid Layout:** Strict column alignment, clear tabular ledger sheets.
+- **Accents:** Muted colors. Unpaid is red, paid is dark emerald.
+- **Rule:** Never write double-entry or ledger balancing logic inside these views. Use services.`;
 
-interface LedgerAccount {
-  id: string;
-  code: string;
-  name: string;
-  balance: number;
-}`;
-    fileTreeCode = `src/
-├── app/
-│   ├── layout.tsx
-│   └── ledger/
-│       └── page.tsx
-├── components/
-│   ├── ledger/
-│   │   └── LedgerGrid.tsx
-│   └── ui/
-│       └── Table.tsx
-├── lib/
-│   └── ledger-engine/
-│       └── doubleEntry.ts
-└── types/
-    └── ledger.ts`;
-    rulesCode = `1. **Double-Entry Integrity.** Debits and Credits must balance to zero before transaction commits.
-2. **Immutable Entries.** Transactions can only be appended, never deleted or updated. Restorations require reversing transactions.`;
+    logicRules = `---
+description: Double-entry auditability and balancing ledger rules
+globs: ["src/lib/services/**/*", "src/app/api/**/*"]
+---
+# Double-Entry Ledger Rules
+- **Balance Invariant:** Debits and Credits must balance to zero before transaction commits.
+- **Auditability:** Transactions can only be appended, never deleted or updated. Restorations require reversing transactions.`;
   } else if (/pipeline|kafka|parquet|cron|worker|postgres|clickhouse|backend/i.test(rawLower)) {
-    persona = 'Senior Systems Architect & Principal Database Engineer';
-    targetIndustry = 'High-Performance Backend Data Systems';
-    projectGoal = 'Build an optimized backend ingestion engine with stream-processing safety and ClickHouse caching.';
-    uiStyle = 'Command-line execution parameters, status logs, database latency charts, performance monitoring gauges.';
-    envCode = `POSTGRES_PRISMA_URL=...
-CLICKHOUSE_HOST=...
-KAFKA_BROKERS=...`;
-    typesCode = `interface DataPipelineJob {
-  id: string;
-  status: 'PENDING' | 'RUNNING' | 'COMPLETED' | 'FAILED';
-  recordsProcessed: number;
-  startedAt: string;
-}
+    logicFileName = 'systems-api.mdc';
+    uiThemeRules = `---
+description: System telemetry latency graphs and execution parameter aesthetics
+globs: ["src/components/**/*", "src/app/**/*.tsx"]
+---
+# Telemetry Dashboard UI Rules
+- **Visuals:** Command-line status logs, latency indicators, gauge visuals.
+- **Contrast:** High contrast, clear indicators for failed worker channels.`;
 
-interface IngestionEvent {
-  topic: string;
-  partition: number;
-  offset: number;
-  payload: string;
-}`;
-    fileTreeCode = `src/
-├── bin/
-│   └── worker.ts
-├── lib/
-│   ├── database/
-│   │   ├── clickhouse.ts
-│   │   └── postgres.ts
-│   └── streams/
-│       └── kafka.ts
-└── types/
-    └── pipeline.ts`;
-    rulesCode = `1. **Zero Client Components.** Strict prohibition of writing frontend/React files.
-    2. **Batching Commits.** Ingestion events must pool and batch commit to ClickHouse in thresholds of 1000 records or 5 seconds.`;
+    logicRules = `---
+description: Kafka batching and stream-processing rules
+globs: ["src/lib/services/**/*", "src/app/api/**/*"]
+---
+# Ingestion Stream Rules
+- **Zero Client Components:** Strict prohibition of writing frontend/React files.
+- **Batching Commits:** Ingestion events must pool and batch commit to ClickHouse in thresholds of 1000 records or 5 seconds.`;
   } else if (/medical|health|patient|clinic|doctor|pharmacy/i.test(rawLower)) {
-    persona = 'Senior Software Architect & Medical Software Consultant';
-    targetIndustry = 'Healthcare & Patient Management Systems';
-    projectGoal = 'Build a HIPAA-compliant medical patient tracking workspace prioritizing data privacy and secure session tracking.';
-    uiStyle = 'Clean, distraction-free medical aesthetics. High contrast, readable sans-serif typography, patient emergency banners.';
-    envCode = `PATIENT_ENCRYPTION_KEY=...
-HIPAA_AUDIT_LOG_URL=...`;
-    typesCode = `interface PatientRecord {
-  id: string;
-  encryptedNhsNo: string;
-  name: string;
-  dob: string;
-  allergies: string[];
-}
+    logicFileName = 'clinical-rules.mdc';
+    uiThemeRules = `---
+description: Medical patient tracker safety banners and clean typography layouts
+globs: ["src/components/**/*", "src/app/**/*.tsx"]
+---
+# Patient Safety UI Rules
+- **Banners:** Patient emergency banners must be highly visible and color-coded.
+- **Typography:** Highly readable sans-serif layout systems for clinical settings.`;
 
-interface AuditLog {
-  userId: string;
-  action: 'READ' | 'WRITE' | 'EXPORT';
-  timestamp: string;
-}`;
-    fileTreeCode = `src/
-├── app/
-│   └── patients/
-│       └── page.tsx
-├── components/
-│   └── PatientBanner.tsx
-├── lib/
-│   ├── security/
-│   │   └── encryptor.ts
-│   └── services/
-│       └── patient.service.ts
-└── types/
-    └── clinical.ts`;
-    rulesCode = `1. **HIPAA Logging.** Every read access to patient records must append to the HIPAA audit logs.
-2. **Encryption at Rest.** Patient identity strings must always be parsed via encryptor functions.`;
+    logicRules = `---
+description: HIPAA auditing and data encryption policies
+globs: ["src/lib/services/**/*", "src/app/api/**/*"]
+---
+# Clinical Data Rules
+- **HIPAA Logging:** Every read access to patient records must append to the HIPAA audit logs.
+- **Encryption at Rest:** Patient identity strings must always be parsed via encryptor functions.`;
   } else if (/farm|agriculture|crop|plant|soil|weather/i.test(rawLower)) {
-    persona = 'Senior Software Architect & Agricultural Operations Analyst';
-    targetIndustry = 'Agricultural Operations & Sensor Analytics';
-    projectGoal = 'Build an IoT agricultural field sensor monitor and harvest prediction analyzer.';
-    uiStyle = 'Earthy tones, dense field telemetry tables, weather-sensitive indicators, crop moisture indicators.';
-    envCode = `IOT_SENSOR_API_KEY=...
-WEATHER_SERVICE_URL=...`;
-    typesCode = `interface FieldTelemetry {
-  fieldId: string;
-  soilMoisturePercent: number;
-  ambientTempCelsius: number;
-  nitrogenLevel: number;
-  recordedAt: string;
-}
+    logicFileName = 'agriculture-rules.mdc';
+    uiThemeRules = `---
+description: Earthy UI theme layout parameters and sensor dials
+globs: ["src/components/**/*", "src/app/**/*.tsx"]
+---
+# Telemetry Dashboard UI Rules
+- **Theme:** Earthy tones, weather-sensitive indicators, soil moisture scales.`;
 
-interface CropYieldProjection {
-  cropType: string;
-  projectedHarvestTons: number;
-  riskLevel: 'LOW' | 'MEDIUM' | 'HIGH';
-}`;
-    fileTreeCode = `src/
-├── app/
-│   └── fields/
-│       └── page.tsx
-├── components/
-│   └── SensorGrid.tsx
-├── lib/
-│   └── analytics/
-│       └── harvestEngine.ts
-└── types/
-    └── agriculture.ts`;
-    rulesCode = `1. **Sensor Fallback.** Sensor telemetry data must fall back to moving averages if sensor heartbeat is missing.
-2. **Decimal Precision.** Soil metrics must maintain float rounding values (precisions up to 2 decimal spaces).`;
+    logicRules = `---
+description: Telemetry calculations and weather mappings
+globs: ["src/lib/services/**/*", "src/app/api/**/*"]
+---
+# Agricultural Telemetry Rules
+- **Sensor Fallback:** Sensor telemetry data must fall back to moving averages if sensor heartbeat is missing.
+- **Decimal Precision:** Soil metrics must maintain float rounding values (precisions up to 2 decimal spaces).`;
+  } else {
+    // Default general rules
+    uiThemeRules = `---
+description: Standard UI component styling and responsive layouts
+globs: ["src/components/**/*", "src/app/**/*.tsx"]
+---
+# UI Component Invariants
+- Layout: Use CSS-first layout rules using Tailwind CSS variables.
+- Accessibility: Apply standard semantic tags and ARIA descriptors.
+- Error Boundaries: Ensure user interfaces wrap client nodes in local error catch modules.`;
+
+    logicRules = `---
+description: API response standards and standard db boundaries
+globs: ["src/lib/services/**/*", "src/app/api/**/*"]
+---
+# Logic and API Invariants
+- Every API endpoint must return a structured JSON response.
+- Do not use custom query wrappers; write raw database client primitives.
+- **Verification Rule:** Every endpoint must pass local linter execution (\`npm run lint\`) before committing.`;
   }
 
-  const promptMd = `# ${projectName} — AI Session Context
+  // Configure AI-Optimized README / System North Star dynamic content
+  let prdThesis = 'SignalSignal is a high-density, real-time portfolio tracker and analytical canvas built for sovereign crypto and stock investors. It bridges the gap between chaotic retail trading interfaces and institutional-grade tooling, delivering split-second multi-asset portfolio visibility.';
+  let prdProblem = 'Retail investors lose alpha because their data is fragmented across multiple exchanges, wallets, and slow, click-heavy web UIs. SignalSignal provides a unified, zero-latency "command center" layout.';
+  let prdPillars = `* **The Bloomberg Dashboard (Bento Layout):** A single-view, keyboard-navigable dashboard rendering live asset metrics, total PnL allocation charts, and historical performance tables.
+* **The Research Sandbox (Shared Rooms):** Real-time collaborative workspaces utilizing transient state streams where co-investors can overlay macro charts, share text nodes, and analyze vectors simultaneously.
+* **The Terminal Feed:** A high-density, monospaced HTML data stream aggregating volatile tickers and execution actions without nested pagination loops.`;
+  let prdVocab = `| Human Term | Code Property | Context Definition |
+| :--- | :--- | :--- |
+| **Ticker/Symbol** | \`ticker\` | Standardized market identifier (e.g., \`BTC\`, \`AAPL\`). |
+| **Average Fill Price** | \`averagePrice\` | The weighted average cost basis of an accumulated position. |
+| **Current Market Value** | \`totalValue\` | \`quantity\` multiplied by the live asset \`currentPrice\`. |
+| **Unrealized Gain/Loss** | \`pnlValue\` / \`pnlPercent\` | Net financial delta between cost basis and live valuation. |`;
 
-> Share this file at the start of every new AI session. It contains everything needed to write correct code immediately.
-> For full detail, reference the other docs in \`/docs/\` only when needed for a specific task.
+  if (/account|billing|invoice|ledger|audit|tax/i.test(rawLower)) {
+    prdThesis = 'LedgerCore is a high-integrity, double-entry audit bookkeeping engine designed for financial operations, bookkeeping, and cash flow tracing.';
+    prdProblem = 'Manual bookkeeping is prone to credit/debit mismatch and tampering. LedgerCore enforces atomic ledger accounting and immutable audits.';
+    prdPillars = `* **Ledger Books View:** Tabular layout representing journal entries.
+* **Audit Trails logging:** Appending hash-chained transactions.
+* **Invoicing status monitor:** Quick dashboard showing paid vs overdue cash flows.`;
+    prdVocab = `| Human Term | Code Property | Context Definition |
+| :--- | :--- | :--- |
+| **Entry Type** | \`type\` | Direction of bookkeeping mutation (\`DEBIT\` or \`CREDIT\`). |
+| **Asset Code** | \`code\` | Standardized account identifier. |
+| **Net Balance** | \`balance\` | Total accumulated balance of the ledger. |`;
+  } else if (/pipeline|kafka|parquet|cron|worker|postgres|clickhouse|backend/i.test(rawLower)) {
+    prdThesis = 'DataPipeline is a stream-processing worker built for high-performance ingestion of parquet datasets into ClickHouse and PostgreSQL.';
+    prdProblem = 'Data loss occurs under high-volume streaming spikes. DataPipeline pools Kafka events and guarantees batching commits.';
+    prdPillars = `* **Stream Consumer:** Zero-client backend worker consuming Kafka partitions.
+* **Batch Ingest Engine:** Parallel insertion blocks to ClickHouse.
+* **Telemetry Logs Monitor:** Monospaced terminal indicators monitoring partition offset lag.`;
+    prdVocab = `| Human Term | Code Property | Context Definition |
+| :--- | :--- | :--- |
+| **Job Status** | \`status\` | State of the pipeline worker execution. |
+| **Record Count** | \`recordsProcessed\` | Number of events committed to databases. |
+| **Stream Offset** | \`offset\` | Position indicator in Kafka topic partition. |`;
+  } else if (/medical|health|patient|clinic|doctor|pharmacy/i.test(rawLower)) {
+    prdThesis = 'MedTrack is a clinical patient tracker and allergy monitor built to provide clinical teams with instant patient history visibility.';
+    prdProblem = 'Delayed records access in emergency settings leads to medical errors. MedTrack ensures instant data retrieval with local caching.';
+    prdPillars = `* **Clinical Banner View:** Patient emergency metrics.
+* **Allergy Alert alerts:** Live notifications showing medical triggers.
+* **HIPAA Audit logging:** Immutable patient record access history tracking.`;
+    prdVocab = `| Human Term | Code Property | Context Definition |
+| :--- | :--- | :--- |
+| **NHS Number** | \`encryptedNhsNo\` | Encrypted patient health identity key. |
+| **Medical Trigger** | \`allergies\` | List of severe patient allergen factors. |
+| **Audit Action** | \`action\` | Operational tag tracking patient history access. |`;
+  } else if (/farm|agriculture|crop|plant|soil|weather/i.test(rawLower)) {
+    prdThesis = 'FieldSync is an IoT field sensor telemetry monitor and harvest prediction analyzer.';
+    prdProblem = 'Fragmented crop analytics lead to delayed hydration and harvest risk. FieldSync pools sensor feeds into soil metrics maps.';
+    prdPillars = `* **Field Telemetry Table:** Telemetry metrics (soil moisture, nitrogen levels).
+* **Harvest Projection engine:** Predictive engine resolving crop yield targets.
+* **Sensor Heartbeat alerts:** Latency tracking dials showing active fields.`;
+    prdVocab = `| Human Term | Code Property | Context Definition |
+| :--- | :--- | :--- |
+| **Moisture Value** | \`soilMoisturePercent\` | Volumetric soil water content delta. |
+| **Yield Projection** | \`projectedHarvestTons\` | Expected harvest output size in tons. |
+| **Sensor Timestamp** | \`recordedAt\` | Date-time indicator of IoT sensor heartbeat. |`;
+  } else if (!/crypto|stock|portfolio|trade|finance|wealth|broker/i.test(rawLower)) {
+    // General default
+    prdThesis = 'AppCore is a simplicity-aligned workspace for managing standard business records.';
+    prdProblem = 'Redundant boilerplate code slows down standard application development.';
+    prdPillars = `* **Records Grid:** A clean dashboard showing database metrics.
+* **Collaboration room:** Real-time presence rooms for sync.
+* **ZIP Export canvas:** One-click local downloads of context packs.`;
+    prdVocab = `| Human Term | Code Property | Context Definition |
+| :--- | :--- | :--- |
+| **Record ID** | \`id\` | Standard unique database key. |
+| **Name Value** | \`name\` | Human-readable title property. |
+| **Creation Stamp** | \`createdAt\` | ISO timestamp of record insertion. |`;
+  }
+
+  const readmeMd = `# ${projectName}: System Overview & North Star
+
+## 1. Product Thesis & Vision
+${prdThesis}
+
+### The Core Problem It Solves:
+${prdProblem}
 
 ---
 
-## What This App Is
-A zero-auth, real-time workspace focused on the following domain logic:
-${projectGoal}
-
-The interface aesthetic matches:
-- **UI Styling:** ${uiStyle}
+## 2. Core Functional Pillars
+To protect the product scope, the application is strictly bound to these launch execution vectors:
+${prdPillars}
 
 ---
 
-## AI System Persona & Role
-- **Role:** You are acting as a **${persona}**.
-- **Industry Context:** ${targetIndustry}
-- **Mindset:** You write production-grade, highly optimized code. You understand the business implications, regulatory requirements, and engineering taste required for ${targetIndustry}. Always double-check calculations and safety bounds.
+## 3. Ubiquitous Domain Vocabulary
+To ensure consistent naming conventions across components and services, you must strictly adhere to this domain terminology:
+
+${prdVocab}
 
 ---
 
-## Current Phase
-Phase 1 (Planning and Setup)
-
----
-
-## Tech Stack (Decisions are Final)
-- **Framework**: Next.js 16 (App Router), TypeScript
-- **Styling**: Tailwind CSS v4 configured natively inside global stylesheets
-- **State**: Zustand / local storage indicators
-- **Sync**: Supabase Transient Realtime (Broadcast and Presence)
-
----
-
-## Pages & Routes
-| Route | Purpose |
-| :--- | :--- |
-| \`/\` | Main entry point / dashboard layout |
-| \`/room/[id]\` | Sub-niche workspace viewport |
-
----
-
-## TypeScript Types (Source of Truth)
-\`\`\`typescript
-${typesCode}
-\`\`\`
-
----
-
-## Key File Locations
-\`\`\`text
-${fileTreeCode}
-\`\`\`
-
----
-
-## Architectural Rules (Must Follow)
-${rulesCode}
-
----
-
-## Key Environment Variables
-\`\`\`bash
-${envCode}
-\`\`\`
-
----
-
-## Reference Docs
-| File | Read When... |
-| :--- | :--- |
-| \`docs/phases.md\` | Planning next steps or checking what's done |
-| \`docs/overview.md\` | Reviewing the core architecture guidelines |`;
+## 4. Context Matrix Directory Map
+For operational execution, do not dump system configs here. Navigate directly to these highly scoped files:
+- **Global Developer Constraints & Constitution:** Check \`./AGENTS.md\`
+- **Local CLI Runtime & Build Command Flags:** Check \`./CLAUDE.md\`
+- **Target Feature Roadmaps & Phase Checklists:** Check \`./docs/phases.md\`
+- **System Overview & North Star:** Check \`./README.md\`
+`;
 
   const phasesMd = `# ${projectName} — Development Phases
 
-## Phase 1: Planning and Setup ✅ COMPLETE
-- [x] Create project documentation (\`docs/\` folder).
-- [x] Scaffold Next.js application workspace.
-- [x] Configure tailwindcss \`@theme\` design variables.
-- [x] Create \`.env.local\` with credentials placeholders.
+## Phase 1: Planning and Setup
+- [ ] Create project documentation (\`docs/\` folder).
+- [ ] Scaffold Next.js application workspace.
+- [ ] Configure tailwindcss \`@theme\` design variables.
+- [ ] Create \`.env.local\` with credentials placeholders.
 
 ## Phase 2: Core UI Scaffold & Theming
 - [ ] Create core layout panels (Sidebar, Header, Main view).
@@ -527,42 +445,15 @@ ${envCode}
 - [ ] Apply smooth micro-animations.`;
 
   const cursorRules: Record<string, string> = {
-    'tech-stack.mdc': `---
-description: Global architectural invariants and taste guidelines for the stack
-globs: *
----
-# Global Tech Invariants
-
-- Language: TypeScript. Prefer clear, explicit type interfaces.
-- Styles: Tailwind CSS v4 using global theme values.
-- Dependency rule: Do not introduce external npm packages unless verified for security and size.`,
-
-    'api.mdc': `---
-description: Rules for modifying or creating API endpoints under api/
-globs: src/app/api/**/*
----
-# API Architecture Invariants
-
-- Every API endpoint must return a structured JSON response.
-- Do not use custom query wrappers; write raw database client primitives.
-- **Verification Rule:** Every endpoint must pass local linter execution (\`npm run lint\`) before committing.`,
-
-    'ui.mdc': `---
-description: Scoped styling and component layouts
-globs: src/components/**/*, src/app/**/*.tsx
----
-# UI Component Invariants
-
-- Layout: Use CSS-first layout rules using Tailwind CSS variables.
-- Accessibility: Apply standard semantic tags and ARIA descriptors.
-- Error Boundaries: Ensure user interfaces wrap client nodes in local error catch modules.`
+    'ui-theme.mdc': uiThemeRules,
+    [logicFileName]: logicRules
   };
 
   return {
     agentsMd,
     claudeMd,
-    promptMd,
     phasesMd,
+    readmeMd,
     cursorRules
   };
 }
