@@ -15,7 +15,6 @@ export function Editor({ roomId, value, onChange, onUsersChange, onStatusChange 
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
   const channelRef = React.useRef<ReturnType<typeof supabase.channel> | null>(null);
 
-  // Initialize Supabase Channel
   React.useEffect(() => {
     onStatusChange('connecting');
 
@@ -34,13 +33,11 @@ export function Editor({ roomId, value, onChange, onUsersChange, onStatusChange 
         const textarea = textareaRef.current;
         
         if (textarea && document.activeElement === textarea) {
-          // Save cursor selection points to prevent jumping
           const start = textarea.selectionStart;
           const end = textarea.selectionEnd;
           
           onChange(newText);
           
-          // Restore cursor selection on next tick
           setTimeout(() => {
             if (textareaRef.current) {
               textareaRef.current.selectionStart = start;
@@ -53,7 +50,6 @@ export function Editor({ roomId, value, onChange, onUsersChange, onStatusChange 
       })
       .on('presence', { event: 'sync' }, () => {
         const state = channel.presenceState();
-        // Map presence entries to determine user count
         const userCount = Object.keys(state).length;
         onUsersChange(userCount);
       })
@@ -77,7 +73,6 @@ export function Editor({ roomId, value, onChange, onUsersChange, onStatusChange 
     const newVal = e.target.value;
     onChange(newVal);
 
-    // Broadcast change instantly over the existing active channel
     if (channelRef.current) {
       channelRef.current.send({
         type: 'broadcast',
@@ -92,19 +87,25 @@ export function Editor({ roomId, value, onChange, onUsersChange, onStatusChange 
 
   return (
     <div className="flex flex-col flex-1 h-full overflow-hidden bg-background">
-      <div className="flex items-center justify-between px-6 h-10 border-b border-white/5 bg-white/[0.01]">
-        <span className="text-xs font-mono tracking-wider text-muted-foreground uppercase">Collaborative Scratchpad (Markdown)</span>
-        <span className="text-[10px] text-muted-foreground font-mono">
-          {wordCount} words / {characterCount} chars
+      {/* Fine-border panel header */}
+      <div className="flex items-center justify-between px-6 h-10 border-b border-white/[0.03] bg-zinc-950/40">
+        <span className="text-[10px] font-mono tracking-widest text-zinc-500 uppercase">
+          01 // scratchpad.md
+        </span>
+        <span className="text-[10px] text-zinc-600 font-mono">
+          {wordCount} words &bull; {characterCount} chars
         </span>
       </div>
-      <div className="flex-1 p-4 font-mono text-sm leading-relaxed overflow-y-auto">
+
+      {/* Structured Text Workspace */}
+      <div className="flex-grow relative overflow-hidden bg-zinc-950/20">
         <textarea
           ref={textareaRef}
           value={value}
           onChange={handleTextChange}
-          className="w-full h-full p-4 bg-transparent outline-none resize-none text-zinc-100 border border-transparent focus:border-white/5 rounded-xl transition-all"
+          className="w-full h-full p-8 bg-transparent outline-none resize-none text-zinc-300 font-mono text-sm leading-relaxed selection:bg-zinc-800 focus:text-zinc-100"
           placeholder="Paste raw chaotic notes or outline your app here..."
+          spellCheck="false"
         />
       </div>
     </div>

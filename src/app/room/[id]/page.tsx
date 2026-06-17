@@ -2,11 +2,11 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { 
-  ArrowLeft, Copy, Check, Play, ShieldAlert, Users, Network, Wifi, WifiOff
-} from 'lucide-react';
+import { ArrowLeft, Copy, Check, Play, ShieldAlert, Users, Network, Wifi, WifiOff } from 'lucide-react';
 import { Editor } from '@/components/editor';
 import { Preview } from '@/components/preview';
+import { CompiledPack } from '@/lib/prompt-compiler';
+import JSZip from 'jszip';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -18,12 +18,12 @@ export default function RoomPage({ params }: PageProps) {
 
   // Core Room State
   const [markdownText, setMarkdownText] = React.useState<string>(
-    `# Project PromptOps Blueprint\n\n` +
+    `# Project Auxo\n\n` +
     `## Stack\n- Next.js (App Router)\n- TailwindCSS\n- Supabase (Realtime)\n\n` +
     `## Goals\nBuild a zero-auth real-time markdown playground for founders to collaborate.`
   );
   
-  const [compiledFiles, setCompiledFiles] = React.useState<Record<string, string> | null>(null);
+  const [compiledFiles, setCompiledFiles] = React.useState<CompiledPack | null>(null);
   const [activeFile, setActiveFile] = React.useState<string>('AGENTS.md');
   const [copiedLink, setCopiedLink] = React.useState(false);
   const [isCompiling, setIsCompiling] = React.useState(false);
@@ -42,101 +42,149 @@ export default function RoomPage({ params }: PageProps) {
     }
   };
 
-  const handleCompile = () => {
-    setIsCompiling(true);
-    // Simulate compilation delay for user feedback (Phase 4 will replace this with the LLM API call)
-    setTimeout(() => {
-      setIsCompiling(false);
-      setCompiledFiles({
-        'AGENTS.md': `# AGENTS.md\n\n## Project Context\nName: PromptOps Blueprint\nStack: Next.js (App Router), TailwindCSS, Supabase (Realtime)\n\n## Build & Test Rules\n- Build Command: npm run build\n- Test Command: npm test\n\n## Exclusions\n- No User Authorization/Signups\n- No Kanban Boards`,
-        'CLAUDE.md': `# CLAUDE.md\n\n## Rules & References\n@AGENTS.md\n\n## Operating Rules\n- Only deploy on approved zero-retention hosts\n- Build command: npm run dev`,
-        'api.mdc': `---\nglobs: src/app/api/**/*\n---\n# API Guidelines\n\n- All API endpoints must be stateless.\n- Ensure zero data retention logic is strictly followed.`,
-        'ui.mdc': `---\nglobs: src/components/**/*, src/app/**/*.tsx\n---\n# UI Guidelines\n\n- Use Geist/Geist_Mono font variables.\n- Apply premium glassmorphic cards and obsidian glow classes.`
+  const handleCompile = async () => {
+    try {
+      setIsCompiling(true);
+
+      // 1. Call custom Next.js API Route for Software 3.0 Context Compilation
+      const response = await fetch('/api/compile', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ markdownText }),
       });
+
+      if (!response.ok) {
+        throw new Error(`Compile route failed: ${response.statusText}`);
+      }
+
+      const files: CompiledPack = await response.json();
+      setCompiledFiles(files);
       setActiveFile('AGENTS.md');
-    }, 1200);
+
+      // 2. Generate ZIP file structure containing the dynamic file matrix
+      const zip = new JSZip();
+
+      // Set root-level agent standard configurations
+      if (files.agentsMd) zip.file('AGENTS.md', files.agentsMd);
+      if (files.claudeMd) zip.file('CLAUDE.md', files.claudeMd);
+
+      // Build nested rule definitions (.cursor/rules/)
+      const cursorFolder = zip.folder('.cursor');
+      if (cursorFolder) {
+        const rulesFolder = cursorFolder.folder('rules');
+        if (rulesFolder) {
+          Object.entries(files.cursorRules).forEach(([name, content]) => {
+            rulesFolder.file(name, content);
+          });
+        }
+      }
+
+      // 3. Trigger immediate client-side package download
+      const blob = await zip.generateAsync({ type: 'blob' });
+      const url = URL.createObjectURL(blob);
+      
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `auxo-blueprint-${roomId.slice(0, 8)}.zip`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+    } catch (error) {
+      console.error('Compilation and zipping failure:', error);
+      alert('Failed to compile context blueprint. Inspect server logs for details.');
+    } finally {
+      setIsCompiling(false);
+    }
   };
 
-  // Connection Indicator UI Helpers
   const getConnectionIcon = () => {
     switch (connectionStatus) {
       case 'connected':
-        return <Wifi className="w-3.5 h-3.5 text-emerald-400" />;
+        return <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />;
       case 'connecting':
-        return <Network className="w-3.5 h-3.5 text-amber-400 animate-spin" />;
+        return <span className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse" />;
       case 'disconnected':
       default:
-        return <WifiOff className="w-3.5 h-3.5 text-rose-500" />;
+        return <span className="w-1.5 h-1.5 bg-rose-500 rounded-full" />;
     }
   };
 
   const getConnectionText = () => {
     switch (connectionStatus) {
       case 'connected':
-        return 'Synced';
+        return 'SYNCED';
       case 'connecting':
-        return 'Connecting...';
+        return 'CONNECTING';
       case 'disconnected':
       default:
-        return 'Offline';
+        return 'OFFLINE';
     }
   };
 
   return (
-    <div className="flex flex-col flex-1 h-screen overflow-hidden bg-background">
-      {/* Workspace Header */}
-      <header className="flex flex-wrap items-center justify-between gap-4 px-6 h-16 border-b border-white/5 glass z-20">
-        {/* Left Side Brand */}
+    <div className="flex flex-col flex-1 h-screen overflow-hidden bg-background font-sans selection:bg-zinc-800">
+      
+      {/* Header Toolbar */}
+      <header className="flex items-center justify-between px-6 h-14 border-b border-white/[0.03] bg-zinc-950/20 backdrop-blur-md z-20">
+        
+        {/* Brand & Connection Details */}
         <div className="flex items-center gap-4">
           <button 
             onClick={() => router.push('/')}
-            className="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-white/5 transition-colors text-muted-foreground hover:text-foreground"
+            className="flex items-center justify-center w-7 h-7 rounded border border-white/5 hover:border-white/10 hover:bg-white/[0.02] transition-all text-zinc-400 hover:text-zinc-200"
             title="Go to landing page"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="w-3.5 h-3.5" />
           </button>
-          <div className="flex flex-col">
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-semibold text-foreground">Auxo Workspace</span>
-              <span className="px-2 py-0.5 text-[10px] font-medium tracking-wider text-accent border border-accent/20 rounded-md bg-accent/5">
-                ROOM: {roomId.slice(0, 8)}...
-              </span>
+          
+          <div className="flex items-center gap-3">
+            <span className="font-mono text-xs font-semibold tracking-tight text-zinc-300">AUXO // BLUEPRINT</span>
+            <span className="h-3 w-px bg-white/10" />
+            <div className="flex items-center gap-1.5 px-2 py-0.5 border border-white/5 bg-white/[0.01] rounded">
+              <span className="font-mono text-[9px] text-zinc-500 tracking-wider">ROOM:</span>
+              <span className="font-mono text-[9px] text-zinc-300 font-semibold">{roomId.slice(0, 8)}</span>
             </div>
-            <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+            
+            {/* Status Indicator */}
+            <div className="flex items-center gap-1.5">
               {getConnectionIcon()}
-              <span>{getConnectionText()}</span>
+              <span className="font-mono text-[8px] tracking-wider text-zinc-500 font-bold">{getConnectionText()}</span>
             </div>
           </div>
         </div>
 
-        {/* Center: IP Protection Safety */}
-        <div className="hidden md:flex items-center gap-2 text-xs text-amber-400/90 bg-amber-400/5 border border-amber-400/10 px-3 py-1.5 rounded-lg">
-          <ShieldAlert className="w-3.5 h-3.5" />
-          <span>Zero-Data Retention: Raw notes wiped instantly on tab close</span>
+        {/* Center: Zero-Data Log Warning */}
+        <div className="hidden md:flex items-center gap-2 text-[10px] font-mono tracking-wider text-amber-500/80 bg-amber-500/[0.02] border border-amber-500/10 px-3 py-1 rounded">
+          <ShieldAlert className="w-3 h-3 text-amber-500" />
+          <span>ZERO-DATA RETENTION PREVENTATIVE IP SHELTER ACTIVE</span>
         </div>
 
-        {/* Right Actions */}
+        {/* Actions bar */}
         <div className="flex items-center gap-3">
-          {/* Active Users Badge */}
-          <div className="flex items-center gap-1.5 px-3 py-1.5 border border-white/5 rounded-lg bg-white/[0.02] text-xs text-muted-foreground">
-            <Users className="w-3.5 h-3.5 text-accent" />
-            <span>{usersCount} {usersCount === 1 ? 'Builder' : 'Builders'} online</span>
+          {/* Active Builders Counter */}
+          <div className="flex items-center gap-2 px-2.5 py-1 border border-white/5 rounded bg-white/[0.01] text-[10px] font-mono text-zinc-500 uppercase tracking-widest">
+            <Users className="w-3 h-3 text-zinc-500" />
+            <span>{usersCount} {usersCount === 1 ? 'BUILDER' : 'BUILDERS'}</span>
           </div>
 
-          {/* Copy Link / Invite Partner */}
+          {/* Copy invite URL */}
           <button
             onClick={handleCopyLink}
-            className="flex items-center gap-1.5 h-9 px-3 rounded-lg border border-white/5 bg-white/[0.02] text-xs font-medium text-foreground hover:bg-white/[0.06] transition-colors"
+            className="flex items-center justify-center gap-1.5 h-8 px-3 rounded border border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.03] text-[10px] font-mono font-semibold tracking-wider text-zinc-300 transition-colors"
           >
             {copiedLink ? (
               <>
-                <Check className="w-3.5 h-3.5 text-emerald-400" />
-                <span className="text-emerald-400">Link Copied</span>
+                <Check className="w-3 h-3 text-emerald-400" />
+                <span className="text-emerald-400">LINK COPIED</span>
               </>
             ) : (
               <>
-                <Copy className="w-3.5 h-3.5" />
-                <span>Invite Partner</span>
+                <Copy className="w-3 h-3" />
+                <span>INVITE PARTNER</span>
               </>
             )}
           </button>
@@ -145,24 +193,24 @@ export default function RoomPage({ params }: PageProps) {
           <button
             onClick={handleCompile}
             disabled={isCompiling}
-            className="flex items-center gap-2 h-9 px-4 rounded-lg bg-gradient-to-r from-primary to-accent text-xs font-semibold text-white hover:opacity-90 active:scale-95 transition-all shadow-[0_2px_10px_rgba(99,102,241,0.2)] disabled:opacity-50"
+            className="flex items-center justify-center gap-2 h-8 px-4 rounded bg-zinc-100 hover:bg-zinc-200 text-zinc-950 text-[10px] font-mono font-semibold tracking-wider transition-all disabled:opacity-50 disabled:pointer-events-none active:scale-95 shadow-sm cursor-pointer"
           >
             {isCompiling ? (
-              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <div className="w-3 h-3 border border-zinc-950 border-t-transparent rounded-full animate-spin" />
             ) : (
               <>
-                <Play className="w-3.5 h-3.5" />
-                <span>Compile Agent Pack</span>
+                <Play className="w-2.5 h-2.5 fill-current" />
+                <span>COMPILE AGENT PACK</span>
               </>
             )}
           </button>
         </div>
       </header>
 
-      {/* Main Workspace split view */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 flex-1 overflow-hidden">
+      {/* Main split panels viewports */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 flex-1 overflow-hidden h-[calc(100vh-3.5rem)]">
         
-        {/* Collaborative Editor component */}
+        {/* Collaborative Markdown Editor */}
         <Editor 
           roomId={roomId}
           value={markdownText}
@@ -171,7 +219,7 @@ export default function RoomPage({ params }: PageProps) {
           onStatusChange={setConnectionStatus}
         />
 
-        {/* Structured Preview component */}
+        {/* Structured Context Matrix Preview */}
         <Preview 
           compiledFiles={compiledFiles}
           activeFile={activeFile}

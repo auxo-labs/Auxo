@@ -1,4 +1,4 @@
-# Project Phases: Auxo (PromptOps Blueprint)
+# Project Phases: Auxo
 
 ## Phase 1: Planning, Setup & Scaffolding
 - [x] **Step 1.1:** Write the phase plan to `phases.md` and outline the architecture. (Current Step)
@@ -16,11 +16,17 @@
 - [x] **Step 3.3:** Add multi-user cursor presence or visual cues showing concurrent editors in the room.
 
 ## Phase 4: Folder Preview & LLM Compiler
-- [ ] **Step 4.1:** Build the interactive file explorer/preview component (`src/components/preview.tsx`) to show the output folder structure.
-- [ ] **Step 4.2:** Implement the Server Action / route (`src/lib/prompt-compiler.ts`) using an LLM endpoint (zero-data retention) to compile chaotic notes into structured text.
-- [ ] **Step 4.3:** Set up a client-side `.zip` exporter (e.g. using `jszip`) to let users download the final files (`AGENTS.md`, `CLAUDE.md`, `.cursor/rules/*.mdc`) in one click.
+- [x] **Step 4.1:** Build the interactive file explorer/preview component (`src/components/preview.tsx`) to show the output folder structure.
+- [x] **Step 4.2:** Implement the Server Action / route (`src/lib/prompt-compiler.ts`) using an LLM endpoint (zero-data retention) to compile chaotic notes into structured text.
+- [x] **Step 4.3:** Set up a client-side `.zip` exporter (e.g. using `jszip`) to let users download the final files (`AGENTS.md`, `CLAUDE.md`, `.cursor/rules/*.mdc`) in one click.
 
 ## Phase 5: Testing, Refactoring & Polish
-- [ ] **Step 5.1:** Set up manual test cases and verify them (updating `TESTING.md`).
-- [ ] **Step 5.2:** Add final micro-animations, glassmorphic UI accents, and error boundaries.
-- [ ] **Step 5.3:** Finalize walkthrough and check off the project lifecycle.
+- [x] **Step 5.1:** Set up manual test cases and verify them (updating `TESTING.md`).
+- [x] **Step 5.2:** Add final micro-animations, glassmorphic UI accents, and error boundaries.
+- [x] **Step 5.3:** Finalize walkthrough and check off the project lifecycle.
+
+## Phase 6: Karpathy-Inspired Prompt Compiler Implementation
+- [x] **Step 6.1:** Update the Prompt Compiler schema and local mock compiler inside `src/lib/prompt-compiler.ts`.
+- [x] **Step 6.2:** Create the API Route handler at `src/app/api/compile/route.ts`.
+- [x] **Step 6.3:** Integrate the new API route and JSZip generator in `src/app/room/[id]/page.tsx` and `src/components/preview.tsx`.
+- [x] **Step 6.4:** Perform manual verification of the compiler outputs.
