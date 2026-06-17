@@ -41,3 +41,15 @@ auxo/
 *   **Client-Side ZIP Bundling:** Uses `JSZip` to compile the generated context structure and initiate downloads of the exact file structure required by Cursor and Claude Code.
 *   **Zero-Auth Monetisation:** Stripe Checkout gates compilation behind a one-time payment. The active `roomId` is passed as `client_reference_id`; on redirect back the workspace auto-compiles and downloads without any login requirement.
 *   **LocalStorage Crash Safety:** Scratchpad content is continuously mirrored to `localStorage` by Room UUID, restoring the user's work automatically on refresh or accidental tab close.
+
+## 3. LLM Architecture & Rate Limiting Strategy
+
+Auxo orchestrates calls to advanced LLMs (OpenAI's `gpt-4o-mini` or Anthropic's `claude-3-5-sonnet`) to parse unstructured developer notes into structured prompt configurations. To ensure reliability, speed, and cost efficiency, the following strategies are implemented:
+
+*   **Double-Tier Fallback Engine:**
+    1. If `OPENAI_API_KEY` is configured, it defaults to the fast, cost-effective `gpt-4o-mini` using the JSON object output format.
+    2. If OpenAI fails or is missing, and `ANTHROPIC_API_KEY` is present, it fails over to `claude-3-5-sonnet-20241022` with pre-cleaned JSON blocks.
+    3. If both external APIs fail (or keys are missing in local dev), it falls back to a smart `localMockCompile` template parser to ensure continuous availability.
+*   **Stripe Gate as a Rate-Limiter:** Since compile actions require a successful Stripe session lookup (`session.payment_status === 'paid'`), arbitrary spamming of the LLM endpoint is natively prevented in production.
+*   **Keyless Registry Caching:** The live `tech-resolver.ts` queries NPM Registry metadata via `fetch` using Next.js route caching (`next: { revalidate: 3600 }`). This caches NPM requests for 1 hour, protecting the registry API from rate-limiting penalties while keeping stack resolutions live.
+*   **Client-Side Throttling:** The compilation actions inside the room UI disable the triggers (`isCompiling` state) and block concurrent compilations during an active request.

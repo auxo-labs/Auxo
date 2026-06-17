@@ -59,3 +59,17 @@
 - [ ] **Step 10.3:** Refactor the Supabase client helpers to associate compiled prompt matrices and scratchpad histories with the authenticated user ID.
 - [ ] **Step 10.4:** Implement a premium sidebar or room dashboard explorer to allow users to view, search, and restore their historical compiled blueprints.
 - [ ] **Step 10.5:** Configure strict Supabase Row-Level Security (RLS) policies to protect proprietary developer blueprints and database queries.
+
+## Phase 11: Testing & Quality Verification
+- [x] **Step 11.1:** Define three distinct test inputs representing different developer requirements in `docs/test_cases.md`.
+- [ ] **Step 11.2:** Run the local mock compiler on these inputs to verify mock packaging.
+- [ ] **Step 11.3 (Optional):** Add a temporary `OPENAI_API_KEY` to `.env.local` to run actual LLM compilations, capturing and analyzing the output quality of `AGENTS.md` and `.cursor/rules/*.mdc`.
+
+## Phase 12: Scratchpad & Real-Time Collaboration Upgrades
+- [ ] **Step 12.1:** Upgrade the editor UI from a plain `<textarea>` to a premium code editor (e.g., integrating a lightweight Markdown editor like CodeMirror 6 or Monaco Editor).
+- [ ] **Step 12.2:** Add visual line-number gutter and syntax highlighting for Markdown.
+- [ ] **Step 12.3:** Enhance Supabase Real-time collaboration:
+  - Implement active user avatars/names (presence state).
+  - Show cursors and selection highlights of other active users inside the editor.
+  - Add a live character/word count animation.
+

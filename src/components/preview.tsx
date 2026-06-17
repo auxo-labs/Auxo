@@ -42,6 +42,8 @@ export function Preview({ compiledFiles, activeFile, onActiveFileChange }: Previ
     if (!compiledFiles) return '';
     if (activeFile === 'AGENTS.md') return compiledFiles.agentsMd || '';
     if (activeFile === 'CLAUDE.md') return compiledFiles.claudeMd || '';
+    if (activeFile === 'prompt.md') return compiledFiles.promptMd || '';
+    if (activeFile === 'phases.md') return compiledFiles.phasesMd || '';
     return compiledFiles.cursorRules[activeFile] || '';
   };
 
@@ -105,6 +107,24 @@ export function Preview({ compiledFiles, activeFile, onActiveFileChange }: Previ
                   >
                     <FileText className="w-3.5 h-3.5 text-zinc-500" />
                     <span>CLAUDE.md</span>
+                  </div>
+
+                  {/* prompt.md file */}
+                  <div 
+                    onClick={() => onActiveFileChange('prompt.md')}
+                    className={`flex items-center gap-2 py-1 px-1.5 rounded cursor-pointer transition-colors ${activeFile === 'prompt.md' ? 'bg-white/[0.03] text-zinc-100 border-l border-white' : 'hover:bg-white/[0.02]'}`}
+                  >
+                    <FileText className="w-3.5 h-3.5 text-zinc-500" />
+                    <span>prompt.md</span>
+                  </div>
+
+                  {/* phases.md file */}
+                  <div 
+                    onClick={() => onActiveFileChange('phases.md')}
+                    className={`flex items-center gap-2 py-1 px-1.5 rounded cursor-pointer transition-colors ${activeFile === 'phases.md' ? 'bg-white/[0.03] text-zinc-100 border-l border-white' : 'hover:bg-white/[0.02]'}`}
+                  >
+                    <FileText className="w-3.5 h-3.5 text-zinc-500" />
+                    <span>phases.md</span>
                   </div>
 
                   {/* .cursor folder */}

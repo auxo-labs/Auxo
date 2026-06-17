@@ -31,6 +31,7 @@ function RoomContent({ roomId }: { roomId: string }) {
   const [isMac, setIsMac] = React.useState(true);
   const [usersCount, setUsersCount] = React.useState<number>(1);
   const [connectionStatus, setConnectionStatus] = React.useState<'connecting' | 'connected' | 'disconnected'>('connecting');
+  const isMountedRef = React.useRef(false);
 
   // ── Simple mount effects ───────────────────────────────────────────────────
 
@@ -46,13 +47,19 @@ function RoomContent({ roomId }: { roomId: string }) {
   React.useEffect(() => {
     const savedText = localStorage.getItem(`auxo-room-${roomId}`);
     if (savedText) {
-      setTimeout(() => setMarkdownText(savedText), 0);
+      setMarkdownText(savedText);
     }
+    const timer = setTimeout(() => {
+      isMountedRef.current = true;
+    }, 50);
+    return () => clearTimeout(timer);
   }, [roomId]);
 
   // Mirror scratchpad changes to LocalStorage on every edit
   React.useEffect(() => {
-    localStorage.setItem(`auxo-room-${roomId}`, markdownText);
+    if (isMountedRef.current) {
+      localStorage.setItem(`auxo-room-${roomId}`, markdownText);
+    }
   }, [roomId, markdownText]);
 
   // ── Handlers (all declared before any effects that reference them) ─────────
@@ -86,10 +93,13 @@ function RoomContent({ roomId }: { roomId: string }) {
         return;
       }
 
+      const savedText = localStorage.getItem(`auxo-room-${roomId}`);
+      const textToCompile = savedText || markdownText;
+
       const response = await fetch('/api/compile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ markdownText, roomId, sessionId: targetSessionId }),
+        body: JSON.stringify({ markdownText: textToCompile, roomId, sessionId: targetSessionId }),
       });
       if (!response.ok) throw new Error(`Compile route failed: ${response.statusText}`);
 
@@ -113,6 +123,8 @@ function RoomContent({ roomId }: { roomId: string }) {
       const zip = new JSZip();
       zip.file('AGENTS.md', targetFiles.agentsMd);
       zip.file('CLAUDE.md', targetFiles.claudeMd);
+      zip.file('prompt.md', targetFiles.promptMd);
+      zip.file('phases.md', targetFiles.phasesMd);
 
       const cursorFolder = zip.folder('.cursor');
       if (cursorFolder) {
@@ -149,10 +161,12 @@ function RoomContent({ roomId }: { roomId: string }) {
     if (!querySessionId || compiledFiles || isCompiling) return;
 
     const autoRun = async () => {
-      await handleCompile(querySessionId);
-      // Strip session_id from URL to prevent re-triggering on refresh
-      window.history.replaceState({}, document.title, window.location.origin + window.location.pathname);
-      // Download is intentionally NOT triggered here — the user clicks "Download Pack" manually.
+      // Delay compilation slightly to let LocalStorage mount restoration complete
+      setTimeout(async () => {
+        await handleCompile(querySessionId);
+        // Strip session_id from URL to prevent re-triggering on refresh
+        window.history.replaceState({}, document.title, window.location.origin + window.location.pathname);
+      }, 100);
     };
 
     autoRun();
