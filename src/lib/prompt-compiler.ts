@@ -1,5 +1,7 @@
 'use server';
 
+import { TechSignature } from './tech-resolver';
+
 export interface CompiledPack {
   agentsMd: string;      // root AGENTS.md: Global taste guardrails
   claudeMd: string;      // root CLAUDE.md: CLI execution and shortcuts
@@ -8,27 +10,66 @@ export interface CompiledPack {
 
 /**
  * Compiles raw markdown notes into a structured CompiledPack.
- * Enforces Software 3.0 constraints: taste guardrails, explicit invariants, and path-scoped cursor rules.
+ * Enforces Software 3.0 constraints, implied conventions, and resolved tech-stack signatures.
  */
-export async function compilePromptPack(rawMarkdown: string): Promise<CompiledPack> {
+export async function compilePromptPack(
+  rawMarkdown: string, 
+  techSignatures: TechSignature[] = []
+): Promise<CompiledPack> {
   const openAIKey = process.env.OPENAI_API_KEY;
   const anthropicKey = process.env.ANTHROPIC_API_KEY;
 
   try {
     if (openAIKey) {
-      return await callOpenAI(openAIKey, rawMarkdown);
+      return await callOpenAI(openAIKey, rawMarkdown, techSignatures);
     } else if (anthropicKey) {
-      return await callAnthropic(anthropicKey, rawMarkdown);
+      return await callAnthropic(anthropicKey, rawMarkdown, techSignatures);
     } else {
-      return localMockCompile(rawMarkdown);
+      return localMockCompile(rawMarkdown, techSignatures);
     }
   } catch (error) {
     console.error('LLM Prompt compilation failed, reverting to local compiler:', error);
-    return localMockCompile(rawMarkdown);
+    return localMockCompile(rawMarkdown, techSignatures);
   }
 }
 
-async function callOpenAI(apiKey: string, markdown: string): Promise<CompiledPack> {
+function generateSystemPrompt(techSignatures: TechSignature[]): string {
+  const signaturesText = techSignatures.length > 0
+    ? techSignatures.map(sig => `- **${sig.packageName} (v${sig.latestVersion})**: ${sig.architecturalInvariant}`).join('\n')
+    : '- Maintain standard baseline conventions.';
+
+  return `You are an expert prompt architect and context compiler for 2026 AI IDEs.
+Your job is to take raw, chaotic software specifications and compile them into a prompt-optimized context matrix.
+
+You must return a raw JSON object matching this TypeScript interface:
+{
+  "agentsMd": string, // Root AGENTS.md: Enforces simplicity, taste, contrast, context budgets
+  "claudeMd": string, // Root CLAUDE.md: Claude Code CLI permissions, tests, builds
+  "cursorRules": {
+    "tech-stack.mdc": string, // Scoped rule for all files (*). Defines tech stack invariants
+    "api.mdc": string,       // Scoped rule for src/app/api/**/*
+    "ui.mdc": string        // Scoped rule for components/styles src/components/**/*
+  }
+}
+
+### Ground Truth Grounding Data (Live Tech Resolutions):
+${signaturesText}
+
+### Strict Coding Style Rules to AUTO-INJECT:
+1. **DRY & KISS:** Explicitly command the agent to prefer "vanilla over clever." Forbid premature optimization, deeply nested conditions, and excessive abstractions.
+2. **SOLID Conventions:** Require functional, single-responsibility modules.
+3. **JSDoc Documentation:** Command the agent to maintain clean JSDoc parameter documentation on all utility exports.
+4. **Context Budgets:** Force task scoping: "If a task requires modifying more than 3 modules or 60 seconds of manual context navigation, halt and demand clarification."
+5. **No Placeholders:** Prohibit leaving commented placeholders, incomplete functions, or TODO notes in generated code.
+
+### Frontmatter Rules:
+- All values in "cursorRules" MUST start with YAML frontmatter specifying "description" and "globs".
+- "tech-stack.mdc" should target globs: "*".
+- "api.mdc" should target globs: "src/app/api/**/*".
+- "ui.mdc" should target globs: "src/components/**/*".`;
+}
+
+async function callOpenAI(apiKey: string, markdown: string, techSignatures: TechSignature[]): Promise<CompiledPack> {
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
     headers: {
@@ -41,24 +82,7 @@ async function callOpenAI(apiKey: string, markdown: string): Promise<CompiledPac
       messages: [
         {
           role: 'system',
-          content: `You are an expert prompt architect and context compiler for 2026 AI IDEs.
-Your job is to take raw, chaotic software specifications and compile them into a prompt-optimized context matrix.
-You must return a raw JSON object matching this TypeScript interface:
-{
-  "agentsMd": string, // Root AGENTS.md: Enforces simplicity, taste, contrast, context budgets (prefer vanilla over clever)
-  "claudeMd": string, // Root CLAUDE.md: Defines Claude Code CLI permissions, tests, builds
-  "cursorRules": {
-    "tech-stack.mdc": string, // Scoped rule for all files (*). Defines global tech stack invariants
-    "api.mdc": string,       // Scoped rule for src/app/api/**/*
-    "ui.mdc": string        // Scoped rule for components/styles src/components/**/*
-  }
-}
-
-Frontmatter rules:
-- All values in "cursorRules" MUST start with YAML frontmatter specifying "description" and "globs".
-- "tech-stack.mdc" should target globs: "*".
-- "api.mdc" should target globs: "src/app/api/**/*" or similar.
-- "ui.mdc" should target globs: "src/components/**/*" or similar.`
+          content: generateSystemPrompt(techSignatures)
         },
         {
           role: 'user',
@@ -77,7 +101,7 @@ Frontmatter rules:
   return JSON.parse(content);
 }
 
-async function callAnthropic(apiKey: string, markdown: string): Promise<CompiledPack> {
+async function callAnthropic(apiKey: string, markdown: string, techSignatures: TechSignature[]): Promise<CompiledPack> {
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
@@ -88,19 +112,7 @@ async function callAnthropic(apiKey: string, markdown: string): Promise<Compiled
     body: JSON.stringify({
       model: 'claude-3-5-sonnet-20241022',
       max_tokens: 4000,
-      system: `You are an expert prompt architect and context compiler for 2026 AI IDEs.
-Your job is to take raw, chaotic software specifications and compile them into a prompt-optimized context matrix.
-Return ONLY a JSON object matching this TypeScript interface:
-{
-  "agentsMd": string, // Root AGENTS.md
-  "claudeMd": string, // Root CLAUDE.md
-  "cursorRules": {
-    "tech-stack.mdc": string, // Globs: *
-    "api.mdc": string,       // Globs: src/app/api/**/*
-    "ui.mdc": string        // Globs: src/components/**/*
-  }
-}
-All values in "cursorRules" must begin with YAML frontmatter.
+      system: `${generateSystemPrompt(techSignatures)}
 Do not wrap your response in markdown code blocks like \`\`\`json, return only raw JSON.`,
       messages: [
         {
@@ -121,7 +133,7 @@ Do not wrap your response in markdown code blocks like \`\`\`json, return only r
   return JSON.parse(cleanJsonText);
 }
 
-function localMockCompile(rawMarkdown: string): CompiledPack {
+function localMockCompile(rawMarkdown: string, techSignatures: TechSignature[]): CompiledPack {
   const titleMatch = rawMarkdown.match(/^#\s+(.+)$/m);
   const projectName = titleMatch ? titleMatch[1].trim() : 'Project Auxo';
 
@@ -135,16 +147,24 @@ function localMockCompile(rawMarkdown: string): CompiledPack {
     ? bullets.map(b => `- ${b}`).join('\n')
     : '- Collaborative real-time workspace\n- Custom prompt context engine';
 
+  const signaturesText = techSignatures.length > 0
+    ? techSignatures.map(sig => `- **${sig.packageName} (v${sig.latestVersion})**: ${sig.architecturalInvariant}`).join('\n')
+    : '- Default framework rules apply.';
+
   const agentsMd = `# AGENTS.md
 
 ## System Overview
 - **Project Name:** ${projectName}
 - **Source:** Compiled via Auxo.
 
-## Core Directives (Karpathy Guardrails)
-1. **ENFORCE SIMPLICITY:** Prefer "vanilla over clever." Forbid premature optimization, deeply nested conditions, and excessive abstractions. Keep it readable by junior engineers.
+## Core Directives (Karpathy Simplicity Guardrails)
+1. **ENFORCE SIMPLICITY:** Prefer "vanilla over clever." Forbid premature optimization, deeply nested conditions, and excessive abstractions. Keep it readable.
 2. **EXPLICIT CONTRAST:** Prioritize using existing styling tokens, CSS classes, and UI primitives instead of inventing new component layouts.
 3. **CONTEXT BUDGETS:** Force task scoping. If a task requires modifying more than 3 modules or 60 seconds of manual context navigation, halt and demand clarification.
+4. **CODE QUALITY STANDARDS:** Adhere to DRY, SOLID principles. All exports must feature clean JSDoc parameter documentation. No incomplete placeholders or TODO comments are allowed.
+
+## Resolved Tech Stack & Invariants
+${signaturesText}
 
 ## Build & Test Commands
 - Build Command: \`npm run build\`
