@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useState, useEffect, useRef } from 'react';
 import { ArrowRight, Shield, RefreshCw, Cpu, Layers } from 'lucide-react';
 
@@ -48,7 +49,13 @@ export default function Home() {
           <span className="h-4 w-px bg-white/10" />
           <span className="font-mono text-[10px] text-zinc-500 tracking-widest uppercase">Auxo Sandbox</span>
         </div>
-        <div>
+        <div className="flex items-center gap-4">
+          <Link
+            href="/optimality"
+            className="font-mono text-[10px] text-zinc-400 hover:text-zinc-200 tracking-wider transition-colors mr-2 uppercase"
+          >
+            Optimality Specs
+          </Link>
           <span className="font-mono text-[10px] text-zinc-500 border border-white/5 bg-white/[0.02] px-2 py-0.5 rounded">
             v1.0.0-beta
           </span>

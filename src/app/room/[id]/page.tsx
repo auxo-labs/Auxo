@@ -2,8 +2,9 @@
 
 import * as React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { Suspense } from 'react';
-import { ArrowLeft, Copy, Check, Play, ShieldAlert, Users, Download } from 'lucide-react';
+import { ArrowLeft, Copy, Check, Play, ShieldAlert, Users, Download, Compass } from 'lucide-react';
 import { Editor } from '@/components/editor';
 import { Preview } from '@/components/preview';
 import { CompiledPack } from '@/lib/prompt-compiler';
@@ -264,6 +265,15 @@ function RoomContent({ roomId }: { roomId: string }) {
             <Users className="w-3 h-3 text-zinc-500" />
             <span>{usersCount} {usersCount === 1 ? 'BUILDER' : 'BUILDERS'}</span>
           </div>
+
+          {/* Optimality Specs */}
+          <Link
+            href="/optimality"
+            className="flex items-center justify-center gap-2 h-8 px-3 rounded border border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.03] text-[10px] font-mono font-semibold tracking-wider text-zinc-300 transition-colors cursor-pointer"
+          >
+            <Compass className="w-3.5 h-3.5 text-zinc-400" />
+            <span>OPTIMALITY</span>
+          </Link>
 
           {/* Copy invite link */}
           <button

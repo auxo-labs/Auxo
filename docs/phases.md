@@ -65,10 +65,15 @@
 - [x] **Step 11.2:** Run the local mock compiler on these inputs to verify mock packaging.
 - [x] **Step 11.3 (Optional):** Add a temporary `OPENAI_API_KEY` to `.env.local` to run actual LLM compilations, capturing and analyzing the output quality of `AGENTS.md` and `.cursor/rules/*.mdc`.
 
+## Phase 12: Context Optimality & Agentic Efficiency Dashboard
+- [ ] **Step 12.1:** Design the content outlining our context engineering strategies (glob scopes, Refero design themes, keyless NPM caching, zero-data ephemeral broadcast channels, simplicity rules).
+- [ ] **Step 12.2:** Create the new sub-route under `/optimality` (`src/app/optimality/page.tsx`) with a high-fidelity Obsidian dark-mode typography layout and bento grid.
+- [ ] **Step 12.3:** Add links in the landing page navbar and room header toolbar that open `/optimality` in a separate tab.
+- [ ] **Step 12.4:** Run build checks and verify layout responsiveness.
+
 ## Future Phases & Stretch Goals (Deferred)
 - [ ] **Scratchpad & Real-Time Collaboration Upgrades:**
   - Upgrade the editor UI from a plain `<textarea>` to a premium code editor (e.g., CodeMirror 6 or Monaco Editor).
   - Add visual line-number gutter and syntax highlighting for Markdown.
-  - Enhance Supabase Real-time collaboration (avatars/presence state, cursors/selection highlights, character/word count animations).
 
 
