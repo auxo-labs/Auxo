@@ -2,8 +2,8 @@
 
 ## Phase 1: Planning, Setup & Scaffolding
 - [x] **Step 1.1:** Write the phase plan to `phases.md` and outline the architecture. (Current Step)
-- [ ] **Step 1.2:** Scaffold the Next.js project.
-- [ ] **Step 1.3:** Setup global CSS, Tailwind config, and premium dark-mode theme structure.
+- [x] **Step 1.2:** Scaffold the Next.js project.
+- [x] **Step 1.3:** Setup global CSS, Tailwind config, and premium dark-mode theme structure.
 - [ ] **Step 1.4:** Initialize Supabase client helpers (without auth) for real-time text sync.
 
 ## Phase 2: Core Routing & Landing Page
