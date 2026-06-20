@@ -2,6 +2,32 @@
 
 All notable changes to the **Auxo** project are documented here.
 
+## [1.3.0] - 2026-06-20
+
+### Added
+- **Supabase Auth & Magic Link Integration:** Integrated passwordless login flow using Supabase email OTPs and custom glassmorphic `AuthModal`.
+- **Account-Gating & Compilation Credits:** Gated premium compiler endpoints using credits (£15 for 3 compiles) and lifetime access pass (£99). Added profile tracking metadata in the room navbar.
+- **Stripe Webhook Endpoint:** Added `/api/webhooks/stripe` POST route to capture completed checkout sessions, credit user balances in GBP, and apply lifetime passes.
+- **Workspace Segregation:** Separated compiling options into free local fallback compiling ("Basic Agent Pack") and premium compilations ("Deep AI Compile").
+- **Retry Logic State Tracking:** Added stateful tracking of `lastCompileType` to guarantee that compile retries from UI error banners preserve the target execution path.
+
+### Changed
+- **Server Action Constraints:** Cleaned up server-side exports in `prompt-compiler.ts` to strictly adhere to async regulations of Next.js Server Actions.
+
+### Fixed
+- **Type Checking Errors:** Resolved parameter count mismatches and build-breaking variable types in `page.tsx` handlers.
+
+## [1.2.0] - 2026-06-20
+
+### Added
+- **Optimality specs whitepaper:** Implemented `/optimality` route detailing prompt compilation scope maps, token budgeting, and mathematical limits of context decay.
+- **Architectural documents:** Created `compiler_specs.md` detailing CAP architectures and LLM vs Local tradeoffs, and `finalphases.md` detailing Stripe Webhook and auth roadmap.
+- **Compiler test suite:** Added Scenario A, B, and C standard inputs under `test_cases.md` to evaluate parser mapping correctness.
+
+### Changed
+- **Navigation flow:** Updated landing page and room workspace headers to open `/optimality` in the same tab instead of a new tab for seamless user experiences.
+- **Compiler taste parameters:** Upgraded system prompts and local mock models inside `prompt-compiler.ts` to strictly inject DRY, KISS, SOLID, YAGNI, and no-placeholder rules into compiled packs.
+
 ## [1.1.0] - 2026-06-17
 
 ### Added

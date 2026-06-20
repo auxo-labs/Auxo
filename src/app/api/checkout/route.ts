@@ -6,11 +6,18 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '');
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { roomId } = body;
+    const { roomId, userId, tier } = body;
 
     if (!roomId || typeof roomId !== 'string') {
       return NextResponse.json(
         { error: 'roomId is required and must be a string' },
+        { status: 400 }
+      );
+    }
+
+    if (!userId || typeof userId !== 'string') {
+      return NextResponse.json(
+        { error: 'userId is required and must be a string' },
         { status: 400 }
       );
     }
@@ -28,25 +35,35 @@ export async function POST(request: NextRequest) {
     const protocol = request.headers.get('x-forwarded-proto') || 'http';
     const origin = `${protocol}://${host}`;
 
+    // Select pricing structure based on tier selection
+    const isLifetime = tier === 'lifetime';
+    const priceAmount = isLifetime ? 9900 : 1500; // £99.00 GBP vs £15.00 GBP
+    const productName = isLifetime ? 'Auxo Lifetime Pro Pass' : 'Auxo 3x AI Compile Credit Pack';
+    const productDesc = isLifetime
+      ? 'Unlimited premium deep LLM compiles grounded in live package registry metadata.'
+      : '3 premium deep LLM compiles grounded in live package registry metadata.';
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
         {
           price_data: {
-            currency: 'usd',
+            currency: 'gbp',
             product_data: {
-              name: 'Auxo Agent Context Pack',
-              description: `Karpathy-style AI context blueprints (AGENTS.md, CLAUDE.md, .cursor/rules) for Room ${roomId.slice(0, 8)}`,
+              name: productName,
+              description: productDesc,
             },
-            unit_amount: 900, // $9.00 USD
+            unit_amount: priceAmount,
           },
           quantity: 1,
         },
       ],
       mode: 'payment',
-      client_reference_id: roomId,
+      client_reference_id: userId,
       metadata: {
         roomId,
+        userId,
+        tier: isLifetime ? 'lifetime' : 'credits',
       },
       success_url: `${origin}/room/${roomId}?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/room/${roomId}`,

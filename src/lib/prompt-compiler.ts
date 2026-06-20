@@ -16,21 +16,17 @@ export interface CompiledPack {
  */
 export async function compilePromptPack(
   rawMarkdown: string, 
-  techSignatures: TechSignature[] = []
+  techSignatures: TechSignature[] = [],
+  forceBasic = false
 ): Promise<CompiledPack> {
   const openAIKey = process.env.OPENAI_API_KEY;
   const anthropicKey = process.env.ANTHROPIC_API_KEY;
 
-  try {
-    if (openAIKey) {
-      return await callOpenAI(openAIKey, rawMarkdown, techSignatures);
-    } else if (anthropicKey) {
-      return await callAnthropic(anthropicKey, rawMarkdown, techSignatures);
-    } else {
-      return localMockCompile(rawMarkdown, techSignatures);
-    }
-  } catch (error) {
-    console.error('LLM Prompt compilation failed, reverting to local compiler:', error);
+  if (!forceBasic && openAIKey) {
+    return await callOpenAI(openAIKey, rawMarkdown, techSignatures);
+  } else if (!forceBasic && anthropicKey) {
+    return await callAnthropic(anthropicKey, rawMarkdown, techSignatures);
+  } else {
     return localMockCompile(rawMarkdown, techSignatures);
   }
 }
@@ -43,17 +39,33 @@ function generateSystemPrompt(techSignatures: TechSignature[]): string {
   return `You are an expert prompt architect and context compiler for 2026 AI IDEs.
 Your job is to take raw, chaotic software specifications and compile them into a prompt-optimized context matrix.
 
-You must return a raw JSON object matching this TypeScript interface:
-{
-  "agentsMd": string,  // Root AGENTS.md: The global constitution. Defines Stack versions, coding standards (DRY/KISS, SOLID, JSDoc), context budgets, and absolute project constraints.
-  "claudeMd": string,  // Root CLAUDE.md: Claude Code CLI runtime permissions. Lists build, test, lint, and dev command shortcuts.
-  "phasesMd": string,  // Root phases.md: A clean step-by-step checklist of development phases and sub-steps (all checkboxes unchecked by default with \`- [ ]\`).
-  "readmeMd": string,  // Root README.md: The System North Star. Establishes the Product Thesis & Vision, Core Functional Pillars, Ubiquitous Domain Vocabulary, and Scoped References directory map.
-  "cursorRules": {
-    "ui-theme.mdc": string, // Path rule scoped to components and frontend files. Defines UI aesthetics, colors, layouts, and typography.
-    "logic-api.mdc": string // Path rule scoped to services and API routes. Defines mock fallback switch logic, math precision, and external services boundaries.
-  }
-}
+You MUST structure your response as a single unified Markdown text stream. You will write the contents of multiple files sequentially. Every file MUST be opened with a start marker and closed with an end marker. Do NOT wrap your output in a JSON object or use quotes.
+
+Use the exact format shown below for the markers (the path names must match exactly):
+
+--- START FILE: AGENTS.md ---
+(Content for AGENTS.md)
+--- END FILE: AGENTS.md ---
+
+--- START FILE: CLAUDE.md ---
+(Content for CLAUDE.md)
+--- END FILE: CLAUDE.md ---
+
+--- START FILE: phases.md ---
+(Content for phases.md)
+--- END FILE: phases.md ---
+
+--- START FILE: README.md ---
+(Content for README.md)
+--- END FILE: README.md ---
+
+--- START FILE: .cursor/rules/ui-theme.mdc ---
+(Content for the ui-theme.mdc rule)
+--- END FILE: .cursor/rules/ui-theme.mdc ---
+
+--- START FILE: .cursor/rules/logic-api.mdc ---
+(Content for the logic-api.mdc rule)
+--- END FILE: .cursor/rules/logic-api.mdc ---
 
 ### Ground Truth Grounding Data (Live Tech Resolutions):
 ${signaturesText}
@@ -76,11 +88,11 @@ ${signaturesText}
 - Create a clean 5-phase project roadmap. Use checkboxes (\`- [ ]\`). Do not pre-check any checkboxes by default.
 
 ### Specific Instructions for Path-Scoped Rules under "cursorRules" (The Context Scalpels):
-- **ui-theme.mdc:**
-  - Description: YAML frontmatter with \`description: Enforces the UI theme, aesthetics, and layout parameters\` and \`globs: ["src/components/**/*", "src/app/**/*.tsx"]\`.
+- **.cursor/rules/ui-theme.mdc:**
+  - Description: Start with YAML frontmatter with \`description: Enforces the UI theme, aesthetics, and layout parameters\` and \`globs: ["src/components/**/*", "src/app/**/*.tsx"]\`.
   - Content: Define aesthetic constraints based on the notes (e.g. true-black Bloomberg terminal for finance notes; clean sterile layouts with banners for medical; green earthy layouts for agriculture). Include a strict rule: "Never write calculation/business logic in UI components; delegate to service layers."
-- **logic-api.mdc (Rename file dynamically if appropriate, e.g. "finance-api.mdc", "ledger-rules.mdc", "systems-api.mdc"):**
-  - Description: YAML frontmatter with \`description: Logic validation for services and API routing layers\` and \`globs: ["src/lib/services/**/*", "src/app/api/**/*"]\`.
+- **.cursor/rules/logic-api.mdc (Rename filename in starter/end markers if appropriate, e.g. ".cursor/rules/finance-api.mdc", ".cursor/rules/ledger-rules.mdc", ".cursor/rules/systems-api.mdc"):**
+  - Description: Start with YAML frontmatter with \`description: Logic validation for services and API routing layers\` and \`globs: ["src/lib/services/**/*", "src/app/api/**/*"]\`.
   - Content: Define core system logic invariants (e.g. mock swappability checking \`NEXT_PUBLIC_USE_MOCK_DATA\`, calculations precision, external service boundaries, database protocols).
 
 ### Strict Coding Style Rules to AUTO-INJECT into AGENTS.md and MDC files:
@@ -92,7 +104,7 @@ ${signaturesText}
 6. **No Placeholders:** Strictly prohibit leaving commented placeholders, stub functions, incomplete implementations, or TODO lines in any generated code.
 
 ### Frontmatter Rules:
-- All values in "cursorRules" MUST start with YAML frontmatter specifying "description" and "globs".`;
+- All values in ".cursor/rules/*.mdc" files MUST start with YAML frontmatter specifying "description", "globs", and "alwaysApply".`;
 }
 
 async function callOpenAI(apiKey: string, markdown: string, techSignatures: TechSignature[]): Promise<CompiledPack> {
@@ -104,7 +116,6 @@ async function callOpenAI(apiKey: string, markdown: string, techSignatures: Tech
     },
     body: JSON.stringify({
       model: 'gpt-4o-mini',
-      response_format: { type: 'json_object' },
       messages: [
         {
           role: 'system',
@@ -124,7 +135,7 @@ async function callOpenAI(apiKey: string, markdown: string, techSignatures: Tech
 
   const data = await response.json();
   const content = data.choices[0].message.content;
-  return JSON.parse(content);
+  return parseMarkdownStream(content);
 }
 
 async function callAnthropic(apiKey: string, markdown: string, techSignatures: TechSignature[]): Promise<CompiledPack> {
@@ -138,8 +149,7 @@ async function callAnthropic(apiKey: string, markdown: string, techSignatures: T
     body: JSON.stringify({
       model: 'claude-3-5-sonnet-20241022',
       max_tokens: 4000,
-      system: `${generateSystemPrompt(techSignatures)}
-Do not wrap your response in markdown code blocks like \`\`\`json, return only raw JSON.`,
+      system: generateSystemPrompt(techSignatures),
       messages: [
         {
           role: 'user',
@@ -155,8 +165,7 @@ Do not wrap your response in markdown code blocks like \`\`\`json, return only r
 
   const data = await response.json();
   const text = data.content[0].text;
-  const cleanJsonText = text.replace(/^[^{]*/, '').replace(/[^}]*$/, '');
-  return JSON.parse(cleanJsonText);
+  return parseMarkdownStream(text);
 }
 
 function localMockCompile(rawMarkdown: string, techSignatures: TechSignature[]): CompiledPack {
@@ -460,4 +469,68 @@ For operational execution, do not dump system configs here. Navigate directly to
     readmeMd,
     cursorRules
   };
+}
+
+function parseMarkdownStream(stream: string): CompiledPack {
+  const pack: CompiledPack = {
+    agentsMd: '',
+    claudeMd: '',
+    phasesMd: '',
+    readmeMd: '',
+    cursorRules: {}
+  };
+
+  if (!stream) return pack;
+
+  const lines = stream.split('\n');
+  let currentFile: string | null = null;
+  let fileLines: string[] = [];
+
+  for (const line of lines) {
+    const startMatch = line.match(/^---\s*START\s*FILE:\s*(.+?)\s*---$/i);
+    const endMatch = line.match(/^---\s*END\s*FILE:\s*(.+?)\s*---$/i);
+
+    if (startMatch) {
+      if (currentFile && fileLines.length > 0) {
+        // Save previously active file context if nested/cut-off start is hit
+        saveFileContent(pack, currentFile, fileLines.join('\n').trim());
+      }
+      currentFile = startMatch[1].trim();
+      fileLines = [];
+    } else if (endMatch) {
+      if (currentFile) {
+        saveFileContent(pack, currentFile, fileLines.join('\n').trim());
+      }
+      currentFile = null;
+      fileLines = [];
+    } else {
+      if (currentFile !== null) {
+        fileLines.push(line);
+      }
+    }
+  }
+
+  // Handle case where stream ended before final end marker (e.g. truncated)
+  if (currentFile && fileLines.length > 0) {
+    saveFileContent(pack, currentFile, fileLines.join('\n').trim());
+  }
+
+  return pack;
+}
+
+function saveFileContent(pack: CompiledPack, filename: string, content: string) {
+  if (filename === 'AGENTS.md') {
+    pack.agentsMd = content;
+  } else if (filename === 'CLAUDE.md') {
+    pack.claudeMd = content;
+  } else if (filename === 'phases.md') {
+    pack.phasesMd = content;
+  } else if (filename === 'README.md') {
+    pack.readmeMd = content;
+  } else if (filename.startsWith('.cursor/rules/')) {
+    const ruleName = filename.replace('.cursor/rules/', '');
+    pack.cursorRules[ruleName] = content;
+  } else {
+    pack.cursorRules[filename] = content;
+  }
 }

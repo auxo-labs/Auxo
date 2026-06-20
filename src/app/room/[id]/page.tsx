@@ -4,11 +4,14 @@ import * as React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Suspense } from 'react';
-import { ArrowLeft, Copy, Check, Play, ShieldAlert, Users, Download, Compass } from 'lucide-react';
+import { ArrowLeft, Copy, Check, Play, ShieldAlert, Users, Download, Compass, User, LogOut } from 'lucide-react';
 import { Editor } from '@/components/editor';
 import { Preview } from '@/components/preview';
 import { CompiledPack } from '@/lib/prompt-compiler';
 import JSZip from 'jszip';
+import { supabase } from '@/lib/supabase';
+import { AuthModal } from '@/components/auth-modal';
+import type { User as SupabaseUser } from '@supabase/supabase-js';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -28,11 +31,16 @@ function RoomContent({ roomId }: { roomId: string }) {
   const [activeFile, setActiveFile] = React.useState<string>('README.md');
   const [copiedLink, setCopiedLink] = React.useState(false);
   const [isCompiling, setIsCompiling] = React.useState(false);
+  const [compileError, setCompileError] = React.useState<string | null>(null);
   const [isDownloading, setIsDownloading] = React.useState(false);
   const [isMac, setIsMac] = React.useState(true);
   const [usersCount, setUsersCount] = React.useState<number>(1);
   const [connectionStatus, setConnectionStatus] = React.useState<'connecting' | 'connected' | 'disconnected'>('connecting');
   const [expandedPanel, setExpandedPanel] = React.useState<'none' | 'editor' | 'preview'>('none');
+  const [user, setUser] = React.useState<SupabaseUser | null>(null);
+  const [profile, setProfile] = React.useState<{ credits: number; is_lifetime: boolean } | null>(null);
+  const [isAuthModalOpen, setIsAuthModalOpen] = React.useState(false);
+  const [lastCompileType, setLastCompileType] = React.useState<'basic' | 'premium'>('basic');
   const isMountedRef = React.useRef(false);
 
   // ── Simple mount effects ───────────────────────────────────────────────────
@@ -44,6 +52,54 @@ function RoomContent({ roomId }: { roomId: string }) {
     }, 0);
     return () => clearTimeout(timer);
   }, []);
+
+  // Listen to Supabase Auth state and session changes
+  React.useEffect(() => {
+    const fetchUserProfile = async (userId: string) => {
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('credits, is_lifetime')
+          .eq('id', userId)
+          .single();
+        if (error) throw error;
+        setProfile(data);
+      } catch (err) {
+        console.error('Failed to fetch user profile:', err);
+      }
+    };
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        fetchUserProfile(session.user.id);
+      }
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      const activeUser = session?.user ?? null;
+      setUser(activeUser);
+      if (activeUser) {
+        fetchUserProfile(activeUser.id);
+      } else {
+        setProfile(null);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  const handleSignOut = async () => {
+    try {
+      await supabase.auth.signOut();
+      setUser(null);
+      setProfile(null);
+    } catch (err) {
+      console.error('Failed to sign out', err);
+    }
+  };
 
   // Restore scratchpad text from LocalStorage on mount
   React.useEffect(() => {
@@ -78,18 +134,52 @@ function RoomContent({ roomId }: { roomId: string }) {
     }
   };
 
-  const handleCompile = async (forcedSessionId?: string): Promise<CompiledPack | undefined> => {
+  const handleCompile = async (type: 'basic' | 'premium', forcedSessionId?: string): Promise<CompiledPack | undefined> => {
     if (isCompiling) return;
     try {
       setIsCompiling(true);
+      setCompileError(null);
+      setLastCompileType(type);
+
+      const savedText = localStorage.getItem(`auxo-room-${roomId}`);
+      const textToCompile = savedText || markdownText;
+
+      if (type === 'basic') {
+        const response = await fetch('/api/compile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ markdownText: textToCompile, roomId, compileType: 'basic' }),
+        });
+        if (!response.ok) {
+          let errorMsg = `Compile route failed: ${response.statusText}`;
+          try {
+            const errData = await response.json();
+            if (errData?.error) errorMsg = errData.error;
+          } catch {}
+          throw new Error(errorMsg);
+        }
+        const files: CompiledPack = await response.json();
+        setCompiledFiles(files);
+        setActiveFile('README.md');
+        return files;
+      }
+
+      // Premium compile handling:
+      // 1. Must be authenticated
+      if (!user) {
+        setIsAuthModalOpen(true);
+        return;
+      }
+
       const targetSessionId = forcedSessionId ?? searchParams.get('session_id');
 
-      if (!targetSessionId) {
-        // No paid session → redirect user to Stripe Checkout
+      // 2. Must have credits or lifetime pass
+      if (!profile?.is_lifetime && (profile?.credits ?? 0) <= 0 && !targetSessionId) {
+        // Redirect to stripe checkout
         const checkoutRes = await fetch('/api/checkout', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ roomId }),
+          body: JSON.stringify({ roomId, userId: user.id }),
         });
         if (!checkoutRes.ok) throw new Error('Failed to generate checkout session');
         const { url } = await checkoutRes.json();
@@ -97,23 +187,51 @@ function RoomContent({ roomId }: { roomId: string }) {
         return;
       }
 
-      const savedText = localStorage.getItem(`auxo-room-${roomId}`);
-      const textToCompile = savedText || markdownText;
+      // 3. Authenticated and has compilation rights
+      // Get JWT token
+      const session = (await supabase.auth.getSession()).data.session;
+      const token = session?.access_token;
 
       const response = await fetch('/api/compile', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ markdownText: textToCompile, roomId, sessionId: targetSessionId }),
+        headers: { 
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({ 
+          markdownText: textToCompile, 
+          roomId, 
+          sessionId: targetSessionId || undefined,
+          compileType: 'premium'
+        }),
       });
-      if (!response.ok) throw new Error(`Compile route failed: ${response.statusText}`);
+
+      if (!response.ok) {
+        let errorMsg = `Compile route failed: ${response.statusText}`;
+        try {
+          const errData = await response.json();
+          if (errData?.error) errorMsg = errData.error;
+        } catch {}
+        throw new Error(errorMsg);
+      }
 
       const files: CompiledPack = await response.json();
       setCompiledFiles(files);
       setActiveFile('README.md');
+      
+      // Refresh user profile in background to decrement credit balance
+      const { data: updatedProfile } = await supabase
+        .from('profiles')
+        .select('credits, is_lifetime')
+        .eq('id', user.id)
+        .single();
+      if (updatedProfile) {
+        setProfile(updatedProfile);
+      }
       return files;
     } catch (error) {
       console.error('Compilation failure:', error);
-      alert('Failed to compile context blueprint. Inspect server logs.');
+      setCompileError(error instanceof Error ? error.message : 'Failed to compile context blueprint.');
     } finally {
       setIsCompiling(false);
     }
@@ -167,7 +285,17 @@ function RoomContent({ roomId }: { roomId: string }) {
     const autoRun = async () => {
       // Delay compilation slightly to let LocalStorage mount restoration complete
       setTimeout(async () => {
-        await handleCompile(querySessionId);
+        if (user) {
+          try {
+            const { data } = await supabase
+              .from('profiles')
+              .select('credits, is_lifetime')
+              .eq('id', user.id)
+              .single();
+            if (data) setProfile(data);
+          } catch {}
+        }
+        await handleCompile('premium', querySessionId);
         // Strip session_id from URL to prevent re-triggering on refresh
         window.history.replaceState({}, document.title, window.location.origin + window.location.pathname);
       }, 100);
@@ -185,7 +313,7 @@ function RoomContent({ roomId }: { roomId: string }) {
   React.useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       const isCmd = e.metaKey || e.ctrlKey;
-      if (isCmd && e.key === 'Enter') { e.preventDefault(); handleCompile(); return; }
+      if (isCmd && e.key === 'Enter') { e.preventDefault(); handleCompile('basic'); return; }
       if (isCmd && e.key === 's' && compiledFiles) { e.preventDefault(); handleDownload(); return; }
       if (isCmd && e.shiftKey && e.key.toLowerCase() === 'c') { e.preventDefault(); handleCopyLink(); return; }
       if (e.key === 'Escape') {
@@ -266,6 +394,37 @@ function RoomContent({ roomId }: { roomId: string }) {
             <span>{usersCount} {usersCount === 1 ? 'BUILDER' : 'BUILDERS'}</span>
           </div>
 
+          {/* User Profile Widget */}
+          {!user ? (
+            <button
+              onClick={() => setIsAuthModalOpen(true)}
+              className="flex items-center justify-center gap-1.5 h-8 px-3 rounded border border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.03] text-[10px] font-mono font-semibold tracking-wider text-zinc-300 transition-colors cursor-pointer"
+            >
+              <User className="w-3.5 h-3.5 text-zinc-400" />
+              <span>SIGN IN</span>
+            </button>
+          ) : (
+            <div className="flex items-center gap-2 h-8 px-3 rounded border border-white/5 bg-white/[0.01] text-[10px] font-mono tracking-wider text-zinc-300">
+              <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full" />
+              <span className="text-zinc-400 font-semibold">{user.email?.split('@')[0].toUpperCase()}</span>
+              <span className="h-3 w-px bg-white/10" />
+              {profile?.is_lifetime ? (
+                <span className="text-[9px] font-bold text-amber-400 font-mono">LIFETIME PRO</span>
+              ) : (
+                <span className="text-[9px] font-semibold text-zinc-400 font-mono">
+                  {profile?.credits ?? 0} {profile?.credits === 1 ? 'CREDIT' : 'CREDITS'}
+                </span>
+              )}
+              <button
+                onClick={handleSignOut}
+                className="ml-1 text-zinc-500 hover:text-zinc-300 transition-colors cursor-pointer"
+                title="Sign Out"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
+
           {/* Optimality Specs */}
           <Link
             href="/optimality"
@@ -296,22 +455,39 @@ function RoomContent({ roomId }: { roomId: string }) {
             )}
           </button>
 
-          {/* Compile */}
+          {/* Compile Basic (Free) */}
           <button
-            onClick={() => handleCompile()}
+            onClick={() => handleCompile('basic')}
+            disabled={isCompiling}
+            className="flex items-center justify-center gap-2 h-8 px-3 rounded border border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.03] text-[10px] font-mono font-semibold tracking-wider text-zinc-300 transition-colors disabled:opacity-50 disabled:pointer-events-none active:scale-95 cursor-pointer"
+            title="Compile standard prompt blueprint locally (Free)"
+          >
+            {isCompiling ? (
+              <div className="w-3 h-3 border border-zinc-300 border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <>
+                <Play className="w-2.5 h-2.5 text-zinc-400 fill-current" />
+                <span>COMPILE BASIC</span>
+                <span className="px-1 py-0.5 rounded bg-zinc-800 border border-zinc-700/50 text-[8px] font-mono text-zinc-500 font-medium">
+                  {isMac ? '⌘↵' : 'Ctrl+↵'}
+                </span>
+              </>
+            )}
+          </button>
+
+          {/* Deep LLM Compile (Premium) */}
+          <button
+            onClick={() => handleCompile('premium')}
             disabled={isCompiling}
             className="flex items-center justify-center gap-2 h-8 px-4 rounded bg-zinc-100 hover:bg-zinc-200 text-zinc-950 text-[10px] font-mono font-semibold tracking-wider transition-all disabled:opacity-50 disabled:pointer-events-none active:scale-95 shadow-sm cursor-pointer"
-            title="Compile markdown"
+            title="Compile hyper-tailored 2026 AI Agent Pack (Requires Credits)"
           >
             {isCompiling ? (
               <div className="w-3 h-3 border border-zinc-950 border-t-transparent rounded-full animate-spin" />
             ) : (
               <>
-                <Play className="w-2.5 h-2.5 fill-current" />
-                <span>COMPILE</span>
-                <span className="px-1 py-0.5 rounded bg-zinc-200 border border-zinc-300 text-[8px] font-mono text-zinc-600 font-medium">
-                  {isMac ? '⌘↵' : 'Ctrl+↵'}
-                </span>
+                <Play className="w-2.5 h-2.5 fill-current text-zinc-950" />
+                <span>DEEP AI COMPILE</span>
               </>
             )}
           </button>
@@ -338,6 +514,33 @@ function RoomContent({ roomId }: { roomId: string }) {
           )}
         </div>
       </header>
+
+      {compileError && (
+        <div className="flex items-center justify-between gap-4 px-6 py-2.5 bg-red-950/40 border-b border-red-500/20 backdrop-blur-md z-10 animate-fade-in">
+          <div className="flex items-center gap-2.5">
+            <div className="flex items-center justify-center w-4 h-4 rounded-full bg-red-500/10 text-red-400 text-[10px] font-mono font-bold animate-pulse">
+              !
+            </div>
+            <span className="text-xs font-mono text-red-200">
+              {compileError}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => handleCompile(lastCompileType)}
+              className="px-2.5 py-1 text-[9px] font-mono font-semibold tracking-wide bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-200 rounded transition-colors active:scale-95 cursor-pointer"
+            >
+              RETRY
+            </button>
+            <button
+              onClick={() => setCompileError(null)}
+              className="px-2 py-1 text-[9px] font-mono text-zinc-400 hover:text-zinc-200 transition-colors cursor-pointer"
+            >
+              DISMISS
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Main split-panel layout */}
       <div className={`grid flex-1 overflow-hidden h-[calc(100vh-3.5rem)] ${
@@ -367,6 +570,13 @@ function RoomContent({ roomId }: { roomId: string }) {
         )}
 
       </div>
+
+      {isAuthModalOpen && (
+        <AuthModal
+          isOpen={isAuthModalOpen}
+          onClose={() => setIsAuthModalOpen(false)}
+        />
+      )}
     </div>
   );
 }

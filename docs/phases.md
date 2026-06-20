@@ -60,15 +60,23 @@
 
 ## Phase 10: Context Optimality & Fine-Tuning the Compiled Agent Pack (Active Phase)
 - [x] **Step 10.1 (Optimality Page):** Review, complete, and format the Technical Research Whitepaper under `/optimality` (`src/app/optimality/page.tsx`).
-- [x] **Step 10.2 (Optimality Links):** Ensure the links in the landing page navbar and room header toolbar correctly target `/optimality` and open in a new tab.
+- [x] **Step 10.2 (Optimality Links):** Ensure the links in the landing page navbar and room header toolbar correctly target `/optimality` and open in the same tab.
 - [x] **Step 10.3 (Fine-tuning Compiler):** Fine-tune compiler output format in `src/lib/prompt-compiler.ts` (ensuring correct JSDoc templates, clean comments, DRY/SOLID instructions, and strict token budget bounds are strictly followed by the AI generator).
-- [ ] **Step 10.4 (Optimality/Compiler Validation):** Run local mock compilations and check generated file structure outputs against linter checks (`npm run lint` and `npm run build`).
+- [x] **Step 10.4 (Optimality/Compiler Validation):** Run local mock compilations and check generated file structure outputs against linter checks (`npm run lint` and `npm run build`).
 
 ## Phase 11: Testing & Quality Verification
 
 - [x] **Step 11.1:** Define three distinct test inputs representing different developer requirements in `docs/test_cases.md`.
 - [x] **Step 11.2:** Run the local mock compiler on these inputs to verify mock packaging.
 - [x] **Step 11.3 (Optional):** Add a temporary `OPENAI_API_KEY` to `.env.local` to run actual LLM compilations, capturing and analyzing the output quality of `AGENTS.md` and `.cursor/rules/*.mdc`.
+
+## Phase 12: Account-Gated Premium Compiles & Supabase Auth
+
+- [x] **Step 12.1 (Planning and Database Design):** Design and run migrations for profiles table in Supabase tracking compilation credits (GBP £15 for 3 credits) and lifetime access flags (£99).
+- [x] **Step 12.2 (Supabase Auth Integration):** Set up `@supabase/supabase-js` anonymous/admin clients, create the glassmorphic passwordless Magic Link `AuthModal`, and add navbar indicators.
+- [x] **Step 12.3 (Workspace Segregation):** Decouple compile actions in the UI: free `"Basic Agent Pack"` vs premium `"Deep AI Compile"` using token gating and Stripe redirects.
+- [x] **Step 12.4 (Stripe Webhook & API Gating):** Map checkout sessions using `client_reference_id`, build the secure `webhooks/stripe` POST route to credit accounts, and update the API compilation handler to authenticate and decrement credits.
+- [x] **Step 12.5 (Polish & Verification):** Fix asynchronous server action exports, parameter mismatches, compile retry type-safeties, and verify standard builds.
 
 ## Future Phases & Stretch Goals (Deferred)
 
