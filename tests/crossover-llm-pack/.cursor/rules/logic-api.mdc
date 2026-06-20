@@ -1,31 +1,28 @@
 ---
-description: Defines core system logic invariants, external service boundaries, and data handling protocols.
-globs: ["src/services/**/*", "src/utils/**/*", "src/lib/**/*", "src/server/**/*.ts", "src/app/api/**/*.ts"]
+description: Defines core system logic invariants for the CareWorkspace Clinic Portal, including B2B tenant isolation, HIPAA compliance, and database protocols.
+globs: ["src/lib/**/*.ts", "src/services/**/*.ts", "src/app/api/**/*.ts"]
 alwaysApply: false
 ---
 
-# Logic & API Invariants for CareWorkspace
+# CareWorkspace Clinic Portal - Core Logic & API Rules
 
-This document defines the fundamental invariants and operational protocols for all system logic, API endpoints, and service layer interactions within the CareWorkspace Clinic Portal. These rules ensure robustness, consistency, and compliance across the application's backend and data processing layers.
+These rules govern the implementation of all backend logic, API endpoints, and data interactions for the CareWorkspace Clinic Portal.
 
-## I. Core System Logic Invariants
-
-1.  **Mock Data Swappability**: All external service integrations, complex data fetching layers, and API endpoints must support a mock data mode. This should be controlled by a `NEXT_PUBLIC_USE_MOCK_DATA` environment variable, enabling seamless development and testing without live dependencies.
-2.  **Calculations Precision**: All numerical calculations, particularly those involving sensitive financial or medical values (e.g., dosage, billing, rates), must use appropriate decimal types (e.g., `Decimal.js` or database `NUMERIC` types) to prevent floating-point inaccuracies. All calculation logic must be thoroughly unit and integration tested.
-3.  **Robust Error Handling**: Implement centralized and standardized error handling across all service layers and API endpoints. Errors must be logged appropriately, and user-facing messages should be generic and informative without exposing sensitive backend details or stack traces.
-4.  **Idempotency**: Critical API actions that modify data (e.g., creating patient records, updating appointments) should, where possible, be designed to be idempotent to prevent duplicate operations in case of network retries.
-
-## II. External Service Boundaries
-
-1.  **Clear Encapsulation**: All interactions with third-party APIs (e.g., Supabase, potentially payment gateways, or other health services) must be encapsulated within dedicated service modules or functions. Avoid direct, unmediated calls to external APIs from business logic.
-2.  **Abstraction**: Create clear interfaces or abstraction layers for external services to facilitate future swapping or migration without impacting core business logic.
-
-## III. Supabase Interaction Protocols
-
-1.  **Realtime Preference**: For ephemeral, low-latency data synchronization and notifications (e.g., presence indicators, chat functionality), prefer using Supabase's Realtime Broadcast or Presence channels.
-2.  **Limited Direct Writes**: **STRICTLY LIMIT DIRECT DATABASE CONNECTIONS OR STATEFUL WRITES from any client-side context.** All data mutations (INSERT, UPDATE, DELETE) should primarily flow through secure, server-side mechanisms such as Next.js Server Actions, dedicated API routes, or Supabase Edge Functions.
-3.  **Row-Level Security (RLS)**: Design and enforce robust Row-Level Security policies within Supabase to ensure that users can only access data relevant to their `tenantId` and assigned roles, preventing direct bypasses via the API.
-4.  **Schema Enforcement**: Ensure strict schema validation on all data entering or leaving the database.
-
-## IV. General Coding Style & Principles
-All logic and API development must strictly adhere to the global coding philosophies outlined in `AGENTS.md`, including DRY, KISS, SOLID, YAGNI, JSDoc parameter documentation, respecting context budgets, and the absolute prohibition of placeholders.
+1.  **Tenant Isolation (`tenantId`):** All data access, creation, update, and deletion operations *must* include and strictly enforce `tenantId` scoping. No data interaction should occur without explicit `tenantId` verification, ensuring strict B2B multi-tenancy.
+2.  **HIPAA Compliance at the Logic Layer:**
+    *   **PHI Handling:** All services handling Protected Health Information (PHI) must implement strict access controls and data validation. PHI should be encrypted before storage and accessed only through audited, authorized mechanisms.
+    *   **Audit Logging:** Critical operations involving PHI (read, write, update) must generate comprehensive audit log entries, including the `doctor` identity, `tenantId`, timestamp, and specific action performed.
+3.  **Supabase Protocol:**
+    *   **Row-Level Security (RLS):** Prioritize Supabase Row-Level Security policies to enforce data access rules at the database level, particularly for `tenantId` and user roles.
+    *   **Transient Channels:** Utilize Supabase Realtime Broadcast or Presence channels for real-time synchronization of non-critical, ephemeral UI state (e.g., user presence, generic notifications). Avoid direct stateful database writes via these channels.
+    *   **Encapsulation:** All direct Supabase interactions should be encapsulated within dedicated data access layers or repositories.
+4.  **Doctor Logging:** Implement robust logging mechanisms for every action performed by a `doctor` on patient data. This includes who, what, when, and where for all CRUD operations on `patient` and `medicalRecord` entities.
+5.  **Mock Data Strategy:** Support a `NEXT_PUBLIC_USE_MOCK_DATA` environment variable. If true, external service calls (e.g., Supabase, external APIs) should be replaced with in-memory or static mock data to facilitate isolated development and testing.
+6.  **External Service Boundaries:** Clearly define and encapsulate interactions with all external services. Implement robust error handling, retry mechanisms (where appropriate), and circuit breakers to ensure system resilience.
+7.  **Calculations Precision:** All numerical calculations, especially those potentially related to billing or medical measurements, must use appropriate data types and maintain required precision to avoid rounding errors.
+8.  **DRY (Don't Repeat Yourself) & KISS (Keep It Simple, Stupid):** Prefer "vanilla over clever." Forbid premature optimization, deeply nested conditional structures, duplicate helper logic, and unnecessary abstractions. Maintain extreme readability and directness in implementation.
+9.  **SOLID Design Principles:** Enforce functional, single-responsibility modules. Implement open-closed behavior where applicable, ensuring modules are open for extension but closed for modification. Practice interface segregation for clearer API contracts and dependency inversion to decouple high-level modules from low-level implementations.
+10. **YAGNI (You Aren't Gonna Need It):** Prohibit writing speculative boilerplate code or future-proofing implementations that are not explicitly requested by the current specifications. Focus solely on delivering current requirements.
+11. **JSDoc Parameter Documentation:** Maintain detailed JSDoc comments including `@param`, `@returns`, and `@description` for all helper functions, exported utility modules, and API endpoints. This is critical for maintainability and AI agent understanding.
+12. **Context Budgets:** If a task requires modifying more than 3 modules or 60 seconds of manual context navigation, halt the task and demand user clarification. Break down complex tasks into smaller, manageable units.
+13. **No Placeholders:** Strictly prohibit leaving commented placeholders, stub functions, incomplete implementations, or TODO lines in any generated code. All outputs must represent complete, implementable codebase scaffolding files.

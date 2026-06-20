@@ -5,8 +5,10 @@ All notable changes to the **Auxo** project are documented here.
 ## [1.4.1] - 2026-06-20
 
 ### Added
-- **Multi-Domain Crossover Support:** Added support for compiling specs with intersecting SaaS archetypes. Inputting keywords from multiple domains (such as B2B and HealthTech) will now output separate rule files (e.g. `tenant-rules.mdc` and `hipaa-rules.mdc`) with targeted globs and `alwaysApply: false`.
-- **B2B HealthTech CareWorkspace Template:** Introduced a specialized deterministic crossover template in the local fallback compiler (`localMockCompile`) for B2B clinical portals, merging patient tracking, HIPAA compliance, and tenant/workspace isolation into the product thesis and vocabulary.
+- **Pre-Baked Compliance Invariants:** Automatically injects authoritative compliance guidelines into `AGENTS.md` based on active archetypes (SOC2 guidelines for B2B/SaaS, HIPAA security rule standards for HealthTech, and PCI-DSS payment directives for FinTech).
+- **Crossover Multi-Domain Templates:** Added dedicated local compiler templates for multi-domain crossovers: **ClaimFlow** (HealthTech + FinTech for audited, HIPAA-compliant claims billing) and **BizLedger** (B2B + FinTech for multi-tenant billing ledgers).
+- **Crossover Rule Merging:** Improved keyword checks and file arrays in the local compiler to gracefully combine rule files (e.g. generating `ledger-rules.mdc` + `hipaa-rules.mdc` + `ui-theme.mdc` simultaneously) without collisions.
+- **Generative Compliance Instructions:** Added instructions inside `generateSystemPrompt` for the LLM to auto-inject matching SOC2, HIPAA, and PCI-DSS compliance directives based on domain keywords.
 
 ### Fixed
 - **Compiler Syntax Error:** Resolved a duplicate declaration of `cursorRules` in `localMockCompile` that was referencing undefined variables (`uiThemeRules`, `logicFileName`, and `logicRules`).

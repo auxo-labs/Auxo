@@ -1,0 +1,9 @@
+---
+description: HIPAA encrypted datastore protocols and audit trails
+globs: ["src/lib/services/**/*", "src/app/api/**/*"]
+alwaysApply: false
+---
+# HIPAA Clinical Data Rules
+- **Encrypted Storage:** Enforce encryption abstractions on all patient identity records.
+- **Activity Logging:** Maintain strict audit tables recording every query access to clinical logs.
+- **Zero Cache:** Zero-cached client state patterns on all patient telemetry views.

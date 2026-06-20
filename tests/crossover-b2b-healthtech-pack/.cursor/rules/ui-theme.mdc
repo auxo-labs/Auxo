@@ -1,0 +1,10 @@
+---
+description: General UI layout parameters and styling theme guidelines
+globs: ["src/components/**/*", "src/app/**/*.tsx"]
+alwaysApply: false
+---
+# UI Theme Guidelines
+- Layout: Use CSS-first layout rules using Tailwind CSS variables.
+- Accessibility: Apply standard semantic tags and ARIA descriptors.
+- Error Boundaries: Ensure user interfaces wrap client nodes in local error catch modules.
+- **Safety Banner:** Clinical emergency banners must be highly visible and display top-level patient alerts.

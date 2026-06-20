@@ -3,7 +3,7 @@ import { resolveTechStack } from '../src/lib/tech-resolver';
 import * as fs from 'fs';
 import * as path from 'path';
 
-const crossoverNotes = `# CareWorkspace Clinic Portal
+const b2bHealthTechNotes = `# CareWorkspace Clinic Portal
 A B2B HIPAA compliant patient portal with tenant workspace isolation and medical doctor logging.
 We are using next and tailwindcss and @supabase/supabase-js.
 
@@ -13,19 +13,33 @@ Requirements:
 - Patient history tracking.
 `;
 
-async function run() {
-  console.log("Running compilation tests...");
+const healthTechFinTechNotes = `# ClaimFlow Medical Billing
+A HIPAA compliant medical billing system and claims ledger for doctors.
+Enforces strict accounting audits and card processing checks.
+We are using next and tailwindcss.
 
-  // Resolve signatures
-  const signatures = await resolveTechStack(crossoverNotes);
-  console.log("Resolved Signatures:", signatures);
+Requirements:
+- PHI data isolation.
+- Ledger ledger balance checks.
+- Invoice credit card billing validations.
+`;
 
-  // Compile basic
-  const basicPack = await compilePromptPack(crossoverNotes, signatures, true);
-  console.log("Basic Pack Compiled!");
+const b2bFinTechNotes = `# BizLedger Enterprise Gateway
+A B2B multi-tenant enterprise billing and double-entry ledger platform.
+We are using next and tailwindcss and @supabase/supabase-js.
 
-  // Output directories
-  const outDir = path.join(__dirname, 'crossover-basic-pack');
+Requirements:
+- Tenant workspace isolation.
+- Double-entry balance zero-sum check.
+- SOC2 compliant invoicing.
+`;
+
+async function compileAndWriteBasic(scenarioName: string, notes: string, folderName: string) {
+  console.log(`\n--- Compiling basic pack for: ${scenarioName} ---`);
+  const signatures = await resolveTechStack(notes);
+  const basicPack = await compilePromptPack(notes, signatures, true);
+
+  const outDir = path.join(__dirname, folderName);
   if (!fs.existsSync(outDir)) {
     fs.mkdirSync(outDir, { recursive: true });
   }
@@ -40,19 +54,30 @@ async function run() {
     fs.mkdirSync(rulesDir, { recursive: true });
   }
 
-  // Clear rules directory first to remove old ones
-  const files = fs.readdirSync(rulesDir);
-  for (const file of files) {
-    fs.unlinkSync(path.join(rulesDir, file));
+  // Clear old rules
+  if (fs.existsSync(rulesDir)) {
+    const files = fs.readdirSync(rulesDir);
+    for (const file of files) {
+      fs.unlinkSync(path.join(rulesDir, file));
+    }
   }
 
   for (const [name, content] of Object.entries(basicPack.cursorRules)) {
     fs.writeFileSync(path.join(rulesDir, name), content);
+    console.log(`  Rule created: ${name} (${content.length} bytes)`);
   }
+  console.log(`Saved to tests/${folderName}/`);
+}
 
-  console.log(`Basic Pack files written to tests/crossover-basic-pack/`);
+async function run() {
+  console.log("Running compliance and crossover compilation tests...");
 
-  // Try to load env variables from .env.local manually if not present
+  // Run the three basic crossover compiles
+  await compileAndWriteBasic("B2B + HealthTech (CareWorkspace)", b2bHealthTechNotes, "crossover-b2b-healthtech-pack");
+  await compileAndWriteBasic("HealthTech + FinTech (ClaimFlow)", healthTechFinTechNotes, "crossover-healthtech-fintech-pack");
+  await compileAndWriteBasic("B2B + FinTech (BizLedger)", b2bFinTechNotes, "crossover-b2b-fintech-pack");
+
+  // Load env variables if present
   if (!process.env.GEMINI_API_KEY && !process.env.OPENAI_API_KEY && fs.existsSync(path.join(__dirname, '../.env.local'))) {
     const envContent = fs.readFileSync(path.join(__dirname, '../.env.local'), 'utf-8');
     const matches = envContent.matchAll(/^([A-Z0-9_]+)\s*=\s*(.+)$/gm);
@@ -66,18 +91,17 @@ async function run() {
   const geminiKey = process.env.GEMINI_API_KEY;
   const openAIKey = process.env.OPENAI_API_KEY;
 
-  if (geminiKey) {
-    console.log("Running Gemini compile...");
-    const userConfig = {
-      provider: 'gemini' as const,
-      model: 'gemini-2.5-flash',
-      apiKey: geminiKey
-    };
+  if (geminiKey || openAIKey) {
+    const key = geminiKey || openAIKey;
+    const provider = geminiKey ? 'gemini' as const : 'openai' as const;
+    const model = geminiKey ? 'gemini-2.5-flash' : 'gpt-4o-mini';
+
+    console.log(`\n--- Running Live LLM compile (${provider}) on B2B HealthTech ---`);
+    const signatures = await resolveTechStack(b2bHealthTechNotes);
+    const userConfig = { provider, model, apiKey: key };
 
     try {
-      const llmPack = await compilePromptPack(crossoverNotes, signatures, false, userConfig);
-      console.log("LLM Pack Compiled successfully!");
-
+      const llmPack = await compilePromptPack(b2bHealthTechNotes, signatures, false, userConfig);
       const llmOutDir = path.join(__dirname, 'crossover-llm-pack');
       if (!fs.existsSync(llmOutDir)) {
         fs.mkdirSync(llmOutDir, { recursive: true });
@@ -93,65 +117,24 @@ async function run() {
         fs.mkdirSync(llmRulesDir, { recursive: true });
       }
 
-      // Clear old rules
-      const llmFiles = fs.readdirSync(llmRulesDir);
-      for (const file of llmFiles) {
+      const files = fs.readdirSync(llmRulesDir);
+      for (const file of files) {
         fs.unlinkSync(path.join(llmRulesDir, file));
       }
 
       for (const [name, content] of Object.entries(llmPack.cursorRules)) {
         fs.writeFileSync(path.join(llmRulesDir, name), content);
       }
-      console.log(`LLM Pack files written to tests/crossover-llm-pack/`);
+      console.log("LLM Pack Compiled successfully and written to tests/crossover-llm-pack/");
     } catch (err) {
-      console.error("Gemini compilation failed:", err);
-    }
-  } else if (openAIKey) {
-    console.log("Running OpenAI compile...");
-    const userConfig = {
-      provider: 'openai' as const,
-      model: 'gpt-4o-mini',
-      apiKey: openAIKey
-    };
-
-    try {
-      const llmPack = await compilePromptPack(crossoverNotes, signatures, false, userConfig);
-      console.log("LLM Pack Compiled successfully!");
-
-      const llmOutDir = path.join(__dirname, 'crossover-llm-pack');
-      if (!fs.existsSync(llmOutDir)) {
-        fs.mkdirSync(llmOutDir, { recursive: true });
-      }
-
-      fs.writeFileSync(path.join(llmOutDir, 'README.md'), llmPack.readmeMd);
-      fs.writeFileSync(path.join(llmOutDir, 'AGENTS.md'), llmPack.agentsMd);
-      fs.writeFileSync(path.join(llmOutDir, 'CLAUDE.md'), llmPack.claudeMd);
-      fs.writeFileSync(path.join(llmOutDir, 'phases.md'), llmPack.phasesMd);
-
-      const llmRulesDir = path.join(llmOutDir, '.cursor', 'rules');
-      if (!fs.existsSync(llmRulesDir)) {
-        fs.mkdirSync(llmRulesDir, { recursive: true });
-      }
-
-      // Clear old rules
-      const llmFiles = fs.readdirSync(llmRulesDir);
-      for (const file of llmFiles) {
-        fs.unlinkSync(path.join(llmRulesDir, file));
-      }
-
-      for (const [name, content] of Object.entries(llmPack.cursorRules)) {
-        fs.writeFileSync(path.join(llmRulesDir, name), content);
-      }
-      console.log(`LLM Pack files written to tests/crossover-llm-pack/`);
-    } catch (err) {
-      console.error("OpenAI compilation failed:", err);
+      console.error("LLM compile failed:", err);
     }
   } else {
-    console.log("No GEMINI_API_KEY or OPENAI_API_KEY found in process environment or .env.local. Skipping LLM compile.");
+    console.log("\nSkipping Live LLM compile (no keys found).");
   }
 
   // Run Sanitizer Test on LLM-pack-1 rules
-  console.log("Running sanitizer verification tests...");
+  console.log("\nRunning sanitizer verification tests on LLM-pack-1...");
   const llmPack1Dir = path.join(__dirname, 'LLM-pack-1');
   const sanitizedOutDir = path.join(__dirname, 'sanitized-LLM-pack-1');
   
@@ -170,7 +153,7 @@ async function run() {
           const cleanedContent = cleanMdcRuleContent(rawContent);
           
           fs.writeFileSync(path.join(sanitizedRulesDir, file), cleanedContent);
-          console.log(`Sanitized: ${file} written to tests/sanitized-LLM-pack-1/.cursor/rules/`);
+          console.log(`  Sanitized: ${file}`);
         }
       }
     }

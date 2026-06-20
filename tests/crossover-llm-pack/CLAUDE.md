@@ -1,40 +1,33 @@
-# CLI Runtime Executive
+# CareWorkspace Clinic Portal - CLI Runtime Executive
 
-This document outlines the explicit and safe commands for developing, building, linting, and testing the CareWorkspace Clinic Portal application.
+This document lists the explicit, safe, and sanctioned command-line interface (CLI) commands for developing, building, linting, and testing the CareWorkspace Clinic Portal. Agents MUST only use these commands.
 
 ## Development Commands
 
-*   **Start Development Server**: Runs the Next.js development server with hot module reloading.
+*   **Start Development Server:**
     ```bash
     npm run dev
     ```
-    (Equivalent to `next dev`)
+    This command initiates the Next.js development server, typically accessible at `http://localhost:3000`. It includes hot-reloading for development efficiency.
 
 ## Build Commands
 
-*   **Build Production Application**: Compiles the application for production deployment.
+*   **Build Production Application:**
     ```bash
     npm run build
     ```
-    (Equivalent to `next build`)
+    This command compiles the Next.js application for production deployment, optimizing assets and code.
 
-*   **Start Production Server**: Serves the previously built production application. This command should only be used after `npm run build`.
-    ```bash
-    npm run start
-    ```
-    (Equivalent to `next start`)
+## Code Quality & Testing Commands
 
-## Code Quality Commands
-
-*   **Lint Project**: Runs ESLint to identify and report on patterns found in JavaScript/TypeScript code, ensuring code quality and consistency.
+*   **Run Linter:**
     ```bash
     npm run lint
     ```
-    (Equivalent to `next lint`)
+    This command executes ESLint to check for code style inconsistencies, potential errors, and enforce coding standards.
 
-## Testing Commands
-
-*   **Run Tests**: Executes the project's test suite. (Assuming a standard test runner like Jest or Vitest).
+*   **Run Tests:**
     ```bash
     npm run test
     ```
+    This command executes the project's test suite to ensure functionality and prevent regressions.

@@ -1,0 +1,9 @@
+---
+description: State flow and location queries for two-sided marketplaces
+globs: ["src/lib/services/**/*", "src/app/api/**/*"]
+alwaysApply: false
+---
+# Two-Sided Marketplace Rules
+- **Role Invariant:** Maintain explicit isolation between Buyer and Seller state flows and profiles.
+- **Location Queries:** Apply geo-query filters to limit local search listings (within defined radius).
+- **Public Profile Routing:** Enforce structured profile slug validation.

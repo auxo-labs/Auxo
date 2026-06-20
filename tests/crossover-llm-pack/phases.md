@@ -1,37 +1,33 @@
-# CareWorkspace Clinic Portal: Project Roadmap
+# CareWorkspace Clinic Portal - Project Roadmap
 
-This roadmap outlines the key phases for the development and deployment of the CareWorkspace Clinic Portal. Each phase includes critical tasks that must be completed.
+This document outlines the five-phase project roadmap for the CareWorkspace Clinic Portal. Agents should reference this roadmap to understand the current state and upcoming tasks.
 
-## Phase 1: Project Setup & Core Infrastructure
+## Phase 1: Foundation & Core Scaffolding
 - [ ] Initialize Next.js project with TypeScript.
-- [ ] Configure Tailwind CSS v4 using `@theme` in `src/app/globals.css`.
-- [ ] Set up Supabase integration (`@supabase/supabase-js`).
-- [ ] Implement foundational Server Actions/API routes for initial data fetching.
-- [ ] Establish basic project structure for components, services, and utils.
+- [ ] Configure Tailwind CSS v4 (`src/app/globals.css`).
+- [ ] Set up Supabase client integration.
+- [ ] Establish initial project structure for components, services, and API routes.
 
-## Phase 2: Tenant & User Management
-- [ ] Develop secure user authentication for medical doctors (login/logout).
-- [ ] Implement `tenantId` context propagation for all requests.
-- [ ] Create database schema for `tenants` and `doctors`.
-- [ ] Build tenant registration and onboarding flow (if applicable).
-- [ ] Develop basic user profile management for doctors.
+## Phase 2: Tenant & User Authentication
+- [ ] Implement Supabase-based authentication for medical doctors.
+- [ ] Develop tenant isolation middleware/logic to enforce `tenant_id` access control.
+- [ ] Create basic login, registration, and logout flows.
+- [ ] Secure user sessions and implement access token refreshing.
 
 ## Phase 3: Clinic Workspace & Dashboard
-- [ ] Design and implement the primary clinic workspace dashboard UI.
-- [ ] Fetch and display tenant-specific summary data (e.g., patient count, upcoming appointments).
-- [ ] Implement basic navigation within the workspace.
-- [ ] Ensure all displayed data is strictly scoped by `tenantId`.
+- [ ] Design and implement the primary clinic dashboard UI.
+- [ ] Integrate real-time updates for workspace data using Supabase Realtime (Broadcast/Presence).
+- [ ] Display key clinic metrics (e.g., upcoming appointments, active patients).
+- [ ] Develop core UI components for navigation and data display.
 
-## Phase 4: Patient Data & History Module
-- [ ] Design and implement database schema for `patients` and `medical_records` (ensuring `tenantId` linkage).
-- [ ] Develop secure forms for adding new patients and updating existing patient information.
-- [ ] Implement patient history tracking with different record types (e.g., visits, diagnoses, prescriptions).
-- [ ] Create UI for viewing a patient's comprehensive medical record.
-- [ ] Ensure all patient data access is protected by `tenantId` and user roles.
+## Phase 4: Patient Management & History Tracking
+- [ ] Implement CRUD operations for patient records within a `tenant_id` scope.
+- [ ] Develop UI for viewing and updating patient history (diagnoses, treatments, notes).
+- [ ] Ensure all PHI handling strictly adheres to HIPAA compliance requirements.
+- [ ] Implement doctor logging for all patient record interactions.
 
-## Phase 5: HIPAA Compliance & Security Review
-- [ ] Conduct a thorough review of PHI handling to ensure encryption at rest and in transit.
-- [ ] Implement detailed audit logging for all access and modification of patient data.
-- [ ] Strengthen access control policies based on user roles and `tenantId`.
-- [ ] Perform security penetration testing and vulnerability assessments.
-- [ ] Prepare deployment environment and configure production-grade security settings.
+## Phase 5: Deployment & Compliance Review
+- [ ] Prepare application for production deployment (e.g., environment variables, CI/CD setup).
+- [ ] Conduct comprehensive security audit and penetration testing.
+- [ ] Verify full HIPAA and SOC2 compliance, particularly for PHI handling and tenant isolation.
+- [ ] Finalize documentation and prepare for launch.

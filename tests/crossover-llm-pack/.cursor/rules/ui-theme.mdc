@@ -4,33 +4,31 @@ globs: ["src/components/**/*", "src/app/**/*.tsx"]
 alwaysApply: false
 ---
 
-# React UI Rules for CareWorkspace
+# CareWorkspace Clinic Portal - UI Theme & Aesthetic Rules
 
-This document outlines the aesthetic, layout, and interaction principles for all user interface components within the CareWorkspace Clinic Portal. Adherence to these guidelines is crucial for maintaining a consistent, professional, and user-friendly experience, while also ensuring the sensitive nature of medical data is respected.
+These rules define the visual and interaction design principles for the CareWorkspace Clinic Portal.
 
-## I. Aesthetic & Layout Principles
-
-1.  **Aesthetic**: Prioritize a clean, minimalist, professional, sterile, and calming visual aesthetic. Employ color palettes predominantly featuring blues, whites, and light greys to evoke trust, clarity, and serenity. Avoid overly vibrant or distracting colors.
-2.  **Clarity and Hierarchy**: Information must be presented with clear visual hierarchy. Important data points and actions should be easily discernible. Use typography, spacing, and subtle color cues to guide the user's eye.
-3.  **Layout**: Components and pages must utilize ample whitespace to reduce cognitive load. Content areas should be clearly separated. Implement responsive design principles to ensure optimal viewing and interaction across various device sizes.
-4.  **Information Banners**: Use distinct banners or prominent header areas for important alerts, system messages, or announcements, especially those related to HIPAA compliance or data security.
-5.  **Accessibility**: Ensure all UI components meet WCAG (Web Content Accessibility Guidelines) standards. This includes high contrast for text, full keyboard navigation support, and appropriate ARIA attributes for screen readers.
-
-## II. Interaction & Component Behavior
-
-1.  **Consistency**: Maintain consistent interaction patterns for common actions (e.g., form submissions, data filtering, navigation).
-2.  **Feedback**: Provide clear and immediate visual feedback for user interactions (e.g., loading states, success messages, validation errors).
-3.  **Error States**: Design explicit and helpful error states for forms and data displays, guiding the user on how to resolve issues.
-
-## III. Strict Component Logic Separation
-
-1.  **NEVER WRITE CALCULATION OR BUSINESS LOGIC IN UI COMPONENTS.**
-2.  All complex data transformations, business rule validations, database interactions, or API calls must be delegated to dedicated service layers, utility modules, or Server Actions.
-3.  UI components are strictly responsible for:
-    *   Rendering visual elements.
-    *   Handling user input and local UI state.
-    *   Triggering external service calls or Server Actions (without implementing their logic).
-    *   Displaying data provided by higher-level components or data fetching layers.
-
-## IV. General Coding Style & Principles
-All UI component development must strictly adhere to the global coding philosophies outlined in `AGENTS.md`, including DRY, KISS, SOLID, YAGNI, JSDoc parameter documentation, respecting context budgets, and the absolute prohibition of placeholders.
+1.  **Aesthetic Focus:** The UI must maintain a clean, sterile, and professional aesthetic, reflecting a healthcare environment. Prioritize clarity, readability, and information hierarchy.
+2.  **Layout Structure:**
+    *   Utilize a consistent grid system for layout.
+    *   Employ ample whitespace to reduce cognitive load and improve readability of complex medical data.
+    *   Information density should be appropriate for clinical review; avoid overwhelming the user.
+3.  **Color Palette:**
+    *   Dominant colors should be calming and professional (e.g., shades of blue, white, light grey).
+    *   Accent colors (e.g., for alerts, critical information, or interactive elements) should be used sparingly but effectively to draw attention where needed.
+    *   Ensure high contrast for text and interactive elements to meet accessibility standards.
+4.  **Typography:**
+    *   Use professional, highly readable sans-serif fonts.
+    *   Maintain a clear typographic scale for headings, body text, and labels.
+    *   Text size should be easily readable for extended periods, especially when reviewing patient history.
+5.  **Component Design:**
+    *   Interactive components (buttons, forms, links) must have clear hover, focus, and active states.
+    *   Use banners and alert components for critical system messages, HIPAA compliance warnings, or urgent patient information.
+    *   Patient data displays (e.g., charts, tables) must be structured logically and allow for quick scanning of key information.
+6.  **No Business Logic in UI:** Never write calculation or business logic directly within UI components. Delegate all such logic to dedicated service layers or utility modules. UI components are strictly for rendering data and handling user interactions, passing events to higher-order logic.
+7.  **DRY (Don't Repeat Yourself) & KISS (Keep It Simple, Stupid):** Prefer "vanilla over clever." Forbid premature optimization, deeply nested conditional structures, duplicate helper logic, and unnecessary abstractions. Maintain extreme readability and directness in implementation.
+8.  **SOLID Design Principles:** Enforce functional, single-responsibility modules. Implement open-closed behavior where applicable, ensuring modules are open for extension but closed for modification. Practice interface segregation for clearer API contracts and dependency inversion to decouple high-level modules from low-level implementations.
+9.  **YAGNI (You Aren't Gonna Need It):** Prohibit writing speculative boilerplate code or future-proofing implementations that are not explicitly requested by the current specifications. Focus solely on delivering current requirements.
+10. **JSDoc Parameter Documentation:** Maintain detailed JSDoc comments including `@param`, `@returns`, and `@description` for all helper functions, exported utility modules, and API endpoints. This is critical for maintainability and AI agent understanding.
+11. **Context Budgets:** If a task requires modifying more than 3 modules or 60 seconds of manual context navigation, halt the task and demand user clarification. Break down complex tasks into smaller, manageable units.
+12. **No Placeholders:** Strictly prohibit leaving commented placeholders, stub functions, incomplete implementations, or TODO lines in any generated code. All outputs must represent complete, implementable codebase scaffolding files.

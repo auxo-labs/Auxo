@@ -101,6 +101,13 @@
 - [x] **Step 15.5:** Refine prompting rules inside `prompt-compiler.ts` based on findings and re-run compilation.
 - [x] **Step 15.6:** Validate the final workspace integrity by running `npm run lint` and `npm run build`.
 
+## Phase 16: Code Architecture Refactoring (God Modules Cleanup)
+
+- [ ] **Step 16.1:** Refactor [prompt-compiler.ts](file:///Users/danwooster/1.%20DEV/auxo/src/lib/prompt-compiler.ts) by modularizing LLM clients, system prompts, mock templates, and parser sanitizers under `src/lib/prompt-compiler/`.
+- [ ] **Step 16.2:** Refactor the Room Page [page.tsx](file:///Users/danwooster/1.%20DEV/auxo/src/app/room/[id]/page.tsx) by isolating state listeners into custom hooks (`useRoomSync`, `useShortcuts`) and splitting header/editor rendering.
+- [ ] **Step 16.3:** Move client-side JSZip exporter operations from the Room Page component layer into a dedicated utility helper file `src/lib/zip-exporter.ts`.
+- [ ] **Step 16.4:** Validate that all refactored modular files build successfully and pass linter guidelines using `npm run lint` and `npm run build`.
+
 ## Future Phases & Stretch Goals (Deferred)
 
 - [ ] **Scratchpad & Real-Time Collaboration Upgrades:**

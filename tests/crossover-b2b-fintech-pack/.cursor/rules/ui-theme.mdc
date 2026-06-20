@@ -1,0 +1,12 @@
+---
+description: General UI layout parameters and styling theme guidelines
+globs: ["src/components/**/*", "src/app/**/*.tsx"]
+alwaysApply: false
+---
+# UI Theme Guidelines
+- Layout: Use CSS-first layout rules using Tailwind CSS variables.
+- Accessibility: Apply standard semantic tags and ARIA descriptors.
+- Error Boundaries: Ensure user interfaces wrap client nodes in local error catch modules.
+- **Theme:** Strict true-black terminal layout (#000000). Never use slate or zinc grays.
+- **Accents:** Neon green (#10B981) for positive tickers, neon amber (#F59E0B) for warnings/neutral.
+- **Typography:** Strictly monospaced layout elements, high-density HTML data tables.

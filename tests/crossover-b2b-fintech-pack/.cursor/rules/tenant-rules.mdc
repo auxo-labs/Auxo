@@ -1,0 +1,9 @@
+---
+description: Workspace segregation and row-level security (RLS) constraints for B2B CRM
+globs: ["src/lib/services/**/*", "src/app/api/**/*"]
+alwaysApply: false
+---
+# B2B Multi-Tenant Rules
+- **Workspace Isolation:** Every data query MUST filter by workspace separation keys (e.g., `tenant_id` or `organization_id`).
+- **Row-Level Security:** Enforce strict team-based RLS constraints on all database operations.
+- **Tenant Management:** Validate user organization membership inside route middleware before serving data.

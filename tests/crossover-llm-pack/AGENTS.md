@@ -1,33 +1,33 @@
-# Agent Constitution: CareWorkspace Clinic Portal
+# CareWorkspace Clinic Portal - Agent Constitution
 
-## I. Global Architectural Directives & Stack Declarations
+This document outlines the foundational principles, architectural constraints, and operational philosophies for developing the CareWorkspace Clinic Portal. All AI agents, during any task execution, must strictly adhere to these guidelines.
 
-1.  **Framework**: Utilize **Next.js (v16.2.9)**.
-    *   Default to Server Components. Client-side rendering (`"use client"`) is strictly reserved for components requiring browser-specific APIs or client-side state (e.g., `useState`, `useEffect`).
-    *   Route parameters will be promises; unwrap them using `React.use()` or `await` within Server Components.
-2.  **Styling**: Employ **Tailwind CSS (v4.3.1)**.
-    *   Tailwind v4 is CSS-native. **ABSOLUTE PROHIBITION** on creating `tailwind.config.js`.
-    *   All theme tokens, custom utilities, and design system elements must be defined within `src/app/globals.css` using the `@theme` directive block.
-3.  **Backend Services**: Leverage **Supabase (v2.108.2)**.
-    *   Prioritize transient Realtime Broadcast or Presence channels for low-latency synchronization (e.g., live notifications, collaborative editing indicators).
-    *   Limit direct database connections or stateful writes from client-side components. All mutations should primarily be handled via secure, server-side functions (e.g., Next.js Server Actions, Supabase Edge Functions, or secure API routes) with proper validation and authorization.
+## 1. High-Level Stack Declarations
 
-## II. System-Wide Constraints & Principles
+*   **Next.js (v16.2.9):** Leverage Server Components by default. Avoid `"use client"` directives unless client-side state (useState/useEffect) is an absolute, unavoidable requirement. Route parameters are Promises; unwrap them using `React.use(params)` or `await params` within Server Components.
+*   **Tailwind CSS (v4.3.1):** Use Tailwind CSS v4, which is CSS-native. Absolutely prohibit the creation of `tailwind.config.js`. All theme tokens, custom utilities, and design system elements *must* reside within `src/app/globals.css` using the `@theme` directive block.
+*   **Supabase (@supabase/supabase-js v2.108.2):** Prioritize transient Realtime Broadcast or Presence channels for low-latency synchronization of ephemeral UI state. Limit direct database connections or stateful write operations to explicit, isolated service layers. All Supabase interactions must be encapsulated and follow principle of least privilege.
 
-1.  **HIPAA Compliance**: This is a B2B HIPAA-compliant application. All data handling, storage, access, and transmission must adhere to the highest standards of privacy and security. PHI (Protected Health Information) is paramount.
-2.  **Tenant Isolation**: Implement strict multi-tenancy. Every data operation (read, write, update, delete) must explicitly filter or scope by a `tenant_id`. Cross-tenant data leakage is a critical security breach.
-3.  **Karpathy Simplicity Guidelines**:
-    *   **DRY (Don't Repeat Yourself) & KISS (Keep It Simple, Stupid)**: Prefer vanilla implementations over overly clever or complex solutions. Avoid premature optimization, deeply nested conditional structures, duplicate helper logic, and unnecessary abstractions. Strive for extreme readability and maintainability.
-    *   **SOLID Design Principles**: Adhere to Single Responsibility Principle (SRP) for modules and components, Open/Closed Principle (OCP) for extensibility without modification, Liskov Substitution Principle (LSP), Interface Segregation Principle (ISP), and Dependency Inversion Principle (DIP) to promote modular, testable, and maintainable code.
-    *   **YAGNI (You Aren't Gonna Need It)**: Do not write speculative boilerplate code or implement features not explicitly requested by current specifications. Focus solely on delivering the required functionality.
-4.  **Security First**: Assume all input is malicious. Implement robust validation, sanitization, and authorization checks at every layer, especially when interacting with the database or external services.
-5.  **No Direct Database Writes from UI**: Client-side components must never directly mutate the database. All data modifications must pass through secure, validated server-side endpoints or actions.
-6.  **Authentication**: (Implicit: Doctor logging). Implement secure authentication mechanisms. While no specific provider is mandated, ensure secure token handling, session management, and role-based access control. **ABSOLUTELY NO CLERK AUTH** (as per a common implicit instruction if not mentioned).
-7.  **Error Handling**: Implement comprehensive, graceful error handling across the application, providing informative feedback without exposing sensitive system details.
+## 2. Global Constraints & Coding Philosophies
 
-## III. Coding Style & Development Workflow
+*   **DRY (Don't Repeat Yourself) & KISS (Keep It Simple, Stupid):** Prefer "vanilla over clever." Forbid premature optimization, deeply nested conditional structures (max 3 levels), duplicate helper logic, and unnecessary abstractions. Maintain extreme readability and directness in implementation.
+*   **SOLID Design Principles:** Enforce functional, single-responsibility modules. Implement open-closed behavior where applicable, ensuring modules are open for extension but closed for modification. Practice interface segregation for clearer API contracts and dependency inversion to decouple high-level modules from low-level implementations.
+*   **YAGNI (You Aren't Gonna Need It):** Prohibit writing speculative boilerplate code or future-proofing implementations that are not explicitly requested by the current specifications. Focus solely on delivering current requirements.
+*   **JSDoc Parameter Documentation:** Maintain detailed JSDoc comments including `@param`, `@returns`, and `@description` for all helper functions, exported utility modules, and API endpoints. This is critical for maintainability and AI agent understanding.
+*   **Context Budgets:** If a task requires modifying more than 3 modules or 60 seconds of manual context navigation, halt the task and demand user clarification. Break down complex tasks into smaller, manageable units.
+*   **No Placeholders:** Strictly prohibit leaving commented placeholders, stub functions, incomplete implementations, or TODO lines in any generated code. All outputs must represent complete, implementable codebase scaffolding files.
 
-1.  **JSDoc Parameter Documentation**: All helper functions, utility modules, and exported functions MUST include detailed JSDoc comments describing their purpose, parameters (with types), and return values (with types).
-2.  **Context Budgets**: If a task requires modifying more than 3 modules or would take longer than 60 seconds of manual context navigation, **HALT** and demand user clarification. Break down complex tasks into smaller, manageable units.
-3.  **No Placeholders**: Strictly prohibit leaving commented placeholders, stub functions, incomplete implementations, or `TODO` lines in any generated code. All outputs must represent complete, implementable codebase scaffolding files.
-4.  **Semantic Naming**: Use clear, descriptive, and consistent naming for variables, functions, components, and files. Adhere to the Ubiquitous Domain Vocabulary defined in `README.md`.
+## 3. Compliance Guardrails
+
+As a B2B HIPAA-compliant patient portal, the following compliance directives are paramount:
+
+*   **HIPAA Security Rules:**
+    *   **Protected Health Information (PHI):** PHI must *never* be stored in logs, URLs, or directly exposed in client-side code. All PHI must be routed through audit-logging brokers before storage or transmission.
+    *   **Data Encryption:** Ensure all PHI is encrypted both at rest and in transit (TLS 1.2+).
+    *   **Access Controls:** Implement robust role-based access controls (RBAC) ensuring only authorized personnel (e.g., medical doctors with specific `tenant_id`) can access relevant PHI.
+    *   **Audit Trails:** Maintain comprehensive audit logs for all access to and modifications of PHI, including user identity, timestamp, and action performed.
+    *   **Breach Notification:** Implement mechanisms for rapid identification and notification of security breaches involving PHI.
+*   **SOC2 Directives (for B2B SaaS):**
+    *   **Data Isolation:** Strictly enforce tenant data isolation. Each `tenant_id` must have its data securely segregated, preventing cross-tenant data leakage.
+    *   **Logging:** Avoid including internal stack traces, system configurations, or sensitive tenant data in publicly accessible logs or error responses. All logs must be securely stored and reviewed.
+    *   **Security:** Implement security best practices to protect against unauthorized access, disclosure, and data manipulation.

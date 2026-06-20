@@ -115,6 +115,7 @@ alwaysApply: false
 ### Specific Instructions for "AGENTS.md" (The Constitution):
 - Focus strictly on high-level stack declarations, global constraints, coding philosophies (e.g. Karpathy simplicity guidelines), and absolute constraints (e.g. no clerk auth, no database write permissions).
 - **DO NOT** dump database schemas or TypeScript types here—agents read the files directly.
+- **Compliance Guardrails:** Auto-inject authoritative compliance directives based on the application domain. For B2B/SaaS, include SOC2 rules (omitting internal stack traces from responses). For HealthTech, include HIPAA Security Rules (routing PHI through audit-logging brokers). For FinTech, include PCI-DSS Directives (prohibiting raw card or token storage in logs).
 
 ### Specific Instructions for "CLAUDE.md" (CLI Runtime Executive):
 - List explicit safe commands for starting the dev server, building, linting, and testing.
@@ -277,39 +278,7 @@ function localMockCompile(rawMarkdown: string, techSignatures: TechSignature[]):
     ? techSignatures.map(sig => `- **${sig.packageName} (v${sig.latestVersion})**: ${sig.architecturalInvariant}`).join('\n')
     : '- Default framework rules apply.';
 
-  const agentsMd = `# AGENTS.md
-
-## System Overview
-- **Project Name:** ${projectName}
-- **Source:** Compiled via Auxo.
-
-## Core Directives (Senior Software Developer Guardrails)
-1. **DRY & KISS (Keep It Simple, Stupid):** Prefer "vanilla over clever." Forbid premature optimization, deeply nested conditions, and excessive abstractions. Keep code clean and readable.
-2. **SOLID Principles:** Enforce functional, single-responsibility modules.
-3. **YAGNI (You Aren't Gonna Need It):** Never build speculative boilerplate features or write code that isn't requested in the current spec.
-4. **JSDoc Documentation:** Every exported function and utility module must have complete JSDoc parameter and return descriptions.
-5. **CONTEXT BUDGETS:** If a task requires modifying more than 3 modules or 60 seconds of manual context navigation, halt immediately and ask the user for clarification.
-6. **NO PLACEHOLDERS:** Commented stubs, incomplete functions, or TODO markers are strictly prohibited in the final source.
-7. **EXPLICIT CONTRAST:** Prioritize using existing styling tokens, CSS variables, and layout primitives instead of inventing new component styles.
-
-## Resolved Tech Stack & Invariants
-${signaturesText}
-
-## Build & Test Commands
-- Build Command: \`npm run build\`
-- Dev Command: \`npm run dev\`
-- Test Command: \`npm test\``;
-
-  const claudeMd = `# CLAUDE.md
-
-## Context Rules
-- Refer to @AGENTS.md for global directory structures and Simplicity Contracts.
-
-## Command Policies
-- **Dev Server:** \`npm run dev\`
-- **Build Verification:** \`npm run build\`
-- **Local Testing:** \`npm test\`
-- **Linter Checks:** \`npm run lint\``;  const rawLower = rawMarkdown.toLowerCase();
+  const rawLower = rawMarkdown.toLowerCase();
 
   // 1. B2B Multi-Tenant CRUD / CRM / ATS
   const isB2BCrm = /crm|ats|pipeline|tenant|workspace|b2b|hr|lead|customer/i.test(rawLower);
@@ -327,6 +296,51 @@ ${signaturesText}
   const isContentEngine = /cms|blog|newsletter|markdown|course|education|subscribers/i.test(rawLower);
   // 8. Multi-Device Local-First App / Sync Engine
   const isLocalSync = /offline|local-first|pwa|indexeddb|sync|tauri|electron/i.test(rawLower);
+
+  let complianceGuardrails = '';
+  if (isB2BCrm) {
+    complianceGuardrails += `- **SOC2 Compliance Guidelines:** All API responses must explicitly omit internal stack traces and database transaction details to prevent information disclosure. Enforce TLS-only transport constraints.\n`;
+  }
+  if (isHealthTech) {
+    complianceGuardrails += `- **HIPAA Security Rule Standards:** Database operations processing PHI data must pass through the audit-logging broker to capture user access vectors. Ensure zero storage of raw patient data in unencrypted logs.\n`;
+  }
+  if (isFintech) {
+    complianceGuardrails += `- **PCI-DSS Directives:** Never pass or store raw credit card numbers, CVVs, or payment token identifiers directly in application state logs, database logs, or diagnostic payloads.\n`;
+  }
+
+  const agentsMd = `# AGENTS.md
+
+## System Overview
+- **Project Name:** ${projectName}
+- **Source:** Compiled via Auxo.
+
+## Core Directives (Senior Software Developer Guardrails)
+1. **DRY & KISS (Keep It Simple, Stupid):** Prefer "vanilla over clever." Forbid premature optimization, deeply nested conditions, and excessive abstractions. Keep code clean and readable.
+2. **SOLID Principles:** Enforce functional, single-responsibility modules.
+3. **YAGNI (You Aren't Gonna Need It):** Never build speculative boilerplate features or write code that isn't requested in the current spec.
+4. **JSDoc Documentation:** Every exported function and utility module must have complete JSDoc parameter and return descriptions.
+5. **CONTEXT BUDGETS:** If a task requires modifying more than 3 modules or 60 seconds of manual context navigation, halt immediately and ask the user for clarification.
+6. **NO PLACEHOLDERS:** Commented stubs, incomplete functions, or TODO markers are strictly prohibited in the final source.
+7. **EXPLICIT CONTRAST:** Prioritize using existing styling tokens, CSS variables, and layout primitives instead of inventing new component styles.
+${complianceGuardrails ? `\n## Security & Compliance Guardrails\n${complianceGuardrails}` : ''}
+## Resolved Tech Stack & Invariants
+${signaturesText}
+
+## Build & Test Commands
+- Build Command: \`npm run build\`
+- Dev Command: \`npm run dev\`
+- Test Command: \`npm test\``;
+
+  const claudeMd = `# CLAUDE.md
+
+## Context Rules
+- Refer to @AGENTS.md for global directory structures and Simplicity Contracts.
+
+## Command Policies
+- **Dev Server:** \`npm run dev\`
+- **Build Verification:** \`npm run build\`
+- **Local Testing:** \`npm test\`
+- **Linter Checks:** \`npm run lint\``;
 
   const cursorRules: Record<string, string> = {};
 
@@ -481,6 +495,29 @@ alwaysApply: false
 | **Patient Record** | \`patientRecordId\` | Safe medical record key linking patient metadata. |
 | **NHS / SSN ID** | \`encryptedNationalId\` | Securely encrypted patient identification key. |
 | **Clinic Staff** | \`practitionerId\` | Identifier for the active clinical user. |`;
+  } else if (isHealthTech && isFintech) {
+    prdThesis = 'ClaimFlow is a HIPAA-compliant medical billing and insurance claims ledger engine. It integrates secure patient visit verification with PCI-DSS compliant payment processing for clinics and providers.';
+    prdProblem = 'Processing clinical bills requires absolute patient record secrecy alongside strict ledger audits, exposing clinics to compliance leaks. ClaimFlow merges double-entry accounting with encrypted healthcare records.';
+    prdPillars = `* **Clinical Ledger Audit:** Atomic, double-entry ledger tracing of claims and collections.
+* **HIPAA Claim Sandbox:** Secure claims preparation dashboard isolating patient health data.
+* **PCI-Compliant Gateway:** Gated invoice execution bypassing local logs.`;
+    prdVocab = `| Human Term | Code Property | Context Definition |
+| :--- | :--- | :--- |
+| **Claim Record** | \`claimId\` | Primary identifier linking billing claim metadata. |
+| **Patient ID** | \`encryptedPatientId\` | Encrypted key mapping patient health profile. |
+| **Transaction Value** | \`amountCents\` | Integer value of financial transaction in cents. |
+| **Audit Ledger Key** | \`ledgerHash\` | Cryptographic validation hash of ledger entry. |`;
+  } else if (isB2BCrm && isFintech) {
+    prdThesis = 'BizLedger is a multi-tenant B2B billing and ledger engine. It provides organizations with segregated workspaces, atomic double-entry bookkeeping, and audited invoicing.';
+    prdProblem = 'Enterprises require reliable bookkeeping across multiple business units without cross-tenant ledger leaks. BizLedger guarantees secure workspace RLS and strict audit trails.';
+    prdPillars = `* **Multi-Tenant Invoicing:** Grouped client billing reports.
+* **Double-Entry Journal:** Immutable audit trail records.
+* **Tenant Stripe webhook:** Scoped billing dispatch queues.`;
+    prdVocab = `| Human Term | Code Property | Context Definition |
+| :--- | :--- | :--- |
+| **Workspace Key** | \`tenantId\` | Partition identifier for corporate organizations. |
+| **Ledger Balance** | \`balance\` | Account balance tracking in integer cents. |
+| **Invoice Record** | \`invoiceId\` | Unique billing transaction key. |`;
   } else if (isFintech) {
     prdThesis = 'LedgerCore is a high-integrity, double-entry audit bookkeeping engine designed for financial operations, bookkeeping, and cash flow tracing.';
     prdProblem = 'Manual bookkeeping is prone to credit/debit mismatch and tampering. LedgerCore enforces atomic ledger accounting and immutable audits.';

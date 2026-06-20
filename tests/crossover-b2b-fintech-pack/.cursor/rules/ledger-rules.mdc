@@ -1,0 +1,9 @@
+---
+description: Double-entry financial audit logs and math guidelines
+globs: ["src/lib/services/**/*", "src/app/api/**/*"]
+alwaysApply: false
+---
+# Ledger Billing Rules
+- **Double-Entry Balance:** Financial entries must balance to zero before commit execution.
+- **Audit Trails:** Save all transactions to append-only financial audit logs. No updates or deletes.
+- **Math Guidelines:** All calculations must enforce exact scaling rules. Forbid floating-point issues; utilize integer cents.

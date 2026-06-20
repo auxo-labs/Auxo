@@ -1,42 +1,40 @@
-# CareWorkspace Clinic Portal: System North Star
+# CareWorkspace Clinic Portal - System North Star
 
-## Section 1: Product Thesis & Vision
+## 1. Product Thesis & Vision
 
-The CareWorkspace Clinic Portal is envisioned as a secure, HIPAA-compliant B2B patient portal designed to provide medical clinics with isolated, efficient workspaces for managing patient history, appointments, and doctor logs. Our core problem statement revolves around the chaotic, insecure, and siloed data management practices prevalent in many clinics. This portal aims to streamline clinic operations by offering a centralized, intuitive, and highly secure platform that adheres to the highest standards of data privacy and regulatory compliance, thereby enhancing patient care coordination and administrative efficiency for medical professionals.
+The CareWorkspace Clinic Portal is a secure, HIPAA-compliant B2B SaaS application designed to empower medical clinics with efficient patient management and robust tenant-isolated workspaces. Our vision is to streamline clinic operations by providing doctors with a centralized, real-time platform to track patient history, manage appointments, and log medical interactions, all while ensuring the highest standards of data security and privacy for Protected Health Information (PHI). This project exists to solve the challenges of fragmented patient data, manual record-keeping, and the stringent compliance requirements faced by modern healthcare providers.
 
-## Section 2: Core Functional Pillars
+## 2. Core Functional Pillars
 
-To ensure a focused launch and maintain product scope, the CareWorkspace Clinic Portal will be built upon these four core functional pillars:
+To protect product scope boundaries and ensure a focused launch, the CareWorkspace Clinic Portal will be built upon these core functional pillars:
 
-1.  **Secure Tenant Isolation**: Guaranteeing complete data separation and privacy for each distinct clinic (tenant) utilizing the platform.
-2.  **Clinic Workspace Dashboards**: Providing comprehensive, at-a-glance overviews for doctors and administrative staff within their respective clinic environments.
-3.  **Comprehensive Patient History Tracking**: Enabling detailed and chronological logging, viewing, and management of patient medical records.
-4.  **Medical Doctor Logging & Role-Based Access**: Facilitating secure authentication for medical professionals and enforcing role-specific access controls to sensitive information and functionalities.
+*   **Tenant Workspace Isolation:** Secure separation of clinic data, ensuring that each clinic (tenant) has its own protected environment and data cannot leak between tenants.
+*   **Clinic Dashboard & Management:** A centralized, intuitive dashboard for medical staff to view essential clinic-wide information, manage schedules, and access quick overviews.
+*   **Patient Records Management:** Comprehensive tracking and logging of patient medical history, including diagnoses, treatments, and notes, with strict access controls.
+*   **Medical Doctor Logging & Audit:** Robust logging of all doctor interactions with patient data, providing an auditable trail for compliance and accountability.
 
-## Section 3: Ubiquitous Domain Vocabulary
+## 3. Ubiquitous Domain Vocabulary
 
-This standardized vocabulary ensures consistent naming conventions and understanding across all aspects of the codebase and documentation.
+To ensure naming uniformity and clear communication across the codebase, the following standardized vocabulary will be used:
 
-| Human Term          | Code Property      | Context Definition                                                                                             |
-| :------------------ | :----------------- | :------------------------------------------------------------------------------------------------------------- |
-| Tenant              | `tenant`           | An independent clinic, medical group, or healthcare provider organization utilizing the portal, identified by `tenantId`. |
-| Workspace           | `workspace`        | The isolated digital environment and data scope provided for a specific `tenant`.                              |
-| Patient             | `patient`          | An individual receiving medical care, whose health data is managed securely within a `tenant`'s `workspace`. |
-| Doctor              | `doctor`           | A licensed medical professional with authenticated access to a `tenant`'s `workspace` to manage `patient` data. |
-| Medical Record      | `medicalRecord`    | The comprehensive electronic health history for a `patient`, including diagnoses, treatments, and appointments. |
-| Appointment         | `appointment`      | A scheduled visit, consultation, or procedure for a `patient` with a `doctor` at a specific time.             |
-| Protected Health Information | `phi`      | Any health information that is individually identifiable, subject to strict HIPAA regulations.                   |
-| Tenant ID           | `tenantId`         | A unique identifier assigned to each `tenant` for data segregation and access control.                         |
+| Human Term          | Code Property         | Context Definition                                                               |
+| :------------------ | :-------------------- | :------------------------------------------------------------------------------- |
+| Tenant              | `tenantId`            | A unique identifier for a medical clinic instance. All data is scoped by this.   |
+| Clinic              | `clinic`              | The specific medical practice or institution using the portal.                   |
+| Patient             | `patient`             | An individual receiving medical care; their data is PHI.                         |
+| Doctor              | `doctor`              | A medical professional authorized to access and manage patient data.             |
+| Medical Record      | `medicalRecord`       | A collection of a patient's health information, including history and notes.     |
+| Diagnosis           | `diagnosis`           | A determination of the nature of a disease or condition.                         |
+| Treatment           | `treatment`           | The medical care given to a patient for an illness or injury.                    |
+| Appointment         | `appointment`         | A scheduled meeting between a patient and a doctor.                              |
+| Audit Log Entry     | `auditLogEntry`       | A record of a specific action taken within the system, especially involving PHI. |
+| Workspace           | `workspace`           | The secure, personalized environment for a doctor or clinic within the portal.   |
 
-## Section 4: Context Matrix Directory Map
+## 4. Context Matrix Directory Map
 
-This section provides direct pointers to essential context files that guide the development and understanding of the CareWorkspace Clinic Portal.
+This section provides direct pointers to critical scoped context files for architectural guidance and operational procedures:
 
-*   `README.md`: You are here. The System North Star, product vision, and core vocabulary.
-*   `AGENTS.md`: The global architectural constitution, stack declarations, and overriding coding philosophies.
-*   `CLAUDE.md`: The CLI Runtime Executive, detailing safe and explicit command-line operations.
-*   `phases.md`: The State Roadmap, outlining the project's development phases and task breakdown.
-*   `.cursor/rules/ui-theme.mdc`: Defines the aesthetic constraints, layout parameters, and UI interaction guidelines.
-*   `.cursor/rules/logic-api.mdc`: Outlines general system logic invariants, external service boundaries, and mock data protocols.
-*   `.cursor/rules/tenant-rules.mdc`: Specifies rules and logic for B2B tenant management and data isolation.
-*   `.cursor/rules/hipaa-rules.mdc`: Details the strict requirements for HIPAA compliance and handling of Protected Health Information (PHI).
+*   **System North Star:** `README.md` (You are here)
+*   **Agent Constitution & Global Directives:** `AGENTS.md`
+*   **CLI Runtime Executive & Commands:** `CLAUDE.md`
+*   **Project State Roadmap:** `phases.md`
