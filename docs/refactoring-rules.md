@@ -68,3 +68,21 @@ While primarily for Object-Oriented Programming, these concepts apply broadly:
 ## 4. TypeScript Specific
 
 - Avoid `any` at all costs
+
+---
+
+## 5. React Hooks & ESLint Compliance
+
+### **Avoid Synchronous SetState in Effects (`react-hooks/set-state-in-effect`)**
+
+- **Rule**: Never call state-setting functions (like `setProfile`, `setCredits`, etc.) directly or synchronously inside the body of a `useEffect` hook. Doing so triggers cascading rendering passes that harm browser performance and violates standard rules.
+- **DO**:
+  - Query and update state variables inside asynchronous event callback hooks (such as event triggers or Supabase `onAuthStateChange` callbacks).
+  - Use handlers or callback functions for updating state variables after network resolutions.
+- **DON'T**:
+  - Register a separate `useEffect` hook that listens to a variable (e.g., `user`) just to run a fetch function that synchronously calls `setState`.
+
+### **Unused Variables & Imports (`@typescript-eslint/no-unused-vars`)**
+
+- **Rule**: Clean up all unused type imports, functions, and variables before compiling. The Next.js production build runs strict TypeScript verification and will fail if unused items are present.
+

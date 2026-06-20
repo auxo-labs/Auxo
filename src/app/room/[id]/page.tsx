@@ -6,12 +6,13 @@ import { Suspense } from 'react';
 import { ArrowLeft, Copy, Check, Play, Users, Download, User, LogOut, Settings, ChevronDown } from 'lucide-react';
 import { Editor } from '@/components/editor';
 import { Preview } from '@/components/preview';
-import { CompiledPack, UserConfig } from '@/lib/prompt-compiler';
-import JSZip from 'jszip';
+import { CompiledPack } from '@/lib/prompt-compiler';
+import { exportCompiledPackToZip } from '@/lib/zip-exporter';
+import { useRoomSync } from './hooks/useRoomSync';
+import { useShortcuts } from './hooks/useShortcuts';
 import { supabase } from '@/lib/supabase';
 import { AuthModal } from '@/components/auth-modal';
 import { SettingsModal } from '@/components/settings-modal';
-import type { User as SupabaseUser } from '@supabase/supabase-js';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -21,12 +22,22 @@ function RoomContent({ roomId }: { roomId: string }) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // ── State ─────────────────────────────────────────────────────────────────
-  const [markdownText, setMarkdownText] = React.useState<string>(
-    `# Project Auxo\n\n` +
-    `## Stack\n- Next.js (App Router)\n- TailwindCSS\n- Supabase (Realtime)\n\n` +
-    `## Goals\nBuild a zero-auth real-time markdown playground for founders to collaborate.`
-  );
+  // ── Hook-Managed State ─────────────────────────────────────────────────────
+  const {
+    markdownText,
+    setMarkdownText,
+    user,
+    profile,
+    refreshProfile,
+    userConfig,
+    setUserConfig,
+    usersCount,
+    setUsersCount,
+    connectionStatus,
+    setConnectionStatus
+  } = useRoomSync(roomId);
+
+  // ── UI / Controller State ──────────────────────────────────────────────────
   const [compiledFiles, setCompiledFiles] = React.useState<CompiledPack | null>(null);
   const [activeFile, setActiveFile] = React.useState<string>('README.md');
   const [copiedLink, setCopiedLink] = React.useState(false);
@@ -34,39 +45,13 @@ function RoomContent({ roomId }: { roomId: string }) {
   const [compileError, setCompileError] = React.useState<string | null>(null);
   const [isDownloading, setIsDownloading] = React.useState(false);
   const [isMac, setIsMac] = React.useState(true);
-  const [usersCount, setUsersCount] = React.useState<number>(1);
-  const [connectionStatus, setConnectionStatus] = React.useState<'connecting' | 'connected' | 'disconnected'>('connecting');
   const [expandedPanel, setExpandedPanel] = React.useState<'none' | 'editor' | 'preview'>('none');
-  const [user, setUser] = React.useState<SupabaseUser | null>(null);
-  const [profile, setProfile] = React.useState<{ credits: number; is_lifetime: boolean } | null>(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = React.useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = React.useState(false);
-  const [userConfig, setUserConfig] = React.useState<UserConfig>(() => {
-    if (typeof window !== 'undefined') {
-      const provider = (localStorage.getItem('auxo-settings-provider') || 'premium') as UserConfig['provider'];
-      let apiKey = undefined;
-      let model = undefined;
-
-      if (provider === 'openai') {
-        apiKey = localStorage.getItem('auxo-settings-openai-key') || '';
-        model = localStorage.getItem('auxo-settings-openai-model') || 'gpt-4o-mini';
-      } else if (provider === 'anthropic') {
-        apiKey = localStorage.getItem('auxo-settings-anthropic-key') || '';
-        model = localStorage.getItem('auxo-settings-anthropic-model') || 'claude-3-5-sonnet-20241022';
-      } else if (provider === 'gemini') {
-        apiKey = localStorage.getItem('auxo-settings-gemini-key') || '';
-        model = localStorage.getItem('auxo-settings-gemini-model') || 'gemini-2.5-flash';
-      }
-
-      return { provider, apiKey, model };
-    }
-    return { provider: 'premium' };
-  });
   const [lastCompileType, setLastCompileType] = React.useState<'basic' | 'premium'>('basic');
   const [compileMode, setCompileMode] = React.useState<'basic' | 'premium'>('basic');
   const [showCompileDropdown, setShowCompileDropdown] = React.useState(false);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
-  const isMountedRef = React.useRef(false);
 
   // Close dropdown on click outside
   React.useEffect(() => {
@@ -79,8 +64,6 @@ function RoomContent({ roomId }: { roomId: string }) {
     return () => document.removeEventListener('mousedown', handleOutsideClick);
   }, []);
 
-  // ── Simple mount effects ───────────────────────────────────────────────────
-
   // Detect OS for keyboard label renderings (⌘ vs Ctrl)
   React.useEffect(() => {
     const timer = setTimeout(() => {
@@ -89,76 +72,15 @@ function RoomContent({ roomId }: { roomId: string }) {
     return () => clearTimeout(timer);
   }, []);
 
-  // Listen to Supabase Auth state and session changes
-  React.useEffect(() => {
-    const fetchUserProfile = async (userId: string) => {
-      try {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('credits, is_lifetime')
-          .eq('id', userId)
-          .single();
-        if (error) throw error;
-        setProfile(data);
-      } catch (err) {
-        console.error('Failed to fetch user profile:', err);
-      }
-    };
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchUserProfile(session.user.id);
-      }
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      const activeUser = session?.user ?? null;
-      setUser(activeUser);
-      if (activeUser) {
-        fetchUserProfile(activeUser.id);
-      } else {
-        setProfile(null);
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
-
   const handleSignOut = async () => {
     try {
       await supabase.auth.signOut();
-      setUser(null);
-      setProfile(null);
     } catch (err) {
       console.error('Failed to sign out', err);
     }
   };
 
-  // Restore scratchpad text from LocalStorage on mount
-  React.useEffect(() => {
-    const savedText = localStorage.getItem(`auxo-room-${roomId}`);
-    if (savedText) {
-      setTimeout(() => {
-        setMarkdownText(savedText);
-      }, 0);
-    }
-    const timer = setTimeout(() => {
-      isMountedRef.current = true;
-    }, 50);
-    return () => clearTimeout(timer);
-  }, [roomId]);
-
-  // Mirror scratchpad changes to LocalStorage on every edit
-  React.useEffect(() => {
-    if (isMountedRef.current) {
-      localStorage.setItem(`auxo-room-${roomId}`, markdownText);
-    }
-  }, [roomId, markdownText]);
-
-  // ── Handlers (all declared before any effects that reference them) ─────────
+  // ── Handlers ───────────────────────────────────────────────────────────────
 
   const handleCopyLink = async () => {
     try {
@@ -260,16 +182,7 @@ function RoomContent({ roomId }: { roomId: string }) {
       setActiveFile('README.md');
       
       // Refresh user profile in background to decrement credit balance
-      if (user) {
-        const { data: updatedProfile } = await supabase
-          .from('profiles')
-          .select('credits, is_lifetime')
-          .eq('id', user.id)
-          .single();
-        if (updatedProfile) {
-          setProfile(updatedProfile);
-        }
-      }
+      await refreshProfile();
       return files;
     } catch (error) {
       console.error('Compilation failure:', error);
@@ -284,31 +197,7 @@ function RoomContent({ roomId }: { roomId: string }) {
     if (!targetFiles || isDownloading) return;
     try {
       setIsDownloading(true);
-      const zip = new JSZip();
-      zip.file('AGENTS.md', targetFiles.agentsMd);
-      zip.file('CLAUDE.md', targetFiles.claudeMd);
-      zip.file('phases.md', targetFiles.phasesMd);
-      zip.file('README.md', targetFiles.readmeMd);
-
-      const cursorFolder = zip.folder('.cursor');
-      if (cursorFolder) {
-        const rulesFolder = cursorFolder.folder('rules');
-        if (rulesFolder) {
-          Object.entries(targetFiles.cursorRules).forEach(([name, content]) => {
-            rulesFolder.file(name, content);
-          });
-        }
-      }
-
-      const blob = await zip.generateAsync({ type: 'blob' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `auxo-blueprint-${roomId.slice(0, 8)}.zip`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
+      await exportCompiledPackToZip(roomId, targetFiles);
     } catch (error) {
       console.error('Zipping failed:', error);
       alert('Failed to generate ZIP download.');
@@ -327,16 +216,7 @@ function RoomContent({ roomId }: { roomId: string }) {
     const autoRun = async () => {
       // Delay compilation slightly to let LocalStorage mount restoration complete
       setTimeout(async () => {
-        if (user) {
-          try {
-            const { data } = await supabase
-              .from('profiles')
-              .select('credits, is_lifetime')
-              .eq('id', user.id)
-              .single();
-            if (data) setProfile(data);
-          } catch {}
-        }
+        await refreshProfile();
         await handleCompile('premium', querySessionId);
         // Strip session_id from URL to prevent re-triggering on refresh
         window.history.replaceState({}, document.title, window.location.origin + window.location.pathname);
@@ -350,27 +230,14 @@ function RoomContent({ roomId }: { roomId: string }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
-  // Global keyboard shortcuts — re-registers whenever compiledFiles changes
-  // so the ⌘S guard is always fresh.
-  React.useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
-      const isCmd = e.metaKey || e.ctrlKey;
-      if (isCmd && e.key === 'Enter') { e.preventDefault(); handleCompile(compileMode); return; }
-      if (isCmd && e.key === 's' && compiledFiles) { e.preventDefault(); handleDownload(); return; }
-      if (isCmd && e.shiftKey && e.key.toLowerCase() === 'c') { e.preventDefault(); handleCopyLink(); return; }
-      if (e.key === 'Escape') {
-        const el = document.activeElement;
-        if (el && (el.tagName === 'TEXTAREA' || el.tagName === 'INPUT')) return;
-        e.preventDefault();
-        router.push('/');
-      }
-    };
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  // handleCompile/handleDownload/handleCopyLink are plain functions defined
-  // in render scope — the React Compiler will handle stabilisation.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router, compiledFiles, compileMode]);
+  // Global keyboard shortcuts hook
+  useShortcuts({
+    onCompile: () => handleCompile(compileMode),
+    onDownload: () => handleDownload(),
+    onCopyLink: handleCopyLink,
+    onRouteHome: () => router.push('/'),
+    hasCompiledFiles: compiledFiles !== null,
+  });
 
   // ── Helpers ───────────────────────────────────────────────────────────────
 

@@ -2,6 +2,14 @@
 
 All notable changes to the **Auxo** project are documented here.
 
+## [1.5.0] - 2026-06-20
+
+### Changed
+- **Compiler Modularization:** Deconstructed the monolithic `prompt-compiler.ts` into a clean package under `src/lib/prompt-compiler/` comprising independent sub-modules for clients, prompt generation, parsing utilities, and deterministic mock templates.
+- **Room State Custom Hooks:** Decoupled room state synchronization, local caching, and auth updates from the layout presentation into [useRoomSync.ts](file:///Users/danwooster/1.%20DEV/auxo/src/app/room/[id]/hooks/useRoomSync.ts).
+- **Keyboard Shortcuts Hook:** Isolated global window event listeners for keybindings into [useShortcuts.ts](file:///Users/danwooster/1.%20DEV/auxo/src/app/room/[id]/hooks/useShortcuts.ts).
+- **Zip Exporter Helper:** Moved JSZip compilation methods to a dedicated, stateless helper module [zip-exporter.ts](file:///Users/danwooster/1.%20DEV/auxo/src/lib/zip-exporter.ts).
+
 ## [1.4.1] - 2026-06-20
 
 ### Added

@@ -103,10 +103,27 @@
 
 ## Phase 16: Code Architecture Refactoring (God Modules Cleanup)
 
-- [ ] **Step 16.1:** Refactor [prompt-compiler.ts](file:///Users/danwooster/1.%20DEV/auxo/src/lib/prompt-compiler.ts) by modularizing LLM clients, system prompts, mock templates, and parser sanitizers under `src/lib/prompt-compiler/`.
-- [ ] **Step 16.2:** Refactor the Room Page [page.tsx](file:///Users/danwooster/1.%20DEV/auxo/src/app/room/[id]/page.tsx) by isolating state listeners into custom hooks (`useRoomSync`, `useShortcuts`) and splitting header/editor rendering.
-- [ ] **Step 16.3:** Move client-side JSZip exporter operations from the Room Page component layer into a dedicated utility helper file `src/lib/zip-exporter.ts`.
-- [ ] **Step 16.4:** Validate that all refactored modular files build successfully and pass linter guidelines using `npm run lint` and `npm run build`.
+- [x] **Step 16.1:** Refactor [prompt-compiler.ts](file:///Users/danwooster/1.%20DEV/auxo/src/lib/prompt-compiler.ts) by modularizing LLM clients, system prompts, mock templates, and parser sanitizers under `src/lib/prompt-compiler/`.
+- [x] **Step 16.2:** Refactor the Room Page [page.tsx](file:///Users/danwooster/1.%20DEV/auxo/src/app/room/[id]/page.tsx) by isolating state listeners into custom hooks (`useRoomSync`, `useShortcuts`) and splitting header/editor rendering.
+- [x] **Step 16.3:** Move client-side JSZip exporter operations from the Room Page component layer into a dedicated utility helper file `src/lib/zip-exporter.ts`.
+- [x] **Step 16.4:** Validate that all refactored modular files build successfully and pass linter guidelines using `npm run lint` and `npm run build`.
+
+## Phase 17: BYOK vs. Cloud Compiles UI Clarity Upgrades
+
+- [ ] **Step 17.1:** Redesign the settings button in the room navbar to clearly state "KEYS & ROUTING" or similar, adding a visual indicator badge of the active compiler route (e.g. `[CLOUD]` or `[BYOK: GEMINI]`).
+- [ ] **Step 17.2:** Enhance the Settings Modal to make the comparison between Auxo Cloud Tiers and the free BYOK tier visually obvious with highlighted features and explicit pricing contrasts.
+- [ ] **Step 17.3:** Run build and linter validation to ensure visual stability.
+
+## Phase 18: Landing Page & Marketing Enhancements
+
+- [ ] **Step 18.1:** Update `src/app/page.tsx` hero subtitles and bento cards to clearly feature the free Bring Your Own Key (BYOK) compile tier.
+- [ ] **Step 18.2:** Add a prominent "Pricing" link in the landing page navbar and footer, directing to the new pricing route.
+
+## Phase 19: Pricing Page Implementation
+
+- [ ] **Step 19.1:** Design and implement a premium dark-themed `/pricing` page (`src/app/pricing/page.tsx`) with dynamic bento-style tier selection grid (Free BYOK, PAYG Compile, Lifetime Access).
+- [ ] **Step 19.2:** Link Stripe Checkout triggers to the selected Cloud tiers (credits vs lifetime) with proper checkout session payloads.
+- [ ] **Step 19.3:** Verify redirects, webhook handlers, and auth indicator updates after purchase completion.
 
 ## Future Phases & Stretch Goals (Deferred)
 
