@@ -111,5 +111,5 @@
 ## Future Phases & Stretch Goals (Deferred)
 
 - [ ] **Scratchpad & Real-Time Collaboration Upgrades:**
-  - Upgrade the editor UI from a plain `<textarea>` to a premium code editor (e.g., CodeMirror 6 or Monaco Editor).
-  - Add visual line-number gutter and syntax highlighting for Markdown.
+  - Upgrade the editor UI from a plain `<textarea>` to a more creative visual area - flashcards, notes etc.
+  - Add real-time collaboration features.
