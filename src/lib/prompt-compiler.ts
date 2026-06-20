@@ -89,7 +89,7 @@ Use the exact format shown below for the markers (the path names must match exac
 ${signaturesText}
 
 ### Strict YAML Frontmatter Rules for ".cursor/rules/*.mdc" files:
-1. Every `.mdc` file MUST start with a raw YAML frontmatter block delimited by triple dashes `---`.
+1. Every \`.mdc\` file MUST start with a raw YAML frontmatter block delimited by triple dashes \`---\`.
 2. Do NOT wrap the YAML block or the document in markdown code block fences (e.g. do not write \`\`\`yaml).
 3. The frontmatter block must contain exactly these three fields:
    - \`description\`: A clear, descriptive string explaining when the rule applies.
