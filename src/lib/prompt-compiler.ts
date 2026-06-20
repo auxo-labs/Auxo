@@ -14,18 +14,36 @@ export interface CompiledPack {
  * Compiles raw markdown notes into a structured CompiledPack.
  * Enforces Software 3.0 constraints, implied conventions, and resolved tech-stack signatures.
  */
+export interface UserConfig {
+  provider: 'premium' | 'openai' | 'anthropic' | 'gemini';
+  model?: string;
+  apiKey?: string;
+}
+
 export async function compilePromptPack(
   rawMarkdown: string, 
   techSignatures: TechSignature[] = [],
-  forceBasic = false
+  forceBasic = false,
+  userConfig?: UserConfig
 ): Promise<CompiledPack> {
+  if (!forceBasic && userConfig && userConfig.provider !== 'premium' && userConfig.apiKey) {
+    const { provider, model, apiKey } = userConfig;
+    if (provider === 'openai') {
+      return await callOpenAI(apiKey, model || 'gpt-4o-mini', rawMarkdown, techSignatures);
+    } else if (provider === 'anthropic') {
+      return await callAnthropic(apiKey, model || 'claude-3-5-sonnet-20241022', rawMarkdown, techSignatures);
+    } else if (provider === 'gemini') {
+      return await callGemini(apiKey, model || 'gemini-2.5-flash', rawMarkdown, techSignatures);
+    }
+  }
+
   const openAIKey = process.env.OPENAI_API_KEY;
   const anthropicKey = process.env.ANTHROPIC_API_KEY;
 
   if (!forceBasic && openAIKey) {
-    return await callOpenAI(openAIKey, rawMarkdown, techSignatures);
+    return await callOpenAI(openAIKey, 'gpt-4o-mini', rawMarkdown, techSignatures);
   } else if (!forceBasic && anthropicKey) {
-    return await callAnthropic(anthropicKey, rawMarkdown, techSignatures);
+    return await callAnthropic(anthropicKey, 'claude-3-5-sonnet-20241022', rawMarkdown, techSignatures);
   } else {
     return localMockCompile(rawMarkdown, techSignatures);
   }
@@ -107,7 +125,7 @@ ${signaturesText}
 - All values in ".cursor/rules/*.mdc" files MUST start with YAML frontmatter specifying "description", "globs", and "alwaysApply".`;
 }
 
-async function callOpenAI(apiKey: string, markdown: string, techSignatures: TechSignature[]): Promise<CompiledPack> {
+async function callOpenAI(apiKey: string, model: string, markdown: string, techSignatures: TechSignature[]): Promise<CompiledPack> {
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
     headers: {
@@ -115,7 +133,7 @@ async function callOpenAI(apiKey: string, markdown: string, techSignatures: Tech
       'Authorization': `Bearer ${apiKey}`
     },
     body: JSON.stringify({
-      model: 'gpt-4o-mini',
+      model: model,
       messages: [
         {
           role: 'system',
@@ -130,15 +148,25 @@ async function callOpenAI(apiKey: string, markdown: string, techSignatures: Tech
   });
 
   if (!response.ok) {
-    throw new Error(`OpenAI compilation failed: ${response.statusText}`);
+    let errorText = response.statusText;
+    try {
+      const errJson = await response.json();
+      if (errJson?.error?.message) {
+        errorText = errJson.error.message;
+      }
+    } catch {}
+    throw new Error(`OpenAI compilation failed: ${errorText}`);
   }
 
   const data = await response.json();
-  const content = data.choices[0].message.content;
+  const content = data.choices?.[0]?.message?.content;
+  if (!content) {
+    throw new Error('OpenAI returned an empty response');
+  }
   return parseMarkdownStream(content);
 }
 
-async function callAnthropic(apiKey: string, markdown: string, techSignatures: TechSignature[]): Promise<CompiledPack> {
+async function callAnthropic(apiKey: string, model: string, markdown: string, techSignatures: TechSignature[]): Promise<CompiledPack> {
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
@@ -147,7 +175,7 @@ async function callAnthropic(apiKey: string, markdown: string, techSignatures: T
       'anthropic-version': '2023-06-01'
     },
     body: JSON.stringify({
-      model: 'claude-3-5-sonnet-20241022',
+      model: model,
       max_tokens: 4000,
       system: generateSystemPrompt(techSignatures),
       messages: [
@@ -160,11 +188,71 @@ async function callAnthropic(apiKey: string, markdown: string, techSignatures: T
   });
 
   if (!response.ok) {
-    throw new Error(`Anthropic compilation failed: ${response.statusText}`);
+    let errorText = response.statusText;
+    try {
+      const errJson = await response.json();
+      if (errJson?.error?.message) {
+        errorText = errJson.error.message;
+      }
+    } catch {}
+    throw new Error(`Anthropic compilation failed: ${errorText}`);
   }
 
   const data = await response.json();
-  const text = data.content[0].text;
+  const text = data.content?.[0]?.text;
+  if (!text) {
+    throw new Error('Anthropic returned an empty response');
+  }
+  return parseMarkdownStream(text);
+}
+
+async function callGemini(apiKey: string, model: string, markdown: string, techSignatures: TechSignature[]): Promise<CompiledPack> {
+  const systemPrompt = generateSystemPrompt(techSignatures);
+  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      contents: [
+        {
+          parts: [
+            {
+              text: `Compile these raw specs into the Karpathy-style Software 3.0 context matrix:\n\n${markdown}`
+            }
+          ]
+        }
+      ],
+      systemInstruction: {
+        parts: [
+          {
+            text: systemPrompt
+          }
+        ]
+      },
+      generationConfig: {
+        responseMimeType: 'text/plain'
+      }
+    })
+  });
+
+  if (!response.ok) {
+    let errorText = response.statusText;
+    try {
+      const errJson = await response.json();
+      if (errJson?.error?.message) {
+        errorText = errJson.error.message;
+      }
+    } catch {}
+    throw new Error(`Gemini compilation failed: ${errorText}`);
+  }
+
+  const data = await response.json();
+  const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!text) {
+    throw new Error('Gemini returned an empty response');
+  }
+
   return parseMarkdownStream(text);
 }
 

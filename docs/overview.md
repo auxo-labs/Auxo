@@ -45,18 +45,17 @@ auxo/
 *   **Real-time Collaboration & Sync:** Syncs markdown keystrokes and builder presence in real-time using **Supabase Broadcast & Presence**, maintaining an ephemeral collaborative canvas.
 *   **Software 3.0 Context Matrix:** Processes raw notes into a multi-file matrix designed to keep agent context windows highly scoped, preventing "lost-in-the-middle" attention degradation.
 *   **Client-Side ZIP Bundling:** Uses `JSZip` to compile the generated context structure and initiate downloads of the exact file structure required by Cursor and Claude Code.
-*   **Account-Gated Stripe Tiers:** Deep compilations are gated by Supabase Auth and Stripe payment tiers (£15 for 3 credits vs £99 for a Lifetime Access Pass in GBP). Features a direct Stripe session check on compilation callbacks to bypass webhook propagation delays.
+*   **Hybrid Cloud & Bring Your Own Key (BYOK) Tiers:** Deep compilations can run via our hosted cloud infrastructure (gated by Supabase Auth and Stripe credit packs or a Lifetime Access Pass in GBP) or completely for free via BYOK. BYOK keys for Google Gemini, Anthropic, or OpenAI are stored strictly in client-side `localStorage` and bypass all authentication and payment checks.
 *   **LocalStorage Crash Safety:** Scratchpad content is continuously mirrored to `localStorage` by Room UUID, restoring the user's work automatically on refresh or accidental tab close.
 *   **Context Optimality Specs:** An interactive technical whitepaper hosted at `/optimality` detailing compiler scope boundaries, token efficiencies, and attention maps.
 
 ## 3. LLM Architecture & Rate Limiting Strategy
 
-Auxo orchestrates calls to advanced LLMs (OpenAI's `gpt-4o-mini` or Anthropic's `claude-3-5-sonnet`) to parse unstructured developer notes into structured prompt configurations. To ensure reliability, speed, and cost efficiency, the following strategies are implemented:
+Auxo orchestrates calls to advanced LLMs (OpenAI's `gpt-4o-mini`, Anthropic's `claude-3-5-sonnet`, or Google's `gemini-2.5-flash`) to parse unstructured developer notes into structured prompt configurations. To ensure reliability, speed, and cost efficiency, the following strategies are implemented:
 
-*   **Double-Tier Fallback Engine:**
-    1. If `OPENAI_API_KEY` is configured, it defaults to the fast, cost-effective `gpt-4o-mini` using the JSON object output format.
-    2. If OpenAI fails or is missing, and `ANTHROPIC_API_KEY` is present, it fails over to `claude-3-5-sonnet-20241022` with pre-cleaned JSON blocks.
-    3. If both external APIs fail (or keys are missing in local dev), it falls back to a smart `localMockCompile` template parser to ensure continuous availability.
-*   **Token-Gating as a Rate-Limiter:** Since premium compile actions require authenticated user accounts and decrement their active credit balance (or require lifetime access), arbitrary spamming of the LLM endpoint is natively prevented in production.
+*   **Multi-Tier Fallback & BYOK Engine:**
+    1. For hosted premium runs, if `OPENAI_API_KEY` is configured, it defaults to `gpt-4o-mini`. If missing/failed, it falls back to `claude-3-5-sonnet` (if `ANTHROPIC_API_KEY` is configured). Local offline builds fall back to `localMockCompile`.
+    2. For BYOK configurations, requests are routed directly to the client-provided key and model (e.g. Gemini 2.5 Flash, Claude 3.7/4.5, GPT-4o), bypassing hosted database accounting.
+*   **Token-Gating as a Rate-Limiter:** For hosted cloud runs, requiring accounts and decrementing credit balances prevents endpoint abuse. For BYOK runs, API usage costs are borne directly by the developer's own API subscription.
 *   **Keyless Registry Caching:** The live `tech-resolver.ts` queries NPM Registry metadata via `fetch` using Next.js route caching (`next: { revalidate: 3600 }`). This caches NPM requests for 1 hour, protecting the registry API from rate-limiting penalties while keeping stack resolutions live.
 *   **Client-Side Throttling:** The compilation actions inside the room UI disable the triggers (`isCompiling` state) and block concurrent compilations during an active request.

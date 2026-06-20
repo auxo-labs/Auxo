@@ -78,6 +78,14 @@
 - [x] **Step 12.4 (Stripe Webhook & API Gating):** Map checkout sessions using `client_reference_id`, build the secure `webhooks/stripe` POST route to credit accounts, and update the API compilation handler to authenticate and decrement credits.
 - [x] **Step 12.5 (Polish & Verification):** Fix asynchronous server action exports, parameter mismatches, compile retry type-safeties, and verify standard builds.
 
+## Phase 13: Bring Your Own Key (BYOK) & Multi-Model Integration
+
+- [x] **Step 13.1 (Gemini REST Client):** Implement `callGemini` using native fetch requests to the Google Gen AI REST API (`generativelanguage.googleapis.com`) inside `src/lib/prompt-compiler.ts`.
+- [x] **Step 13.2 (Engine Key & Model Customization):** Refactor `compilePromptPack` to accept custom, optional API keys and models for OpenAI, Anthropic, and Gemini.
+- [x] **Step 13.3 (Route Gating Bypass):** Update `src/app/api/compile/route.ts` to extract user keys/model preferences and bypass the database/Stripe payment validation if a custom API key is supplied.
+- [x] **Step 13.4 (Settings Modal UI):** Design a premium glassmorphic `src/components/settings-modal.tsx` component allowing toggles between Premium (Stripe-backed) and BYOK modes, input fields for API keys (with show/hide visibility), and model configuration options.
+- [x] **Step 13.5 (Workspace Integration & LocalStorage):** Mount the settings toggle gear inside the room navbar, hook it to client-side `localStorage`, and serialize the configurations into active compile requests.
+
 ## Future Phases & Stretch Goals (Deferred)
 
 - [ ] **Scratchpad & Real-Time Collaboration Upgrades:**

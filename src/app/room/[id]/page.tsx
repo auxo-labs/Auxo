@@ -4,13 +4,14 @@ import * as React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Suspense } from 'react';
-import { ArrowLeft, Copy, Check, Play, ShieldAlert, Users, Download, Compass, User, LogOut } from 'lucide-react';
+import { ArrowLeft, Copy, Check, Play, ShieldAlert, Users, Download, Compass, User, LogOut, Settings } from 'lucide-react';
 import { Editor } from '@/components/editor';
 import { Preview } from '@/components/preview';
-import { CompiledPack } from '@/lib/prompt-compiler';
+import { CompiledPack, UserConfig } from '@/lib/prompt-compiler';
 import JSZip from 'jszip';
 import { supabase } from '@/lib/supabase';
 import { AuthModal } from '@/components/auth-modal';
+import { SettingsModal } from '@/components/settings-modal';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 
 interface PageProps {
@@ -40,6 +41,28 @@ function RoomContent({ roomId }: { roomId: string }) {
   const [user, setUser] = React.useState<SupabaseUser | null>(null);
   const [profile, setProfile] = React.useState<{ credits: number; is_lifetime: boolean } | null>(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = React.useState(false);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = React.useState(false);
+  const [userConfig, setUserConfig] = React.useState<UserConfig>(() => {
+    if (typeof window !== 'undefined') {
+      const provider = (localStorage.getItem('auxo-settings-provider') || 'premium') as UserConfig['provider'];
+      let apiKey = undefined;
+      let model = undefined;
+
+      if (provider === 'openai') {
+        apiKey = localStorage.getItem('auxo-settings-openai-key') || '';
+        model = localStorage.getItem('auxo-settings-openai-model') || 'gpt-4o-mini';
+      } else if (provider === 'anthropic') {
+        apiKey = localStorage.getItem('auxo-settings-anthropic-key') || '';
+        model = localStorage.getItem('auxo-settings-anthropic-model') || 'claude-3-5-sonnet-20241022';
+      } else if (provider === 'gemini') {
+        apiKey = localStorage.getItem('auxo-settings-gemini-key') || '';
+        model = localStorage.getItem('auxo-settings-gemini-model') || 'gemini-2.5-flash';
+      }
+
+      return { provider, apiKey, model };
+    }
+    return { provider: 'premium' };
+  });
   const [lastCompileType, setLastCompileType] = React.useState<'basic' | 'premium'>('basic');
   const isMountedRef = React.useRef(false);
 
@@ -165,16 +188,19 @@ function RoomContent({ roomId }: { roomId: string }) {
       }
 
       // Premium compile handling:
-      // 1. Must be authenticated
-      if (!user) {
+      const hasUserKey = userConfig && userConfig.provider !== 'premium' && userConfig.apiKey && userConfig.apiKey.trim() !== '';
+
+      // 1. Must be authenticated (unless using BYOK custom keys)
+      if (!hasUserKey && !user) {
         setIsAuthModalOpen(true);
         return;
       }
 
       const targetSessionId = forcedSessionId ?? searchParams.get('session_id');
 
-      // 2. Must have credits or lifetime pass
-      if (!profile?.is_lifetime && (profile?.credits ?? 0) <= 0 && !targetSessionId) {
+      // 2. Must have credits or lifetime pass (unless using BYOK custom keys)
+      if (!hasUserKey && !profile?.is_lifetime && (profile?.credits ?? 0) <= 0 && !targetSessionId) {
+        if (!user) return;
         // Redirect to stripe checkout
         const checkoutRes = await fetch('/api/checkout', {
           method: 'POST',
@@ -202,7 +228,8 @@ function RoomContent({ roomId }: { roomId: string }) {
           markdownText: textToCompile, 
           roomId, 
           sessionId: targetSessionId || undefined,
-          compileType: 'premium'
+          compileType: 'premium',
+          userConfig
         }),
       });
 
@@ -220,13 +247,15 @@ function RoomContent({ roomId }: { roomId: string }) {
       setActiveFile('README.md');
       
       // Refresh user profile in background to decrement credit balance
-      const { data: updatedProfile } = await supabase
-        .from('profiles')
-        .select('credits, is_lifetime')
-        .eq('id', user.id)
-        .single();
-      if (updatedProfile) {
-        setProfile(updatedProfile);
+      if (user) {
+        const { data: updatedProfile } = await supabase
+          .from('profiles')
+          .select('credits, is_lifetime')
+          .eq('id', user.id)
+          .single();
+        if (updatedProfile) {
+          setProfile(updatedProfile);
+        }
       }
       return files;
     } catch (error) {
@@ -425,6 +454,16 @@ function RoomContent({ roomId }: { roomId: string }) {
             </div>
           )}
 
+          {/* Settings gear button */}
+          <button
+            onClick={() => setIsSettingsModalOpen(true)}
+            className="flex items-center justify-center gap-1.5 h-8 px-3 rounded border border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.03] text-[10px] font-mono font-semibold tracking-wider text-zinc-300 transition-colors cursor-pointer"
+            title="Compiler Settings"
+          >
+            <Settings className="w-3.5 h-3.5 text-zinc-400" />
+            <span className="hidden sm:inline">SETTINGS</span>
+          </button>
+
           {/* Optimality Specs */}
           <Link
             href="/optimality"
@@ -575,6 +614,14 @@ function RoomContent({ roomId }: { roomId: string }) {
         <AuthModal
           isOpen={isAuthModalOpen}
           onClose={() => setIsAuthModalOpen(false)}
+        />
+      )}
+
+      {isSettingsModalOpen && (
+        <SettingsModal
+          isOpen={isSettingsModalOpen}
+          onClose={() => setIsSettingsModalOpen(false)}
+          onSave={setUserConfig}
         />
       )}
     </div>

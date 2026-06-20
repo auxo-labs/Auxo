@@ -10,12 +10,16 @@ All notable changes to the **Auxo** project are documented here.
 - **Stripe Webhook Endpoint:** Added `/api/webhooks/stripe` POST route to capture completed checkout sessions, credit user balances in GBP, and apply lifetime passes.
 - **Workspace Segregation:** Separated compiling options into free local fallback compiling ("Basic Agent Pack") and premium compilations ("Deep AI Compile").
 - **Retry Logic State Tracking:** Added stateful tracking of `lastCompileType` to guarantee that compile retries from UI error banners preserve the target execution path.
+- **Bring Your Own Key (BYOK) Configuration:** Added a settings gear panel allowing developers to input custom OpenAI, Anthropic, or Gemini keys saved in local storage.
+- **Google Gemini Integration:** Added native REST endpoint client `callGemini` inside `prompt-compiler.ts` using `systemInstruction` structure supporting Gemini 2.5/2.0 Flash.
+- **Gating Bypass Flow:** Configured client and server routes to automatically bypass Stripe checks, account creation, and profile billing if custom keys are present.
 
 ### Changed
 - **Server Action Constraints:** Cleaned up server-side exports in `prompt-compiler.ts` to strictly adhere to async regulations of Next.js Server Actions.
 
 ### Fixed
 - **Type Checking Errors:** Resolved parameter count mismatches and build-breaking variable types in `page.tsx` handlers.
+- **Silent Key Fallbacks:** Intercepted invalid/expired API key responses to report explicit auth failures in the UI settings dialog rather than silently falling back to local mocks.
 
 ## [1.2.0] - 2026-06-20
 
