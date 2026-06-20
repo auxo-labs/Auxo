@@ -1,0 +1,9 @@
+---
+description: Enforces the high-density Bloomberg Terminal aesthetic for frontend components
+globs: ["src/components/**/*", "src/app/**/*.tsx"]
+---
+# Bloomberg UI Styling Rules
+- **Theme:** Strict true-black layout (#000000). Never use slate or zinc grays.
+- **Accents:** Neon green (#10B981) for positive tickers, neon amber (#F59E0B) for warnings/neutral.
+- **Typography:** Strictly monospaced layout elements, high-density HTML data tables.
+- **Rule:** Never write business/calculation logic inside these components. Use services instead.

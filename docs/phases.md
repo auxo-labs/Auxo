@@ -92,11 +92,14 @@
 - [x] **Step 14.1:** Redesign the top toolbar of the workspace ([room/page.tsx]) to resolve horizontal squishing by grouping compile actions and applying responsive classes.
 - [x] **Step 14.2:** Test layout boundaries on multiple screens.
 
-## Phase 15: Parser Prompt Tuning
+## Phase 15: Parser Prompt Tuning & Output Analysis
 
 - [ ] **Step 15.1:** Fine-tune system instructions inside [prompt-compiler.ts] to output clean, YAML-frontmatter-compliant `.mdc` file blocks.
-- [ ] **Step 16.2:** Verify compilation outputs under Gemini/OpenAI key paths.
-- [ ] **Step 16.3:** Validate project workspace building using `npm run lint` and `npm run build`.
+- [ ] **Step 15.2:** Generate a compiled pack using the local fallback compiler (COMPILE BASIC) on sample specs and analyze its structure.
+- [ ] **Step 15.3:** Generate a compiled pack using the LLM-driven compiler (DEEP AI COMPILE with Gemini) on the same specifications.
+- [ ] **Step 15.4:** Perform a comprehensive output analysis of both generated matrices to check YAML compliance, frontmatter structure, software engineering taste constraints, and zero-placeholder rule compliance.
+- [ ] **Step 15.5:** Refine prompting rules inside `prompt-compiler.ts` based on findings and re-run compilation.
+- [ ] **Step 15.6:** Validate the final workspace integrity by running `npm run lint` and `npm run build`.
 
 ## Future Phases & Stretch Goals (Deferred)
 

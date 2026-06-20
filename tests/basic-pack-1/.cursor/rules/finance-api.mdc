@@ -1,0 +1,8 @@
+---
+description: Logic validation for data mapping and asset management API layers
+globs: ["src/lib/services/**/*", "src/app/api/**/*"]
+---
+# Financial Engineering Rules
+- **Mock Enforcement:** Respect the `NEXT_PUBLIC_USE_MOCK_DATA` flag. If true, bypass external network requests and fetch mock structures instantly.
+- **Calculation Integrity:** Always double-check floating-point arithmetic. Wrap currency and percentage deltas through `src/lib/utils/formatters.ts`.
+- **Database Boundary:** Supabase connections must remain transient via Realtime Broadcast/Presence channels. No persistent stateful writes unless explicit.

@@ -2,6 +2,20 @@
 
 All notable changes to the **Auxo** project are documented here.
 
+## [1.4.0] - 2026-06-20
+
+### Added
+- **Service Flow & System Architecture Documentation:** Created `docs/service_flow.md` mapping out complete sequence diagrams for Auth sessions, Stripe checkout gating, and the server-bypass BYOK pipeline.
+- **Split Compile Button Dropdown:** Merged the basic and premium compile triggers inside the workspace header into a unified split dropdown button, saving horizontal toolbar space.
+
+### Changed
+- **Responsive Workspace Header Spacing:** Relocated the `Builder count` status badge to the left-hand meta grouping. Removed the center shield indicator and the `Optimality` link to provide breathing room.
+- **Import Optimizations:** Cleaned up unused import values (`Compass`, `ShieldAlert`, `Link`) from the Room Component layer.
+- **YAML Frontmatter & Parser Strictness:** Restructured compilation prompts in `prompt-compiler.ts` to demand strict YAML syntax in generated Cursor `.mdc` rules and prevent placeholders in outputs.
+
+### Fixed
+- **Template Literal Compilation Error:** Correctly backslash-escaped inner markdown code fences inside the `generateSystemPrompt` template literal in `prompt-compiler.ts` to prevent ESLint AST syntax parsing issues.
+
 ## [1.3.0] - 2026-06-20
 
 ### Added
