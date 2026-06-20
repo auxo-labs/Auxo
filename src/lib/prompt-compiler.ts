@@ -84,11 +84,12 @@ ${signaturesText}
   - Content: Define core system logic invariants (e.g. mock swappability checking \`NEXT_PUBLIC_USE_MOCK_DATA\`, calculations precision, external service boundaries, database protocols).
 
 ### Strict Coding Style Rules to AUTO-INJECT into AGENTS.md and MDC files:
-1. **DRY & KISS:** Explicitly command the agent to prefer "vanilla over clever." Forbid premature optimization, deeply nested conditions, and excessive abstractions.
-2. **SOLID Conventions:** Require functional, single-responsibility modules.
-3. **JSDoc Documentation:** Command the agent to maintain clean JSDoc parameter documentation on all utility exports.
-4. **Context Budgets:** Force task scoping: "If a task requires modifying more than 3 modules or 60 seconds of manual context navigation, halt and demand clarification."
-5. **No Placeholders:** Prohibit leaving commented placeholders, incomplete functions, or TODO notes in generated code.
+1. **DRY (Don't Repeat Yourself) & KISS (Keep It Simple, Stupid):** Explicitly command the agent to prefer "vanilla over clever." Forbid premature optimization, deeply nested conditional structures, duplicate helper logic, and unnecessary abstractions. Maintain extreme readability.
+2. **SOLID Design Principles:** Enforce functional, single-responsibility modules, open-closed behavior where applicable, interface separation, and dependency inversion.
+3. **YAGNI (You Aren't Gonna Need It):** Prohibit writing speculative boilerplate code or future-proofing implementations that are not requested by the current specifications.
+4. **JSDoc Parameter Documentation:** Command the agent to maintain detailed JSDoc parameter, return type, and description comments on all helper functions and exported utility modules.
+5. **Context Budgets:** Force task scoping: "If a task requires modifying more than 3 modules or 60 seconds of manual context navigation, halt and demand user clarification."
+6. **No Placeholders:** Strictly prohibit leaving commented placeholders, stub functions, incomplete implementations, or TODO lines in any generated code.
 
 ### Frontmatter Rules:
 - All values in "cursorRules" MUST start with YAML frontmatter specifying "description" and "globs".`;
@@ -173,11 +174,14 @@ function localMockCompile(rawMarkdown: string, techSignatures: TechSignature[]):
 - **Project Name:** ${projectName}
 - **Source:** Compiled via Auxo.
 
-## Core Directives (Karpathy Simplicity Guardrails)
-1. **ENFORCE SIMPLICITY:** Prefer "vanilla over clever." Forbid premature optimization, deeply nested conditions, and excessive abstractions. Keep it readable.
-2. **EXPLICIT CONTRAST:** Prioritize using existing styling tokens, CSS classes, and UI primitives instead of inventing new component layouts.
-3. **CONTEXT BUDGETS:** Force task scoping. If a task requires modifying more than 3 modules or 60 seconds of manual context navigation, halt and demand clarification.
-4. **CODE QUALITY STANDARDS:** Adhere to DRY, SOLID principles. All exports must feature clean JSDoc parameter documentation. No incomplete placeholders or TODO comments are allowed.
+## Core Directives (Senior Software Developer Guardrails)
+1. **DRY & KISS (Keep It Simple, Stupid):** Prefer "vanilla over clever." Forbid premature optimization, deeply nested conditions, and excessive abstractions. Keep code clean and readable.
+2. **SOLID Principles:** Enforce functional, single-responsibility modules.
+3. **YAGNI (You Aren't Gonna Need It):** Never build speculative boilerplate features or write code that isn't requested in the current spec.
+4. **JSDoc Documentation:** Every exported function and utility module must have complete JSDoc parameter and return descriptions.
+5. **CONTEXT BUDGETS:** If a task requires modifying more than 3 modules or 60 seconds of manual context navigation, halt immediately and ask the user for clarification.
+6. **NO PLACEHOLDERS:** Commented stubs, incomplete functions, or TODO markers are strictly prohibited in the final source.
+7. **EXPLICIT CONTRAST:** Prioritize using existing styling tokens, CSS variables, and layout primitives instead of inventing new component styles.
 
 ## Resolved Tech Stack & Invariants
 ${signaturesText}
