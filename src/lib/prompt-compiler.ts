@@ -55,9 +55,9 @@ function generateSystemPrompt(techSignatures: TechSignature[]): string {
     : '- Maintain standard baseline conventions.';
 
   return `You are an expert prompt architect and context compiler for 2026 AI IDEs.
-Your job is to take raw, chaotic software specifications and compile them into a prompt-optimized context matrix.
+Your job is to take raw, chaotic software specifications and compile them into a prompt-optimized context matrix (the Compiled Agent Pack).
 
-You MUST structure your response as a single unified Markdown text stream. You will write the contents of multiple files sequentially. Every file MUST be opened with a start marker and closed with an end marker. Do NOT wrap your output in a JSON object or use quotes.
+You MUST structure your response as a single unified Markdown text stream. You will write the contents of multiple files sequentially. Every file MUST be opened with a start marker and closed with an end marker. Do NOT wrap your output in a JSON object, use quotes, or include markdown wrapper fences around the overall stream.
 
 Use the exact format shown below for the markers (the path names must match exactly):
 
@@ -88,6 +88,21 @@ Use the exact format shown below for the markers (the path names must match exac
 ### Ground Truth Grounding Data (Live Tech Resolutions):
 ${signaturesText}
 
+### Strict YAML Frontmatter Rules for ".cursor/rules/*.mdc" files:
+1. Every `.mdc` file MUST start with a raw YAML frontmatter block delimited by triple dashes `---`.
+2. Do NOT wrap the YAML block or the document in markdown code block fences (e.g. do not write \`\`\`yaml).
+3. The frontmatter block must contain exactly these three fields:
+   - \`description\`: A clear, descriptive string explaining when the rule applies.
+   - \`globs\`: An array of glob string patterns mapping the rule to targeted directory paths.
+   - \`alwaysApply\`: Set to \`false\`.
+4. Example structure:
+---
+description: Enforces the UI theme, aesthetics, and layout parameters
+globs: ["src/components/**/*", "src/app/**/*.tsx"]
+alwaysApply: false
+---
+# React UI rules...
+
 ### Specific Instructions for "README.md" (The System North Star):
 - Establish the business domain and user context.
 - **Section 1: Product Thesis & Vision**: Outline the high-level application vision, why this project exists, and the core problem it solves (derived from the notes).
@@ -107,10 +122,8 @@ ${signaturesText}
 
 ### Specific Instructions for Path-Scoped Rules under "cursorRules" (The Context Scalpels):
 - **.cursor/rules/ui-theme.mdc:**
-  - Description: Start with YAML frontmatter with \`description: Enforces the UI theme, aesthetics, and layout parameters\` and \`globs: ["src/components/**/*", "src/app/**/*.tsx"]\`.
   - Content: Define aesthetic constraints based on the notes (e.g. true-black Bloomberg terminal for finance notes; clean sterile layouts with banners for medical; green earthy layouts for agriculture). Include a strict rule: "Never write calculation/business logic in UI components; delegate to service layers."
 - **.cursor/rules/logic-api.mdc (Rename filename in starter/end markers if appropriate, e.g. ".cursor/rules/finance-api.mdc", ".cursor/rules/ledger-rules.mdc", ".cursor/rules/systems-api.mdc"):**
-  - Description: Start with YAML frontmatter with \`description: Logic validation for services and API routing layers\` and \`globs: ["src/lib/services/**/*", "src/app/api/**/*"]\`.
   - Content: Define core system logic invariants (e.g. mock swappability checking \`NEXT_PUBLIC_USE_MOCK_DATA\`, calculations precision, external service boundaries, database protocols).
 
 ### Strict Coding Style Rules to AUTO-INJECT into AGENTS.md and MDC files:
@@ -119,10 +132,7 @@ ${signaturesText}
 3. **YAGNI (You Aren't Gonna Need It):** Prohibit writing speculative boilerplate code or future-proofing implementations that are not requested by the current specifications.
 4. **JSDoc Parameter Documentation:** Command the agent to maintain detailed JSDoc parameter, return type, and description comments on all helper functions and exported utility modules.
 5. **Context Budgets:** Force task scoping: "If a task requires modifying more than 3 modules or 60 seconds of manual context navigation, halt and demand user clarification."
-6. **No Placeholders:** Strictly prohibit leaving commented placeholders, stub functions, incomplete implementations, or TODO lines in any generated code.
-
-### Frontmatter Rules:
-- All values in ".cursor/rules/*.mdc" files MUST start with YAML frontmatter specifying "description", "globs", and "alwaysApply".`;
+6. **No Placeholders:** Strictly prohibit leaving commented placeholders, stub functions, incomplete implementations, or TODO lines in any generated code. All outputs must represent complete, implementable codebase scaffolding files.`;
 }
 
 async function callOpenAI(apiKey: string, model: string, markdown: string, techSignatures: TechSignature[]): Promise<CompiledPack> {

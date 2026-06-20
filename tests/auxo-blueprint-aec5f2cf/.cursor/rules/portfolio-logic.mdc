@@ -1,0 +1,32 @@
+```yaml
+description: Logic validation and enforcement for core portfolio services, data handling, and API routing layers.
+globs: ["src/lib/services/**/*", "src/app/api/**/*"]
+alwaysApply: true
+```
+# Portfolio Logic & API Rules: SignalSignal
+
+## 1. Core Logic Invariants
+
+*   **Financial Precision**: All financial calculations (e.g., profit/loss, average cost, portfolio value) MUST use appropriate precision (e.g., `decimal.js` or `BigNumber.js` if necessary, or strictly use integer cents/satoshi to avoid floating-point issues, converted to display). NEVER rely on standard JavaScript floating-point arithmetic for financial figures.
+*   **Data Integrity**: Implement robust validation for all incoming and outgoing data, especially when interacting with Supabase. Ensure type safety and data schema adherence.
+*   **External Service Boundaries**: Clearly define and encapsulate interactions with external data providers (e.g., real-time price APIs) within dedicated service modules. All external API calls must include error handling and rate-limiting considerations.
+
+## 2. Supabase Interaction Protocols
+
+*   **Realtime-First**: Prioritize Supabase Realtime Broadcast or Presence channels for any low-latency data synchronization, collaborative features (notes, cursor tracking), and live portfolio updates.
+*   **Direct DB Access (Limited)**: Direct `supabase-js` database queries (e.g., `from().select()...`) should be reserved for initial data loads or specific mutations. Avoid polling.
+*   **Error Handling**: All Supabase interactions, including subscriptions and queries, MUST include comprehensive error handling and logging.
+
+## 3. Development & Testing Considerations
+
+*   **Mock Data Toggle**: Services and API routes SHOULD support a mock data mode, activated by an environment variable (e.g., `NEXT_PUBLIC_USE_MOCK_DATA=true`). This allows for local development and testing without requiring live API connections.
+*   **Idempotency**: API endpoints (especially for writes/mutations) should strive for idempotency where appropriate, to prevent duplicate operations in case of network retries.
+
+## 4. Strict Coding Style Rules
+
+*   **DRY (Don't Repeat Yourself) & KISS (Keep It Simple, Stupid)**: Prefer vanilla implementations over overly clever or complex solutions. Forbid premature optimization, deeply nested conditional structures, duplicate helper logic, and unnecessary abstractions. Maintain extreme readability.
+*   **SOLID Design Principles**: Adhere to functional, single-responsibility modules, open-closed behavior where applicable, interface separation, and dependency inversion.
+*   **YAGNI (You Aren't Gonna Need It)**: Prohibit writing speculative boilerplate code or future-proofing implementations that are not requested by the current specifications.
+*   **JSDoc Parameter Documentation**: Maintain detailed JSDoc parameter, return type, and description comments on all helper functions and exported utility modules.
+*   **Context Budgets**: If a task requires modifying more than 3 modules or 60 seconds of manual context navigation, halt and demand user clarification.
+*   **No Placeholders**: Strictly prohibit leaving commented placeholders, stub functions, incomplete implementations, or TODO lines in any generated code.

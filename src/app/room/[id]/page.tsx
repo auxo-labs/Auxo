@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Suspense } from 'react';
-import { ArrowLeft, Copy, Check, Play, ShieldAlert, Users, Download, Compass, User, LogOut, Settings } from 'lucide-react';
+import { ArrowLeft, Copy, Check, Play, ShieldAlert, Users, Download, Compass, User, LogOut, Settings, ChevronDown } from 'lucide-react';
 import { Editor } from '@/components/editor';
 import { Preview } from '@/components/preview';
 import { CompiledPack, UserConfig } from '@/lib/prompt-compiler';
@@ -64,7 +64,21 @@ function RoomContent({ roomId }: { roomId: string }) {
     return { provider: 'premium' };
   });
   const [lastCompileType, setLastCompileType] = React.useState<'basic' | 'premium'>('basic');
+  const [compileMode, setCompileMode] = React.useState<'basic' | 'premium'>('basic');
+  const [showCompileDropdown, setShowCompileDropdown] = React.useState(false);
+  const dropdownRef = React.useRef<HTMLDivElement>(null);
   const isMountedRef = React.useRef(false);
+
+  // Close dropdown on click outside
+  React.useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setShowCompileDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
+  }, []);
 
   // ── Simple mount effects ───────────────────────────────────────────────────
 
@@ -342,7 +356,7 @@ function RoomContent({ roomId }: { roomId: string }) {
   React.useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       const isCmd = e.metaKey || e.ctrlKey;
-      if (isCmd && e.key === 'Enter') { e.preventDefault(); handleCompile('basic'); return; }
+      if (isCmd && e.key === 'Enter') { e.preventDefault(); handleCompile(compileMode); return; }
       if (isCmd && e.key === 's' && compiledFiles) { e.preventDefault(); handleDownload(); return; }
       if (isCmd && e.shiftKey && e.key.toLowerCase() === 'c') { e.preventDefault(); handleCopyLink(); return; }
       if (e.key === 'Escape') {
@@ -357,7 +371,7 @@ function RoomContent({ roomId }: { roomId: string }) {
   // handleCompile/handleDownload/handleCopyLink are plain functions defined
   // in render scope — the React Compiler will handle stabilisation.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router, compiledFiles]);
+  }, [router, compiledFiles, compileMode]);
 
   // ── Helpers ───────────────────────────────────────────────────────────────
 
@@ -406,34 +420,33 @@ function RoomContent({ roomId }: { roomId: string }) {
               {getConnectionIcon()}
               <span className="font-mono text-[8px] tracking-wider text-zinc-500 font-bold">{getConnectionText()}</span>
             </div>
+            <span className="h-3 w-px bg-white/10 hidden sm:inline" />
+            <div className="hidden sm:flex items-center gap-1 px-1.5 py-0.5 border border-white/5 bg-white/[0.01] rounded font-mono text-[9px] text-zinc-500">
+              <Users className="w-3.5 h-3.5 text-zinc-500" />
+              <span>{usersCount} {usersCount === 1 ? 'BUILDER' : 'BUILDERS'}</span>
+            </div>
           </div>
         </div>
 
         {/* Center badge */}
-        <div className="hidden md:flex items-center gap-2 text-[10px] font-mono tracking-wider text-amber-500/80 bg-amber-500/[0.02] border border-amber-500/10 px-3 py-1 rounded">
+        <div className="hidden xl:flex items-center gap-2 text-[10px] font-mono tracking-wider text-amber-500/80 bg-amber-500/[0.02] border border-amber-500/10 px-3 py-1 rounded">
           <ShieldAlert className="w-3 h-3 text-amber-500" />
           <span>ZERO-DATA RETENTION PREVENTATIVE IP SHELTER ACTIVE</span>
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-3">
-          {/* Builder count */}
-          <div className="flex items-center gap-2 px-2.5 py-1 border border-white/5 rounded bg-white/[0.01] text-[10px] font-mono text-zinc-500 uppercase tracking-widest">
-            <Users className="w-3 h-3 text-zinc-500" />
-            <span>{usersCount} {usersCount === 1 ? 'BUILDER' : 'BUILDERS'}</span>
-          </div>
-
+        <div className="flex items-center gap-2.5">
           {/* User Profile Widget */}
           {!user ? (
             <button
               onClick={() => setIsAuthModalOpen(true)}
-              className="flex items-center justify-center gap-1.5 h-8 px-3 rounded border border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.03] text-[10px] font-mono font-semibold tracking-wider text-zinc-300 transition-colors cursor-pointer"
+              className="flex items-center justify-center gap-1.5 h-8 px-2.5 rounded border border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.03] text-[10px] font-mono font-semibold tracking-wider text-zinc-300 transition-colors cursor-pointer"
             >
               <User className="w-3.5 h-3.5 text-zinc-400" />
               <span>SIGN IN</span>
             </button>
           ) : (
-            <div className="flex items-center gap-2 h-8 px-3 rounded border border-white/5 bg-white/[0.01] text-[10px] font-mono tracking-wider text-zinc-300">
+            <div className="flex items-center gap-2 h-8 px-2.5 rounded border border-white/5 bg-white/[0.01] text-[10px] font-mono tracking-wider text-zinc-300">
               <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full" />
               <span className="text-zinc-400 font-semibold">{user.email?.split('@')[0].toUpperCase()}</span>
               <span className="h-3 w-px bg-white/10" />
@@ -457,26 +470,26 @@ function RoomContent({ roomId }: { roomId: string }) {
           {/* Settings gear button */}
           <button
             onClick={() => setIsSettingsModalOpen(true)}
-            className="flex items-center justify-center gap-1.5 h-8 px-3 rounded border border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.03] text-[10px] font-mono font-semibold tracking-wider text-zinc-300 transition-colors cursor-pointer"
+            className="flex items-center justify-center gap-1.5 h-8 px-2.5 rounded border border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.03] text-[10px] font-mono font-semibold tracking-wider text-zinc-300 transition-colors cursor-pointer"
             title="Compiler Settings"
           >
             <Settings className="w-3.5 h-3.5 text-zinc-400" />
-            <span className="hidden sm:inline">SETTINGS</span>
+            <span className="hidden lg:inline">SETTINGS</span>
           </button>
 
           {/* Optimality Specs */}
           <Link
             href="/optimality"
-            className="flex items-center justify-center gap-2 h-8 px-3 rounded border border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.03] text-[10px] font-mono font-semibold tracking-wider text-zinc-300 transition-colors cursor-pointer"
+            className="flex items-center justify-center gap-1.5 h-8 px-2.5 rounded border border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.03] text-[10px] font-mono font-semibold tracking-wider text-zinc-300 transition-colors cursor-pointer"
           >
             <Compass className="w-3.5 h-3.5 text-zinc-400" />
-            <span>OPTIMALITY</span>
+            <span className="hidden lg:inline">OPTIMALITY</span>
           </Link>
 
           {/* Copy invite link */}
           <button
             onClick={handleCopyLink}
-            className="flex items-center justify-center gap-2 h-8 px-3 rounded border border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.03] text-[10px] font-mono font-semibold tracking-wider text-zinc-300 transition-colors cursor-pointer"
+            className="flex items-center justify-center gap-1.5 h-8 px-2.5 rounded border border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.03] text-[10px] font-mono font-semibold tracking-wider text-zinc-300 transition-colors cursor-pointer"
           >
             {copiedLink ? (
               <>
@@ -486,65 +499,108 @@ function RoomContent({ roomId }: { roomId: string }) {
             ) : (
               <>
                 <Copy className="w-3 h-3 text-zinc-400" />
-                <span>INVITE</span>
-                <span className="px-1 py-0.5 rounded bg-zinc-800 border border-zinc-700/50 text-[8px] font-mono text-zinc-500 font-medium">
+                <span className="hidden lg:inline">INVITE</span>
+                <span className="hidden xl:inline px-1 py-0.5 rounded bg-zinc-800 border border-zinc-700/50 text-[8px] font-mono text-zinc-500 font-medium">
                   {isMac ? '⌘⇧C' : 'Ctrl+Shift+C'}
                 </span>
               </>
             )}
           </button>
 
-          {/* Compile Basic (Free) */}
-          <button
-            onClick={() => handleCompile('basic')}
-            disabled={isCompiling}
-            className="flex items-center justify-center gap-2 h-8 px-3 rounded border border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.03] text-[10px] font-mono font-semibold tracking-wider text-zinc-300 transition-colors disabled:opacity-50 disabled:pointer-events-none active:scale-95 cursor-pointer"
-            title="Compile standard prompt blueprint locally (Free)"
-          >
-            {isCompiling ? (
-              <div className="w-3 h-3 border border-zinc-300 border-t-transparent rounded-full animate-spin" />
-            ) : (
-              <>
-                <Play className="w-2.5 h-2.5 text-zinc-400 fill-current" />
-                <span>COMPILE BASIC</span>
-                <span className="px-1 py-0.5 rounded bg-zinc-800 border border-zinc-700/50 text-[8px] font-mono text-zinc-500 font-medium">
-                  {isMac ? '⌘↵' : 'Ctrl+↵'}
-                </span>
-              </>
-            )}
-          </button>
+          {/* Split Compile Button */}
+          <div className="relative flex items-center shrink-0" ref={dropdownRef}>
+            <button
+              onClick={() => handleCompile(compileMode)}
+              disabled={isCompiling}
+              className={`flex items-center gap-1.5 h-8 px-3 text-[10px] font-mono font-semibold tracking-wider transition-all disabled:opacity-50 disabled:pointer-events-none active:scale-95 cursor-pointer rounded-l ${
+                compileMode === 'basic'
+                  ? 'border border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.03] text-zinc-300'
+                  : 'bg-zinc-100 hover:bg-zinc-200 text-zinc-950'
+              }`}
+              title={compileMode === 'basic' ? "Compile standard prompt blueprint locally (Free)" : "Compile hyper-tailored 2026 AI Agent Pack (Requires Credits)"}
+            >
+              {isCompiling ? (
+                <div className={`w-3 h-3 border border-t-transparent rounded-full animate-spin ${
+                  compileMode === 'basic' ? 'border-zinc-300' : 'border-zinc-950'
+                }`} />
+              ) : (
+                <>
+                  <Play className={`w-2.5 h-2.5 fill-current ${
+                    compileMode === 'basic' ? 'text-zinc-400' : 'text-zinc-950'
+                  }`} />
+                  <span>{compileMode === 'basic' ? 'COMPILE BASIC' : 'DEEP AI COMPILE'}</span>
+                  {compileMode === 'basic' && (
+                    <span className="hidden md:inline px-1 py-0.5 rounded bg-zinc-800 border border-zinc-700/50 text-[8px] font-mono text-zinc-500 font-medium">
+                      {isMac ? '⌘↵' : 'Ctrl+↵'}
+                    </span>
+                  )}
+                </>
+              )}
+            </button>
 
-          {/* Deep LLM Compile (Premium) */}
-          <button
-            onClick={() => handleCompile('premium')}
-            disabled={isCompiling}
-            className="flex items-center justify-center gap-2 h-8 px-4 rounded bg-zinc-100 hover:bg-zinc-200 text-zinc-950 text-[10px] font-mono font-semibold tracking-wider transition-all disabled:opacity-50 disabled:pointer-events-none active:scale-95 shadow-sm cursor-pointer"
-            title="Compile hyper-tailored 2026 AI Agent Pack (Requires Credits)"
-          >
-            {isCompiling ? (
-              <div className="w-3 h-3 border border-zinc-950 border-t-transparent rounded-full animate-spin" />
-            ) : (
-              <>
-                <Play className="w-2.5 h-2.5 fill-current text-zinc-950" />
-                <span>DEEP AI COMPILE</span>
-              </>
+            <button
+              onClick={() => setShowCompileDropdown(!showCompileDropdown)}
+              disabled={isCompiling}
+              className={`flex items-center justify-center h-8 w-6 rounded-r transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none cursor-pointer border-l ${
+                compileMode === 'basic'
+                  ? 'border border-white/5 border-l-white/10 bg-white/[0.01] hover:bg-white/[0.03] hover:border-white/10 text-zinc-300'
+                  : 'bg-zinc-100 hover:bg-zinc-200 text-zinc-950 border-l-zinc-300'
+              }`}
+              title="Change Compile Mode"
+            >
+              <ChevronDown className="w-3.5 h-3.5" />
+            </button>
+
+            {/* Dropdown Menu */}
+            {showCompileDropdown && (
+              <div className="absolute top-full right-0 mt-2 w-64 rounded border border-white/5 bg-zinc-950/95 p-1.5 shadow-2xl backdrop-blur-md z-30 animate-fade-in">
+                <button
+                  onClick={() => {
+                    setCompileMode('basic');
+                    setShowCompileDropdown(false);
+                  }}
+                  className={`flex flex-col text-left w-full p-2 rounded transition-colors text-xs font-mono select-none ${
+                    compileMode === 'basic'
+                      ? 'bg-white/[0.03] text-zinc-100'
+                      : 'hover:bg-white/[0.01] text-zinc-400 hover:text-zinc-200'
+                  }`}
+                >
+                  <span className="font-semibold text-[10px] tracking-wide">BASIC AGENT PACK</span>
+                  <span className="text-[9px] text-zinc-500 mt-0.5">Offline fallback parsing. Fast and free.</span>
+                </button>
+                <div className="h-px bg-white/[0.03] my-1" />
+                <button
+                  onClick={() => {
+                    setCompileMode('premium');
+                    setShowCompileDropdown(false);
+                  }}
+                  className={`flex flex-col text-left w-full p-2 rounded transition-colors text-xs font-mono select-none ${
+                    compileMode === 'premium'
+                      ? 'bg-white/[0.03] text-zinc-100'
+                      : 'hover:bg-white/[0.01] text-zinc-400 hover:text-zinc-200'
+                  }`}
+                >
+                  <span className="font-semibold text-[10px] tracking-wide">DEEP AI COMPILE</span>
+                  <span className="text-[9px] text-zinc-500 mt-0.5">Grounds details using OpenAI, Anthropic, or Gemini.</span>
+                </button>
+              </div>
             )}
-          </button>
+          </div>
 
           {/* Download ZIP (visible only after compile) */}
           {compiledFiles && (
             <button
               onClick={() => handleDownload()}
               disabled={isDownloading}
-              className="flex items-center justify-center gap-2 h-8 px-3 rounded border border-white/10 bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.05] text-[10px] font-mono font-semibold tracking-wider text-zinc-200 transition-all active:scale-95 cursor-pointer animate-fade-in"
+              className="flex items-center justify-center gap-2 h-8 px-3 rounded border border-white/10 bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.05] text-[10px] font-mono font-semibold tracking-wider text-zinc-200 transition-all active:scale-95 cursor-pointer animate-fade-in shrink-0"
             >
               {isDownloading ? (
                 <div className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin" />
               ) : (
                 <>
                   <Download className="w-3.5 h-3.5 text-zinc-400" />
-                  <span>DOWNLOAD PACK</span>
-                  <span className="px-1 py-0.5 rounded bg-zinc-800 border border-zinc-700/50 text-[8px] font-mono text-zinc-500 font-medium">
+                  <span className="hidden lg:inline">DOWNLOAD PACK</span>
+                  <span className="hidden xl:inline px-1 py-0.5 rounded bg-zinc-800 border border-zinc-700/50 text-[8px] font-mono text-zinc-500 font-medium">
                     {isMac ? '⌘S' : 'Ctrl+S'}
                   </span>
                 </>

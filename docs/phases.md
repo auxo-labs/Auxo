@@ -59,6 +59,7 @@
 - [x] **Step 9.3:** Connect the "Compile" action in the UI to redirect to Stripe Checkout when no verified `session_id` is present; post-payment redirect auto-compiles and triggers ZIP download.
 
 ## Phase 10: Context Optimality & Fine-Tuning the Compiled Agent Pack (Active Phase)
+
 - [x] **Step 10.1 (Optimality Page):** Review, complete, and format the Technical Research Whitepaper under `/optimality` (`src/app/optimality/page.tsx`).
 - [x] **Step 10.2 (Optimality Links):** Ensure the links in the landing page navbar and room header toolbar correctly target `/optimality` and open in the same tab.
 - [x] **Step 10.3 (Fine-tuning Compiler):** Fine-tune compiler output format in `src/lib/prompt-compiler.ts` (ensuring correct JSDoc templates, clean comments, DRY/SOLID instructions, and strict token budget bounds are strictly followed by the AI generator).
@@ -85,6 +86,17 @@
 - [x] **Step 13.3 (Route Gating Bypass):** Update `src/app/api/compile/route.ts` to extract user keys/model preferences and bypass the database/Stripe payment validation if a custom API key is supplied.
 - [x] **Step 13.4 (Settings Modal UI):** Design a premium glassmorphic `src/components/settings-modal.tsx` component allowing toggles between Premium (Stripe-backed) and BYOK modes, input fields for API keys (with show/hide visibility), and model configuration options.
 - [x] **Step 13.5 (Workspace Integration & LocalStorage):** Mount the settings toggle gear inside the room navbar, hook it to client-side `localStorage`, and serialize the configurations into active compile requests.
+
+## Phase 14: Navbar Spacing & UI Formatting
+
+- [ ] **Step 14.1:** Redesign the top toolbar of the workspace ([room/page.tsx](file:///Users/danwooster/1.%20DEV/auxo/src/app/room/[id]/page.tsx)) to resolve horizontal squishing by grouping compile actions and applying responsive classes.
+- [ ] **Step 14.2:** Test layout boundaries on multiple screens.
+
+## Phase 15: Parser Prompt Tuning
+
+- [ ] **Step 15.1:** Fine-tune system instructions inside [prompt-compiler.ts] to output clean, YAML-frontmatter-compliant `.mdc` file blocks.
+- [ ] **Step 16.2:** Verify compilation outputs under Gemini/OpenAI key paths.
+- [ ] **Step 16.3:** Validate project workspace building using `npm run lint` and `npm run build`.
 
 ## Future Phases & Stretch Goals (Deferred)
 
