@@ -89,8 +89,8 @@
 
 ## Phase 14: Navbar Spacing & UI Formatting
 
-- [ ] **Step 14.1:** Redesign the top toolbar of the workspace ([room/page.tsx](file:///Users/danwooster/1.%20DEV/auxo/src/app/room/[id]/page.tsx)) to resolve horizontal squishing by grouping compile actions and applying responsive classes.
-- [ ] **Step 14.2:** Test layout boundaries on multiple screens.
+- [x] **Step 14.1:** Redesign the top toolbar of the workspace ([room/page.tsx]) to resolve horizontal squishing by grouping compile actions and applying responsive classes.
+- [x] **Step 14.2:** Test layout boundaries on multiple screens.
 
 ## Phase 15: Parser Prompt Tuning
 

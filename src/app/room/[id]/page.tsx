@@ -2,9 +2,8 @@
 
 import * as React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
 import { Suspense } from 'react';
-import { ArrowLeft, Copy, Check, Play, ShieldAlert, Users, Download, Compass, User, LogOut, Settings, ChevronDown } from 'lucide-react';
+import { ArrowLeft, Copy, Check, Play, Users, Download, User, LogOut, Settings, ChevronDown } from 'lucide-react';
 import { Editor } from '@/components/editor';
 import { Preview } from '@/components/preview';
 import { CompiledPack, UserConfig } from '@/lib/prompt-compiler';
@@ -428,12 +427,6 @@ function RoomContent({ roomId }: { roomId: string }) {
           </div>
         </div>
 
-        {/* Center badge */}
-        <div className="hidden xl:flex items-center gap-2 text-[10px] font-mono tracking-wider text-amber-500/80 bg-amber-500/[0.02] border border-amber-500/10 px-3 py-1 rounded">
-          <ShieldAlert className="w-3 h-3 text-amber-500" />
-          <span>ZERO-DATA RETENTION PREVENTATIVE IP SHELTER ACTIVE</span>
-        </div>
-
         {/* Actions */}
         <div className="flex items-center gap-2.5">
           {/* User Profile Widget */}
@@ -476,15 +469,6 @@ function RoomContent({ roomId }: { roomId: string }) {
             <Settings className="w-3.5 h-3.5 text-zinc-400" />
             <span className="hidden lg:inline">SETTINGS</span>
           </button>
-
-          {/* Optimality Specs */}
-          <Link
-            href="/optimality"
-            className="flex items-center justify-center gap-1.5 h-8 px-2.5 rounded border border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.03] text-[10px] font-mono font-semibold tracking-wider text-zinc-300 transition-colors cursor-pointer"
-          >
-            <Compass className="w-3.5 h-3.5 text-zinc-400" />
-            <span className="hidden lg:inline">OPTIMALITY</span>
-          </Link>
 
           {/* Copy invite link */}
           <button
