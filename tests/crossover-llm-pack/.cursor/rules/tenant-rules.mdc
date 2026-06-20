@@ -1,0 +1,29 @@
+---
+description: Defines rules for B2B tenant management, data isolation, and workspace boundaries.
+globs: ["src/app/api/tenant/**/*", "src/services/tenant/**/*", "src/hooks/useTenant.ts", "src/middleware.ts", "src/lib/tenant/**/*"]
+alwaysApply: false
+---
+
+# Tenant Management & Isolation Rules for CareWorkspace
+
+This document outlines the critical rules and invariants governing multi-tenancy within the CareWorkspace Clinic Portal. Strict adherence to these principles is paramount for data integrity, security, and compliance with B2B service agreements.
+
+## I. Absolute Tenant Isolation
+
+1.  **`tenantId` Enforcement**: All data operations (reads, writes, updates, deletes) on tenant-specific resources MUST explicitly include a `tenantId` filter or scope. This applies at the database level (via Row-Level Security in Supabase), API level, and service layer.
+2.  **No Cross-Tenant Data Access**: Absolutely no code path or configuration may permit access to data belonging to one tenant from the context of another tenant. This is a critical security and compliance invariant.
+3.  **Contextual `tenantId`**: Ensure that the `tenantId` is always securely derived from the authenticated user's session or a validated request header/parameter and is never directly user-controlled in a mutable fashion.
+
+## II. Workspace Scoping & Data Integrity
+
+1.  **Session Binding**: Every authenticated user session must be strictly bound to a single `tenantId` context. Switching tenants requires re-authentication or an explicit, audited session change.
+2.  **Automatic `tenantId` Association**: Any new entity or record created within a tenant's workspace (e.g., a new patient, an appointment) must automatically be associated with the correct `tenantId` at the point of creation within the service layer.
+3.  **Data Partitioning**: Database schemas and queries must be designed to logically partition data by `tenantId`, optimizing for both security and query performance.
+
+## III. User Roles & Access Control
+
+1.  **Role-Based Access Control (RBAC)**: Implement clear, granular role-based access control within each tenant's workspace. Examples include roles like `Doctor`, `Admin`, `Nurse`, each with predefined permissions to access or modify specific types of data or features.
+2.  **Auditability**: All changes to user roles or permissions within a tenant's workspace must be logged and auditable.
+
+## IV. General Coding Style & Principles
+All tenant management and isolation logic must strictly adhere to the global coding philosophies outlined in `AGENTS.md`, including DRY, KISS, SOLID, YAGNI, JSDoc parameter documentation, respecting context budgets, and the absolute prohibition of placeholders.

@@ -94,12 +94,12 @@
 
 ## Phase 15: Parser Prompt Tuning & Output Analysis
 
-- [ ] **Step 15.1:** Fine-tune system instructions inside [prompt-compiler.ts] to output clean, YAML-frontmatter-compliant `.mdc` file blocks.
-- [ ] **Step 15.2:** Generate a compiled pack using the local fallback compiler (COMPILE BASIC) on sample specs and analyze its structure.
-- [ ] **Step 15.3:** Generate a compiled pack using the LLM-driven compiler (DEEP AI COMPILE with Gemini) on the same specifications.
-- [ ] **Step 15.4:** Perform a comprehensive output analysis of both generated matrices to check YAML compliance, frontmatter structure, software engineering taste constraints, and zero-placeholder rule compliance.
-- [ ] **Step 15.5:** Refine prompting rules inside `prompt-compiler.ts` based on findings and re-run compilation.
-- [ ] **Step 15.6:** Validate the final workspace integrity by running `npm run lint` and `npm run build`.
+- [x] **Step 15.1:** Fine-tune system instructions inside [prompt-compiler.ts] to output clean, YAML-frontmatter-compliant `.mdc` file blocks and support crossover domains.
+- [x] **Step 15.2:** Generate a compiled pack using the local fallback compiler (COMPILE BASIC) on crossover specs and analyze its structure.
+- [x] **Step 15.3:** Generate a compiled pack using the LLM-driven compiler (DEEP AI COMPILE with Gemini) on the same specifications.
+- [x] **Step 15.4:** Perform a comprehensive output analysis of both generated matrices to check YAML compliance, frontmatter structure, software engineering taste constraints, and zero-placeholder rule compliance.
+- [x] **Step 15.5:** Refine prompting rules inside `prompt-compiler.ts` based on findings and re-run compilation.
+- [x] **Step 15.6:** Validate the final workspace integrity by running `npm run lint` and `npm run build`.
 
 ## Future Phases & Stretch Goals (Deferred)
 

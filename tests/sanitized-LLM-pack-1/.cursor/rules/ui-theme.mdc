@@ -1,0 +1,34 @@
+---
+description: Enforces the UI theme, aesthetics, and layout parameters for SignalSignal.
+globs: ["src/components/**/*", "src/app/**/*.tsx"]
+alwaysApply: false
+---
+
+# UI Theme & Layout Constraints: SignalSignal
+
+## 1. Aesthetic Guidelines
+
+*   **Primary Aesthetic**: Adopt a "true-black Bloomberg terminal" theme. This implies a dark, high-contrast, professional, and dense information display.
+*   **Color Palette**: Predominantly dark backgrounds (near black), crisp white or light-grey text, with minimal, impactful accent colors (e.g., subtle greens for positive P&L, reds for negative).
+*   **Typography**: Utilize monospaced or clean sans-serif fonts for data displays to enhance readability.
+*   **Information Density**: Optimize components for efficient display of data, avoiding excessive whitespace but maintaining clear visual hierarchy.
+
+## 2. Layout & Structure
+
+*   **Global Layout**: All primary application views will feature a persistent **left-hand sidebar** for navigation (Dashboard, Research, Settings).
+*   **Dashboard Layout**: The main dashboard MUST employ a **Bento layout** (grid-based, modular, interlocking cards) to present portfolio statistics and recent activities. Each card should be self-contained and visually distinct.
+*   **Responsiveness**: Ensure layouts are functional and visually consistent across common desktop viewport sizes. (Mobile is not a primary concern for this iteration, but layouts should degrade gracefully if possible).
+
+## 3. UI Component Logic Separation
+
+*   **Strict Separation**: NEVER write calculation logic, business logic, data fetching, or stateful API interactions directly within UI components (e.g., `src/components`, `src/app/**/*.tsx` that are primarily presentation).
+*   **Delegation**: All such logic MUST be delegated to dedicated service layers (`src/lib/services`), custom hooks (`src/lib/hooks`), or Server Components where appropriate. UI components are for rendering and managing *local* UI state only.
+
+## 4. Strict Coding Style Rules
+
+*   **DRY (Don't Repeat Yourself) & KISS (Keep It Simple, Stupid)**: Prefer vanilla implementations over overly clever or complex solutions. Forbid premature optimization, deeply nested conditional structures, duplicate helper logic, and unnecessary abstractions. Maintain extreme readability.
+*   **SOLID Design Principles**: Adhere to functional, single-responsibility modules, open-closed behavior where applicable, interface separation, and dependency inversion.
+*   **YAGNI (You Aren't Gonna Need It)**: Prohibit writing speculative boilerplate code or future-proofing implementations that are not requested by the current specifications.
+*   **JSDoc Parameter Documentation**: Maintain detailed JSDoc parameter, return type, and description comments on all helper functions and exported utility modules.
+*   **Context Budgets**: If a task requires modifying more than 3 modules or 60 seconds of manual context navigation, halt and demand user clarification.
+*   **No Placeholders**: Strictly prohibit leaving commented placeholders, stub functions, incomplete implementations, or TODO lines in any generated code.

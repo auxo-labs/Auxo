@@ -1,0 +1,9 @@
+---
+description: Fast ingestion indexing patterns and validation routes
+globs: ["src/lib/services/**/*", "src/app/api/**/*"]
+alwaysApply: false
+---
+# Developer Tool Ingestion Rules
+- **Fast-Ingest Pipeline:** Batch commits to ClickHouse in pools of 1000 items or 5 seconds.
+- **Request Validation:** Route validation middleware must intercept and discard corrupt JSON payloads instantly.
+- **Indexing Patterns:** Keep index columns highly optimized for time-series querying.

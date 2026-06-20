@@ -2,6 +2,15 @@
 
 All notable changes to the **Auxo** project are documented here.
 
+## [1.4.1] - 2026-06-20
+
+### Added
+- **Multi-Domain Crossover Support:** Added support for compiling specs with intersecting SaaS archetypes. Inputting keywords from multiple domains (such as B2B and HealthTech) will now output separate rule files (e.g. `tenant-rules.mdc` and `hipaa-rules.mdc`) with targeted globs and `alwaysApply: false`.
+- **B2B HealthTech CareWorkspace Template:** Introduced a specialized deterministic crossover template in the local fallback compiler (`localMockCompile`) for B2B clinical portals, merging patient tracking, HIPAA compliance, and tenant/workspace isolation into the product thesis and vocabulary.
+
+### Fixed
+- **Compiler Syntax Error:** Resolved a duplicate declaration of `cursorRules` in `localMockCompile` that was referencing undefined variables (`uiThemeRules`, `logicFileName`, and `logicRules`).
+
 ## [1.4.0] - 2026-06-20
 
 ### Added

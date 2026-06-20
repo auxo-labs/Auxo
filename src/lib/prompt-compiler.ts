@@ -90,7 +90,7 @@ ${signaturesText}
 
 ### Strict YAML Frontmatter Rules for ".cursor/rules/*.mdc" files:
 1. Every \`.mdc\` file MUST start with a raw YAML frontmatter block delimited by triple dashes \`---\`.
-2. Do NOT wrap the YAML block or the document in markdown code block fences (e.g. do not write \`\`\`yaml).
+2. Do NOT wrap the YAML block or the document in markdown code block fences (e.g. do not write \`\`\`yaml or \`\`\`). Triple dashes must be the absolute first characters on line 1.
 3. The frontmatter block must contain exactly these three fields:
    - \`description\`: A clear, descriptive string explaining when the rule applies.
    - \`globs\`: An array of glob string patterns mapping the rule to targeted directory paths.
@@ -102,6 +102,7 @@ globs: ["src/components/**/*", "src/app/**/*.tsx"]
 alwaysApply: false
 ---
 # React UI rules...
+5. **Crossover Domain Rule Files:** If the specification describes a system combining multiple SaaS archetypes or business domains (e.g., a B2B HealthTech clinic portal, or an AI-powered Fintech ledger), you MUST generate separate, dedicated, and scoped \`.mdc\` files for each domain (e.g., both \`.cursor/rules/tenant-rules.mdc\` and \`.cursor/rules/hipaa-rules.mdc\` for a B2B HealthTech CRM), each using its own targeted file path patterns in the \`globs\` array.
 
 ### Specific Instructions for "README.md" (The System North Star):
 - Establish the business domain and user context.
@@ -109,6 +110,7 @@ alwaysApply: false
 - **Section 2: Core Functional Pillars**: List the launch execution vectors (pillars) to protect product scope boundaries.
 - **Section 3: Ubiquitous Domain Vocabulary**: A markdown table mapping Human Term | Code Property (standardized camelCase) | Context Definition to ensure naming uniformity across the codebase (e.g. mapping human term "Ticker" to code property "ticker", "Average Cost" to "averagePrice", etc. depending on notes).
 - **Section 4: Context Matrix Directory Map**: Direct pointers to scoped context files (e.g., AGENTS.md for constitutions, CLAUDE.md for CLI flags, docs/phases.md for checking tasks, and README.md for System North Star). **DO NOT** list the whole file directory tree here.
+- **Crossover Alignment:** If the project is a crossover (e.g., B2B HealthTech), synthesize a cohesive thesis and vocabulary that reflects both domains (e.g., including both clinical/patient domain terms and tenant/billing/workspace domain terms in the vocabulary table).
 
 ### Specific Instructions for "AGENTS.md" (The Constitution):
 - Focus strictly on high-level stack declarations, global constraints, coding philosophies (e.g. Karpathy simplicity guidelines), and absolute constraints (e.g. no clerk auth, no database write permissions).
@@ -307,123 +309,152 @@ ${signaturesText}
 - **Dev Server:** \`npm run dev\`
 - **Build Verification:** \`npm run build\`
 - **Local Testing:** \`npm test\`
-- **Linter Checks:** \`npm run lint\``;
+- **Linter Checks:** \`npm run lint\``;  const rawLower = rawMarkdown.toLowerCase();
 
-  const rawLower = rawMarkdown.toLowerCase();
+  // 1. B2B Multi-Tenant CRUD / CRM / ATS
+  const isB2BCrm = /crm|ats|pipeline|tenant|workspace|b2b|hr|lead|customer/i.test(rawLower);
+  // 2. AI Wrapper / Vector Search / LLM Tool
+  const isAIWrapper = /openai|anthropic|gemini|llm|vector|rag|embedding|pinecone|agent/i.test(rawLower);
+  // 3. Two-Sided Marketplace / Directory
+  const isMarketplace = /marketplace|directory|booking|job board|hire|vendor|renter|platform/i.test(rawLower);
+  // 4. FinTech / Micro-Billing / Ledger Engine
+  const isFintech = /invoice|billing|ledger|crypto|wallet|accounting|tax|payout/i.test(rawLower);
+  // 5. Developer Tool / API Service / High-Volume Analytics
+  const isDevTool = /analytics|telemetry|api|webhook|logging|sdk|monitoring|clickhouse/i.test(rawLower);
+  // 6. HealthTech / Patient / Client Portal
+  const isHealthTech = /medical|patient|health|clinic|hipaa|therapy|doctor/i.test(rawLower);
+  // 7. Content Engine / Headless CMS / Newsletter Platform
+  const isContentEngine = /cms|blog|newsletter|markdown|course|education|subscribers/i.test(rawLower);
+  // 8. Multi-Device Local-First App / Sync Engine
+  const isLocalSync = /offline|local-first|pwa|indexeddb|sync|tauri|electron/i.test(rawLower);
 
-  // Dynamic path rules based on persona/niche context
-  let uiThemeRules = '';
-  let logicRules = '';
-  let logicFileName = 'logic-api.mdc';
+  const cursorRules: Record<string, string> = {};
 
-  if (/crypto|stock|portfolio|trade|finance|wealth|broker/i.test(rawLower)) {
-    logicFileName = 'finance-api.mdc';
-    uiThemeRules = `---
-description: Enforces the high-density Bloomberg Terminal aesthetic for frontend components
+  // Standard base UI rules frontmatter
+  let uiThemeRulesContent = `---
+description: General UI layout parameters and styling theme guidelines
 globs: ["src/components/**/*", "src/app/**/*.tsx"]
+alwaysApply: false
 ---
-# Bloomberg UI Styling Rules
-- **Theme:** Strict true-black layout (#000000). Never use slate or zinc grays.
-- **Accents:** Neon green (#10B981) for positive tickers, neon amber (#F59E0B) for warnings/neutral.
-- **Typography:** Strictly monospaced layout elements, high-density HTML data tables.
-- **Rule:** Never write business/calculation logic inside these components. Use services instead.`;
-
-    logicRules = `---
-description: Logic validation for data mapping and asset management API layers
-globs: ["src/lib/services/**/*", "src/app/api/**/*"]
----
-# Financial Engineering Rules
-- **Mock Enforcement:** Respect the \`NEXT_PUBLIC_USE_MOCK_DATA\` flag. If true, bypass external network requests and fetch mock structures instantly.
-- **Calculation Integrity:** Always double-check floating-point arithmetic. Wrap currency and percentage deltas through \`src/lib/utils/formatters.ts\`.
-- **Database Boundary:** Supabase connections must remain transient via Realtime Broadcast/Presence channels. No persistent stateful writes unless explicit.`;
-  } else if (/account|billing|invoice|ledger|audit|tax/i.test(rawLower)) {
-    logicFileName = 'ledger-rules.mdc';
-    uiThemeRules = `---
-description: Sober, high-contrast accounting layouts and spreadsheet grids
-globs: ["src/components/**/*", "src/app/**/*.tsx"]
----
-# Accounting UI Grid Rules
-- **Grid Layout:** Strict column alignment, clear tabular ledger sheets.
-- **Accents:** Muted colors. Unpaid is red, paid is dark emerald.
-- **Rule:** Never write double-entry or ledger balancing logic inside these views. Use services.`;
-
-    logicRules = `---
-description: Double-entry auditability and balancing ledger rules
-globs: ["src/lib/services/**/*", "src/app/api/**/*"]
----
-# Double-Entry Ledger Rules
-- **Balance Invariant:** Debits and Credits must balance to zero before transaction commits.
-- **Auditability:** Transactions can only be appended, never deleted or updated. Restorations require reversing transactions.`;
-  } else if (/pipeline|kafka|parquet|cron|worker|postgres|clickhouse|backend/i.test(rawLower)) {
-    logicFileName = 'systems-api.mdc';
-    uiThemeRules = `---
-description: System telemetry latency graphs and execution parameter aesthetics
-globs: ["src/components/**/*", "src/app/**/*.tsx"]
----
-# Telemetry Dashboard UI Rules
-- **Visuals:** Command-line status logs, latency indicators, gauge visuals.
-- **Contrast:** High contrast, clear indicators for failed worker channels.`;
-
-    logicRules = `---
-description: Kafka batching and stream-processing rules
-globs: ["src/lib/services/**/*", "src/app/api/**/*"]
----
-# Ingestion Stream Rules
-- **Zero Client Components:** Strict prohibition of writing frontend/React files.
-- **Batching Commits:** Ingestion events must pool and batch commit to ClickHouse in thresholds of 1000 records or 5 seconds.`;
-  } else if (/medical|health|patient|clinic|doctor|pharmacy/i.test(rawLower)) {
-    logicFileName = 'clinical-rules.mdc';
-    uiThemeRules = `---
-description: Medical patient tracker safety banners and clean typography layouts
-globs: ["src/components/**/*", "src/app/**/*.tsx"]
----
-# Patient Safety UI Rules
-- **Banners:** Patient emergency banners must be highly visible and color-coded.
-- **Typography:** Highly readable sans-serif layout systems for clinical settings.`;
-
-    logicRules = `---
-description: HIPAA auditing and data encryption policies
-globs: ["src/lib/services/**/*", "src/app/api/**/*"]
----
-# Clinical Data Rules
-- **HIPAA Logging:** Every read access to patient records must append to the HIPAA audit logs.
-- **Encryption at Rest:** Patient identity strings must always be parsed via encryptor functions.`;
-  } else if (/farm|agriculture|crop|plant|soil|weather/i.test(rawLower)) {
-    logicFileName = 'agriculture-rules.mdc';
-    uiThemeRules = `---
-description: Earthy UI theme layout parameters and sensor dials
-globs: ["src/components/**/*", "src/app/**/*.tsx"]
----
-# Telemetry Dashboard UI Rules
-- **Theme:** Earthy tones, weather-sensitive indicators, soil moisture scales.`;
-
-    logicRules = `---
-description: Telemetry calculations and weather mappings
-globs: ["src/lib/services/**/*", "src/app/api/**/*"]
----
-# Agricultural Telemetry Rules
-- **Sensor Fallback:** Sensor telemetry data must fall back to moving averages if sensor heartbeat is missing.
-- **Decimal Precision:** Soil metrics must maintain float rounding values (precisions up to 2 decimal spaces).`;
-  } else {
-    // Default general rules
-    uiThemeRules = `---
-description: Standard UI component styling and responsive layouts
-globs: ["src/components/**/*", "src/app/**/*.tsx"]
----
-# UI Component Invariants
+# UI Theme Guidelines
 - Layout: Use CSS-first layout rules using Tailwind CSS variables.
 - Accessibility: Apply standard semantic tags and ARIA descriptors.
 - Error Boundaries: Ensure user interfaces wrap client nodes in local error catch modules.`;
 
-    logicRules = `---
+  // Define dynamic logic rules targeting crossovers:
+  if (isB2BCrm) {
+    cursorRules['tenant-rules.mdc'] = `---
+description: Workspace segregation and row-level security (RLS) constraints for B2B CRM
+globs: ["src/lib/services/**/*", "src/app/api/**/*"]
+alwaysApply: false
+---
+# B2B Multi-Tenant Rules
+- **Workspace Isolation:** Every data query MUST filter by workspace separation keys (e.g., \`tenant_id\` or \`organization_id\`).
+- **Row-Level Security:** Enforce strict team-based RLS constraints on all database operations.
+- **Tenant Management:** Validate user organization membership inside route middleware before serving data.`;
+  }
+
+  if (isAIWrapper) {
+    cursorRules['ai-vector-rules.mdc'] = `---
+description: Prompts tracking, cost auditing, and vector stream-handling
+globs: ["src/lib/services/**/*", "src/app/api/**/*"]
+alwaysApply: false
+---
+# AI Vector Engineering Rules
+- **Prompt Auditing:** Maintain prompt-logging tables tracking input/output tokens and cost metrics.
+- **Cost Tracking:** Apply cost-tracking middleware to intercept LLM provider integrations.
+- **Streaming Handlers:** Handle OpenAI/Gemini streams cleanly, returning chunks to stream-handling UI components.`;
+  }
+
+  if (isMarketplace) {
+    cursorRules['marketplace-rules.mdc'] = `---
+description: State flow and location queries for two-sided marketplaces
+globs: ["src/lib/services/**/*", "src/app/api/**/*"]
+alwaysApply: false
+---
+# Two-Sided Marketplace Rules
+- **Role Invariant:** Maintain explicit isolation between Buyer and Seller state flows and profiles.
+- **Location Queries:** Apply geo-query filters to limit local search listings (within defined radius).
+- **Public Profile Routing:** Enforce structured profile slug validation.`;
+  }
+
+  if (isFintech) {
+    uiThemeRulesContent += `\n- **Theme:** Strict true-black terminal layout (#000000). Never use slate or zinc grays.\n- **Accents:** Neon green (#10B981) for positive tickers, neon amber (#F59E0B) for warnings/neutral.\n- **Typography:** Strictly monospaced layout elements, high-density HTML data tables.`;
+    cursorRules['ledger-rules.mdc'] = `---
+description: Double-entry financial audit logs and math guidelines
+globs: ["src/lib/services/**/*", "src/app/api/**/*"]
+alwaysApply: false
+---
+# Ledger Billing Rules
+- **Double-Entry Balance:** Financial entries must balance to zero before commit execution.
+- **Audit Trails:** Save all transactions to append-only financial audit logs. No updates or deletes.
+- **Math Guidelines:** All calculations must enforce exact scaling rules. Forbid floating-point issues; utilize integer cents.`;
+  }
+
+  if (isDevTool) {
+    cursorRules['ingestion-rules.mdc'] = `---
+description: Fast ingestion indexing patterns and validation routes
+globs: ["src/lib/services/**/*", "src/app/api/**/*"]
+alwaysApply: false
+---
+# Developer Tool Ingestion Rules
+- **Fast-Ingest Pipeline:** Batch commits to ClickHouse in pools of 1000 items or 5 seconds.
+- **Request Validation:** Route validation middleware must intercept and discard corrupt JSON payloads instantly.
+- **Indexing Patterns:** Keep index columns highly optimized for time-series querying.`;
+  }
+
+  if (isHealthTech) {
+    uiThemeRulesContent += `\n- **Safety Banner:** Clinical emergency banners must be highly visible and display top-level patient alerts.`;
+    cursorRules['hipaa-rules.mdc'] = `---
+description: HIPAA encrypted datastore protocols and audit trails
+globs: ["src/lib/services/**/*", "src/app/api/**/*"]
+alwaysApply: false
+---
+# HIPAA Clinical Data Rules
+- **Encrypted Storage:** Enforce encryption abstractions on all patient identity records.
+- **Activity Logging:** Maintain strict audit tables recording every query access to clinical logs.
+- **Zero Cache:** Zero-cached client state patterns on all patient telemetry views.`;
+  }
+
+  if (isContentEngine) {
+    cursorRules['cms-rules.mdc'] = `---
+description: Headless CMS caching paths and newsletter mailing queries
+globs: ["src/lib/services/**/*", "src/app/api/**/*"]
+alwaysApply: false
+---
+# Headless CMS Rules
+- **Caching Paths:** Enforce Static Site Generation (SSG) caching paths for markdown content.
+- **Email Queues:** Newsletter subscriptions must pool in an email queue table for transactional dispatch.
+- **Content Parsing:** Implement secure rich-text markdown parsing layers.`;
+  }
+
+  if (isLocalSync) {
+    cursorRules['sync-rules.mdc'] = `---
+description: Local CRDT resolution rules and network state bindings
+globs: ["src/lib/services/**/*", "src/app/api/**/*"]
+alwaysApply: false
+---
+# Local-First Sync Rules
+- **CRDT Synchronization:** Conflict-Free Replicated Data Type (CRDT) stubs must resolve local vs remote client states.
+- **Local Mirroring:** Sync and mirror databases to IndexedDB schemas on the client.
+- **State Listeners:** Setup online-offline network listeners to queue pending sync changes.`;
+  }
+
+  // If no specific logic rule matched, add the generic default rule file:
+  if (Object.keys(cursorRules).length === 0) {
+    cursorRules['logic-api.mdc'] = `---
 description: API response standards and standard db boundaries
 globs: ["src/lib/services/**/*", "src/app/api/**/*"]
+alwaysApply: false
 ---
 # Logic and API Invariants
 - Every API endpoint must return a structured JSON response.
 - Do not use custom query wrappers; write raw database client primitives.
 - **Verification Rule:** Every endpoint must pass local linter execution (\`npm run lint\`) before committing.`;
   }
+
+  // Save compiled UI theme content
+  cursorRules['ui-theme.mdc'] = uiThemeRulesContent;
 
   // Configure AI-Optimized README / System North Star dynamic content
   let prdThesis = 'SignalSignal is a high-density, real-time portfolio tracker and analytical canvas built for sovereign crypto and stock investors. It bridges the gap between chaotic retail trading interfaces and institutional-grade tooling, delivering split-second multi-asset portfolio visibility.';
@@ -438,7 +469,19 @@ globs: ["src/lib/services/**/*", "src/app/api/**/*"]
 | **Current Market Value** | \`totalValue\` | \`quantity\` multiplied by the live asset \`currentPrice\`. |
 | **Unrealized Gain/Loss** | \`pnlValue\` / \`pnlPercent\` | Net financial delta between cost basis and live valuation. |`;
 
-  if (/account|billing|invoice|ledger|audit|tax/i.test(rawLower)) {
+  if (isB2BCrm && isHealthTech) {
+    prdThesis = 'CareWorkspace is a multi-tenant B2B healthcare CRM and clinic management platform. It offers clinical teams secure workspace segregation for managing patients, appointments, and HIPAA-compliant care logs.';
+    prdProblem = 'Healthcare clinics struggle to manage multi-tenant practitioner workspaces while maintaining strict data isolation and clinical security. CareWorkspace provides a secure, zero-latency clinical CRM.';
+    prdPillars = `* **Multi-Tenant Clinical Portal:** Secure, workspace-isolated dashboard for clinic staff and medical practitioners.
+* **Patient & Care CRM Pipeline:** A visual CRM pipeline for patient intake, scheduling, and clinician assignments.
+* **HIPAA Activity Sandbox:** Encrypted patient data sandbox with real-time collaborative clinical chat.`;
+    prdVocab = `| Human Term | Code Property | Context Definition |
+| :--- | :--- | :--- |
+| **Workspace ID** | \`tenantId\` / \`organizationId\` | The unique partition key isolating clinic workspaces. |
+| **Patient Record** | \`patientRecordId\` | Safe medical record key linking patient metadata. |
+| **NHS / SSN ID** | \`encryptedNationalId\` | Securely encrypted patient identification key. |
+| **Clinic Staff** | \`practitionerId\` | Identifier for the active clinical user. |`;
+  } else if (isFintech) {
     prdThesis = 'LedgerCore is a high-integrity, double-entry audit bookkeeping engine designed for financial operations, bookkeeping, and cash flow tracing.';
     prdProblem = 'Manual bookkeeping is prone to credit/debit mismatch and tampering. LedgerCore enforces atomic ledger accounting and immutable audits.';
     prdPillars = `* **Ledger Books View:** Tabular layout representing journal entries.
@@ -555,11 +598,6 @@ For operational execution, do not dump system configs here. Navigate directly to
 - [ ] Audit linter code constraints using \`npm run lint\`.
 - [ ] Apply smooth micro-animations.`;
 
-  const cursorRules: Record<string, string> = {
-    'ui-theme.mdc': uiThemeRules,
-    [logicFileName]: logicRules
-  };
-
   return {
     agentsMd,
     claudeMd,
@@ -616,6 +654,51 @@ function parseMarkdownStream(stream: string): CompiledPack {
   return pack;
 }
 
+export function cleanMdcRuleContent(content: string): string {
+  let cleaned = content.trim();
+
+  // Strip wrapping markdown code blocks if the entire content is wrapped
+  if (cleaned.startsWith('```yaml')) {
+    cleaned = cleaned.replace(/^```yaml\n/, '').replace(/\n```$/, '').trim();
+  } else if (cleaned.startsWith('```')) {
+    cleaned = cleaned.replace(/^```\n/, '').replace(/\n```$/, '').trim();
+  }
+
+  // Check if it starts with the frontmatter triple dashes
+  if (!cleaned.startsWith('---')) {
+    // If it doesn't start with ---, but contains a heading (#) later,
+    // let's try to extract the YAML block and wrap it with ---.
+    const headingIndex = cleaned.search(/^#/m);
+    if (headingIndex > 0) {
+      let yamlPart = cleaned.substring(0, headingIndex).trim();
+      const markdownPart = cleaned.substring(headingIndex).trim();
+
+      yamlPart = yamlPart.replace(/```yaml|```/g, '').trim();
+      cleaned = `---\n${yamlPart}\n---\n\n${markdownPart}`;
+    } else {
+      cleaned = `---\ndescription: Cursor rules\nglobs: ["*"]\nalwaysApply: false\n---\n\n${cleaned}`;
+    }
+  }
+
+  // Now ensure the first frontmatter block has alwaysApply: false
+  const parts = cleaned.split('---');
+  if (parts.length >= 3) {
+    let frontmatter = parts[1];
+    frontmatter = frontmatter.replace(/```yaml|```/g, '').trim();
+    
+    if (frontmatter.includes('alwaysApply:')) {
+      frontmatter = frontmatter.replace(/alwaysApply\s*:\s*(true|false)/g, 'alwaysApply: false');
+    } else {
+      frontmatter += '\nalwaysApply: false';
+    }
+
+    const rest = parts.slice(2).join('---').trim();
+    cleaned = `---\n${frontmatter}\n---\n\n${rest}`;
+  }
+
+  return cleaned;
+}
+
 function saveFileContent(pack: CompiledPack, filename: string, content: string) {
   if (filename === 'AGENTS.md') {
     pack.agentsMd = content;
@@ -627,8 +710,8 @@ function saveFileContent(pack: CompiledPack, filename: string, content: string) 
     pack.readmeMd = content;
   } else if (filename.startsWith('.cursor/rules/')) {
     const ruleName = filename.replace('.cursor/rules/', '');
-    pack.cursorRules[ruleName] = content;
+    pack.cursorRules[ruleName] = cleanMdcRuleContent(content);
   } else {
-    pack.cursorRules[filename] = content;
+    pack.cursorRules[filename] = cleanMdcRuleContent(content);
   }
 }

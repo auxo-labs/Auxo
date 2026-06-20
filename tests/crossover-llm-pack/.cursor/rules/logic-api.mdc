@@ -1,0 +1,31 @@
+---
+description: Defines core system logic invariants, external service boundaries, and data handling protocols.
+globs: ["src/services/**/*", "src/utils/**/*", "src/lib/**/*", "src/server/**/*.ts", "src/app/api/**/*.ts"]
+alwaysApply: false
+---
+
+# Logic & API Invariants for CareWorkspace
+
+This document defines the fundamental invariants and operational protocols for all system logic, API endpoints, and service layer interactions within the CareWorkspace Clinic Portal. These rules ensure robustness, consistency, and compliance across the application's backend and data processing layers.
+
+## I. Core System Logic Invariants
+
+1.  **Mock Data Swappability**: All external service integrations, complex data fetching layers, and API endpoints must support a mock data mode. This should be controlled by a `NEXT_PUBLIC_USE_MOCK_DATA` environment variable, enabling seamless development and testing without live dependencies.
+2.  **Calculations Precision**: All numerical calculations, particularly those involving sensitive financial or medical values (e.g., dosage, billing, rates), must use appropriate decimal types (e.g., `Decimal.js` or database `NUMERIC` types) to prevent floating-point inaccuracies. All calculation logic must be thoroughly unit and integration tested.
+3.  **Robust Error Handling**: Implement centralized and standardized error handling across all service layers and API endpoints. Errors must be logged appropriately, and user-facing messages should be generic and informative without exposing sensitive backend details or stack traces.
+4.  **Idempotency**: Critical API actions that modify data (e.g., creating patient records, updating appointments) should, where possible, be designed to be idempotent to prevent duplicate operations in case of network retries.
+
+## II. External Service Boundaries
+
+1.  **Clear Encapsulation**: All interactions with third-party APIs (e.g., Supabase, potentially payment gateways, or other health services) must be encapsulated within dedicated service modules or functions. Avoid direct, unmediated calls to external APIs from business logic.
+2.  **Abstraction**: Create clear interfaces or abstraction layers for external services to facilitate future swapping or migration without impacting core business logic.
+
+## III. Supabase Interaction Protocols
+
+1.  **Realtime Preference**: For ephemeral, low-latency data synchronization and notifications (e.g., presence indicators, chat functionality), prefer using Supabase's Realtime Broadcast or Presence channels.
+2.  **Limited Direct Writes**: **STRICTLY LIMIT DIRECT DATABASE CONNECTIONS OR STATEFUL WRITES from any client-side context.** All data mutations (INSERT, UPDATE, DELETE) should primarily flow through secure, server-side mechanisms such as Next.js Server Actions, dedicated API routes, or Supabase Edge Functions.
+3.  **Row-Level Security (RLS)**: Design and enforce robust Row-Level Security policies within Supabase to ensure that users can only access data relevant to their `tenantId` and assigned roles, preventing direct bypasses via the API.
+4.  **Schema Enforcement**: Ensure strict schema validation on all data entering or leaving the database.
+
+## IV. General Coding Style & Principles
+All logic and API development must strictly adhere to the global coding philosophies outlined in `AGENTS.md`, including DRY, KISS, SOLID, YAGNI, JSDoc parameter documentation, respecting context budgets, and the absolute prohibition of placeholders.
