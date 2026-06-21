@@ -123,9 +123,17 @@
 
 - [x] **Step 19.1:** Design and implement a premium dark-themed `/pricing` page (`src/app/pricing/page.tsx`) with dynamic bento-style tier selection grid (Free BYOK, PAYG Compile, Developer Pack).
 - [x] **Step 19.2:** Link Stripe Checkout triggers to the selected Cloud tiers (credits vs developer pack) with proper checkout session payloads.
-- [/] **Step 19.3:** Verify redirects, webhook handlers, and auth indicator updates after purchase completion.
+- [x] **Step 19.3:** Verify redirects, webhook handlers, and auth indicator updates after purchase completion (using Stripe CLI locally to trigger mock `checkout.session.completed` events and verify user credits incrementing).
+- [ ] **Step 19.4:** Build an ultra-lean "Contact/Support" fallback mailto: link/button on the workspace room toolbar for compile failures or credit bugs.
 
-## Future Phases & Stretch Goals (Deferred)
+## Phase 20: Pre-Flight Checklist & Security Hardening
+
+- [ ] **Step 20.1 (Security):** Enable strict Row Level Security (RLS) policies on `public.profiles` table in Supabase so users can only view or update their own row.
+- [ ] **Step 20.2 (Security):** Implement and enforce Stripe webhook signature verification (`stripe-signature`) using the Webhook secret in `src/app/api/webhooks/stripe/route.ts`.
+- [ ] **Step 20.3 (Edge Cases):** Add client-side character limit validation to the scratchpad textarea to avoid expensive payload spikes or timeouts on massive text compiles.
+- [ ] **Step 20.4 (Edge Cases):** Validate that local storage hydration logic clears any malformed/corrupt keys from previous app iterations rather than causing room viewport layout crashes.
+
+## Future Phases & Stretch Goals (DEFERRED - ABSOLUTE FEATURE FREEZE ENFORCED)
 
 - [ ] **Scratchpad & Real-Time Collaboration Upgrades:**
   - Upgrade the editor UI from a plain `<textarea>` to a more creative visual area - flashcards, notes etc.

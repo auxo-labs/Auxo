@@ -5,9 +5,12 @@ All notable changes to the **Auxo** project are documented here.
 ## [1.7.0] - 2026-06-21
 
 ### Added
-- **Developer Pack (Bounded Premium Tier)**: Added a bounded 50-credit Developer Pack (£49 one-time) in place of the Unlimited Lifetime Pass to completely prevent hosted API key token abuse.
-- **Interactive Pricing Route**: Built a premium dark-themed `/pricing` page featuring three tier comparison cards (Free BYOK, PAYG 3x Credits for £15, and Developer Pack 50x Credits for £49) alongside a detailed capabilities matrix.
-- **Stripe Gated Webhooks**: Connected Stripe checkout sessions to credit user account profiles with 50 compiles upon developer pack checkout verification.
+- **Developer Pack (Tier 3)**: Implemented a bounded 50-credit Developer Pack for £9.99 (one-time) to prevent hosted API cost abuse while catering to heavy users.
+- **PAYG Starter Pack (Tier 2)**: Configured a bounded 15-credit pack for £4.99 (one-time).
+- **Interactive Pricing Route**: Created a premium dark-themed `/pricing` page comparing the three active compiler tiers (Free BYOK, £4.99 PAYG Pack, and £9.99 Developer Pack) with a detailed capability matrix.
+- **Stripe Integration & Webhooks**: Integrated checkout triggers and Stripe webhook receivers to provision 15 and 50 credits respectively upon transaction completions.
+- **Stripe Webhook E2E Verification**: Successfully configured Stripe CLI local forwarding to verify user credit provisioning dynamically via mock session completion triggers.
+- **Claude 4.5 Sonnet Migration**: Migrated default hosted cloud compiler models and BYOK configuration recommendations to `claude-sonnet-4-5`.
 
 ### Changed
 - **Settings Dialog Routing Relabel**: Changed compiler options tag label from "PAYG / LIFETIME" to "CLOUD CREDITS".
