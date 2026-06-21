@@ -1,6 +1,6 @@
 # Prompt Architecture: Parsing Greenfield Notes into 2026 AI Agent Context
 
-This research outlines the optimal specifications and architectural guidelines for generating AI developer context files (`AGENTS.md`, `CLAUDE.md`, and `.cursor/rules/`). Designing this mapping accurately is the **core technical moat** for Auxo. It ensures 2026 AI coding assistants (such as Claude Code, Cursor, Aider, and OpenClaw) operate with maximum accuracy, zero attention degradation, and optimal token efficiency.
+This research outlines the optimal specifications and architectural guidelines for generating AI developer context files (`AGENTS.md`, `CLAUDE.md`, `.windsurfrules`, and `.cursor/rules/`). Designing this mapping accurately is the **core technical moat** for Auxo. It ensures 2026 AI coding assistants (such as Antigravity, Claude Code, Cursor, VS Code, and Windsurf) operate with maximum accuracy, zero attention degradation, and optimal token efficiency.
 
 ---
 
@@ -17,6 +17,7 @@ graph TD
     A[Raw Brain-Dump] --> B[Auxo Parser]
     B --> C[AGENTS.md - Global Standard]
     B --> D[CLAUDE.md - CLI Commands]
+    B --> H[.windsurfrules - Windsurf Global]
     B --> E[.cursor/rules/ - Path-Scoped Rules]
     E --> F[api.mdc - Glob: src/app/api/**/*]
     E --> G[ui.mdc - Glob: src/components/**/*]
@@ -139,12 +140,18 @@ export function CustomButton({ label }: ComponentProps) {
 
 ---
 
-## 5. The Conversion Blueprint (Auxo Engine Rule)
+## 5. .windsurfrules (Windsurf Global Invariants)
+Similar to `AGENTS.md`, Windsurf reads `.windsurfrules` at the root of the project to ground the agentic loop in code invariants, styling guidelines, and command boundaries. Auxo mirrors the compiled `agentsMd` content into `.windsurfrules` to ensure instant Windsurf compatibility.
+
+---
+
+## 6. The Conversion Blueprint (Auxo Engine Rule)
 When Auxo converts chaotic founder notes into the agent stack, the LLM orchestration pipeline must apply the following **Parser Pipeline Matrix**:
 
 | Source Note Pattern | Target File | Structural Transformation |
 | :--- | :--- | :--- |
 | Tech stack, tools, project description | `AGENTS.md` | Maps to `System Overview` and `Directory Mappings`. |
+| Tech stack, tools, project description | `.windsurfrules` | Mirrors the `AGENTS.md` global rules structure for Windsurf compatibility. |
 | Exclusions, constraints ("no auth", "wiped instantly") | `AGENTS.md` | Formats into `Strict Constraints & Exclusions`. |
 | Script references, testing, deployment | `CLAUDE.md` | Compiles into `Build and Test Commands`. |
 | Database architecture, APIs, routes | `api.mdc` | Scopes into `.cursor/rules/api.mdc` with `globs: "src/app/api/**/*"`. |

@@ -1,6 +1,6 @@
 # AUXO DEVELOPER CONTEXT PROMPT
 
-You are an elite software architect and developer working on **Auxo** — a zero-auth, real-time collaborative sandbox that parses raw specifications into prompt-optimized file matrices (`AGENTS.md`, `CLAUDE.md`, and `.cursor/rules/*.mdc`) for 2026 AI IDEs.
+You are an elite software architect and developer working on **Auxo** — a zero-auth, real-time collaborative sandbox that parses raw specifications into prompt-optimized file matrices (`AGENTS.md`, `CLAUDE.md`, `.windsurfrules`, and `.cursor/rules/*.mdc`) for 2026 AI IDEs.
 
 ## 1. Architectural Guardrails
 

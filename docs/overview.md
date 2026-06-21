@@ -1,6 +1,6 @@
 # Auxo Architecture & System Overview
 
-Auxo is a zero-auth, collaborative prompt engineering workspace built with Next.js 16 (App Router) and Tailwind CSS v4. It parses unstructured brainstorming notes into structured, prompt-optimized context files (`AGENTS.md`, `CLAUDE.md`, and `.cursor/rules/`) for 2026 AI coding agents.
+Auxo is a zero-auth, collaborative prompt engineering workspace built with Next.js 16 (App Router) and Tailwind CSS v4. It parses unstructured brainstorming notes into structured, prompt-optimized context files (`AGENTS.md`, `CLAUDE.md`, `.windsurfrules`, and `.cursor/rules/`) for 2026 AI coding agents.
 
 ## 1. Directory Structure
 
@@ -44,7 +44,7 @@ auxo/
 *   **Premium Obsidian Design:** Built with high-contrast serif typography (`Playfair_Display`) and grid patterns (`dot-bg`), inspired by Aceternity and Refero Design.
 *   **Real-time Collaboration & Sync:** Syncs markdown keystrokes and builder presence in real-time using **Supabase Broadcast & Presence**, maintaining an ephemeral collaborative canvas.
 *   **Software 3.0 Context Matrix:** Processes raw notes into a multi-file matrix designed to keep agent context windows highly scoped, preventing "lost-in-the-middle" attention degradation.
-*   **Client-Side ZIP Bundling:** Uses `JSZip` to compile the generated context structure and initiate downloads of the exact file structure required by Cursor and Claude Code.
+*   **Client-Side ZIP Bundling:** Uses `JSZip` to compile the generated context structure and initiate downloads of the exact file structure required by Antigravity, Cursor, Claude Code, VS Code, and Windsurf (including `.windsurfrules`).
 *   **Hybrid Cloud & Bring Your Own Key (BYOK) Tiers:** Deep compilations can run via our hosted cloud infrastructure (gated by Supabase Auth and Stripe credit packs or a Lifetime Access Pass in GBP) or completely for free via BYOK. BYOK keys for Google Gemini, Anthropic, or OpenAI are stored strictly in client-side `localStorage` and bypass all authentication and payment checks.
 *   **LocalStorage Crash Safety:** Scratchpad content is continuously mirrored to `localStorage` by Room UUID, restoring the user's work automatically on refresh or accidental tab close.
 *   **Context Optimality Specs:** An interactive technical whitepaper hosted at `/optimality` detailing compiler scope boundaries, token efficiencies, and attention maps.

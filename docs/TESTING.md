@@ -10,7 +10,7 @@ The following test cases describe the verification procedures for the core funct
 | **TC-04** | Presence | Active Users Tracker | Connect multiple windows to the same sandbox room | Builder presence count matches total active tabs | PASS |
 | **TC-05** | Compiler | LLM Server Action | Type outlines and click "Compile Agent Pack" | Shows spinner, calls Server Action, returns structured files | PASS |
 | **TC-06** | Exporter | Pack Zip Exporter | Click "Compile Agent Pack" | Initiates download of `auxo-blueprint-[roomId].zip` | PASS |
-| **TC-07** | Exporter | Directory Matrix | Extract and inspect the downloaded `.zip` file | Contains root `AGENTS.md`, `CLAUDE.md`, and folder `.cursor/rules/` | PASS |
+| **TC-07** | Exporter | Directory Matrix | Extract and inspect the downloaded `.zip` file | Contains root `AGENTS.md`, `CLAUDE.md`, `.windsurfrules`, and folder `.cursor/rules/` | PASS |
 | **TC-08** | Auth | Magic Link Login | Click "SIGN IN" in toolbar, enter email, click send, open OTP link | Redirects back to active room, logs user in, and fetches profile credits | PASS |
 | **TC-09** | Compiler | Basic vs Premium Compile | Click "COMPILE BASIC" (Free) vs "DEEP AI COMPILE" (Premium) | Basic runs instantly. Premium requests Stripe checkout if no credits / not logged in | PASS |
 | **TC-10** | Stripe | Checkout & Webhooks | Click "DEEP AI COMPILE", complete checkout, run Stripe CLI forwarder | Updates user credits (+15 or +50 depending on tier), auto-compiles and triggers download | PASS |
