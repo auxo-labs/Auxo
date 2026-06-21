@@ -65,26 +65,26 @@ export async function POST(request: NextRequest) {
       if (tier === 'lifetime' || tier === 'pro') {
         const { error: updateError } = await supabaseAdmin
           .from('profiles')
-          .update({ credits: profile.credits + 50, is_lifetime: true })
+          .update({ credits: profile.credits + 75, is_lifetime: true })
           .eq('id', userId);
 
         if (updateError) {
           console.error('Failed to update developer credits:', updateError);
           return NextResponse.json({ error: 'Database update failed' }, { status: 500 });
         }
-        console.log(`Successfully credited 50 compiles to user ${userId} (New Balance: ${profile.credits + 50})`);
+        console.log(`Successfully credited 75 compiles to user ${userId} (New Balance: ${profile.credits + 75})`);
       } else {
-        // Default to adding 15 credits
+        // Default to adding 20 credits
         const { error: updateError } = await supabaseAdmin
           .from('profiles')
-          .update({ credits: profile.credits + 15 })
+          .update({ credits: profile.credits + 20 })
           .eq('id', userId);
 
         if (updateError) {
           console.error('Failed to increment user credits:', updateError);
           return NextResponse.json({ error: 'Database update failed' }, { status: 500 });
         }
-        console.log(`Successfully credited 15 compiles to user ${userId} (New Balance: ${profile.credits + 15})`);
+        console.log(`Successfully credited 20 compiles to user ${userId} (New Balance: ${profile.credits + 20})`);
       }
     }
 

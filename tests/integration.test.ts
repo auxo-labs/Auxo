@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { POST as webhookPOST } from '../src/app/api/webhooks/stripe/route';
 import { POST as compilePOST } from '../src/app/api/compile/route';
 import { NextRequest } from 'next/server';
+import { clearRateLimitLogs } from '../src/lib/rate-limiter';
 
 // 1. Mock DB queries
 const mockSingle = vi.fn().mockResolvedValue({
@@ -74,6 +75,7 @@ describe('Batch 2: Webhook and API Integration Tests', () => {
   beforeEach(() => {
     process.env = { ...originalEnv };
     vi.clearAllMocks();
+    clearRateLimitLogs();
   });
 
   afterEach(() => {
@@ -111,12 +113,12 @@ describe('Batch 2: Webhook and API Integration Tests', () => {
       expect(mockSelect).toHaveBeenCalled();
       expect(mockSingle).toHaveBeenCalled();
 
-      // Verify DB update was triggered with +15 credits increment (10 initial + 15 = 25)
-      expect(mockUpdate).toHaveBeenCalledWith({ credits: 25 });
+      // Verify DB update was triggered with +20 credits increment (10 initial + 20 = 30)
+      expect(mockUpdate).toHaveBeenCalledWith({ credits: 30 });
       expect(mockEq).toHaveBeenCalledWith('id', 'mock-user-uuid');
     });
 
-    it('should increment user credits by +50 for Developer Pack / Lifetime tier', async () => {
+    it('should increment user credits by +75 for Developer Pack / Lifetime tier', async () => {
       process.env.STRIPE_WEBHOOK_SECRET = 'whsec_test';
       
       const payload = {
@@ -138,8 +140,8 @@ describe('Batch 2: Webhook and API Integration Tests', () => {
       const response = await webhookPOST(request);
       expect(response.status).toBe(200);
 
-      // Verify DB update was triggered with +50 credits increment (10 initial + 50 = 60) and is_lifetime: true
-      expect(mockUpdate).toHaveBeenCalledWith({ credits: 60, is_lifetime: true });
+      // Verify DB update was triggered with +75 credits increment (10 initial + 75 = 85) and is_lifetime: true
+      expect(mockUpdate).toHaveBeenCalledWith({ credits: 85, is_lifetime: true });
     });
 
     it('should return 500 error if webhook secret is missing in production environment', async () => {
@@ -329,6 +331,35 @@ describe('Batch 2: Webhook and API Integration Tests', () => {
 
       expect(response.status).toBe(400);
       expect(data.error).toContain('exceeds the 15,000 character limit');
+    });
+
+    it('should rate limit requests exceeding 5 compiles per minute per IP (SEC-07)', async () => {
+      const payload = {
+        markdownText: '# Test Spec',
+        roomId: 'room-uuid',
+        compileType: 'basic'
+      };
+
+      // Execute 5 standard compile requests (within limits)
+      for (let i = 0; i < 5; i++) {
+        const req = new NextRequest('http://localhost/api/compile', {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
+        const res = await compilePOST(req);
+        expect(res.status).toBe(200);
+      }
+
+      // The 6th request from the same IP must be rate limited
+      const limitReq = new NextRequest('http://localhost/api/compile', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+      const limitRes = await compilePOST(limitReq);
+      const limitData = await limitRes.json();
+
+      expect(limitRes.status).toBe(429);
+      expect(limitData.error).toContain('Too many compile requests');
     });
   });
 

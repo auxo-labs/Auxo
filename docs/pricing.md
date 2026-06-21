@@ -34,29 +34,32 @@ $$\text{Fee} = 1.5\% + £0.20$$
 
 ## 4. Profit Margin Analysis by Tier
 
-### Tier 2: 15x Credits Pack (£4.99 One-time)
-*   **Total Revenue**: £4.99
-*   **Revenue per Compile**: £0.33
-*   **Stripe Fee**: £0.27 (1.5% of £4.99 + £0.20)
-*   **Direct Compile Costs**:
-    *   Stripe Fee split: £0.018 (£0.27 / 15 compiles)
-    *   API cost: £0.030
-    *   **Total cost per compile**: **£0.048**
-*   **Net Profit per Compile**: **£0.282**
-*   **Overall Tier Profit Margin**: **~85.5%**
-*   **Net Profit per Sale**: **£4.27**
-
-### Tier 3: Developer Pack (£9.99 One-time)
+### Tier 2: Builder Pack (£9.99 One-time, 20 Credits)
 *   **Total Revenue**: £9.99
-*   **Revenue per Compile**: £0.20
+*   **Revenue per Compile**: £0.50
 *   **Stripe Fee**: £0.35 (1.5% of £9.99 + £0.20)
 *   **Direct Compile Costs**:
-    *   Stripe Fee split: £0.007 (£0.35 / 50 compiles)
+    *   Stripe Fee split: £0.0175 (£0.35 / 20 compiles)
     *   API cost: £0.030
-    *   **Total cost per compile**: **£0.037**
-*   **Net Profit per Compile**: **£0.163**
-*   **Overall Tier Profit Margin**: **~81.5%**
-*   **Net Profit per Sale**: **£8.14**
+    *   **Total cost per compile**: **£0.0475**
+*   **Net Profit per Compile**: **£0.4525**
+*   **Overall Tier Profit Margin**: **~90.5%**
+*   **Net Profit per Sale**: **£9.04**
+
+### Tier 3: Founder/Developer Pack (£24.99 One-time, 75 Credits)
+*   **Total Revenue**: £24.99
+*   **Revenue per Compile**: £0.333
+*   **Stripe Fee**: £0.57 (1.5% of £24.99 + £0.20)
+*   **Direct Compile Costs**:
+    *   Stripe Fee split: £0.0076 (£0.57 / 75 compiles)
+    *   API cost: £0.030
+    *   **Total cost per compile**: **£0.0376**
+*   **Net Profit per Compile**: **£0.2954**
+*   **Overall Tier Profit Margin**: **~88.7%**
+*   **Net Profit per Sale**: **£22.17**
+
+### Tier 4: Enterprise/Team Pack (£49.00/month, Uncapped Teams)
+*   *Note:* Deferred to post-launch scaling phase.
 
 ---
 
@@ -66,4 +69,4 @@ Even if a power user compiles a massive scratchpad that reaches peak token capac
 *   Output Cost: 4,000 × $0.000015 = $0.060
 *   **Max API Cost per compile**: $0.084 (approx. **£0.06 GBP**)
 
-Because compiles are hard-gated by purchased database credits (15 and 50 respectively), the project is completely protected against infinite iteration runaway costs, guaranteeing a **80%+ net profit margin** under all circumstances.
+Because compiles are hard-gated by purchased database credits (20 and 75 respectively), the project is completely protected against infinite iteration runaway costs, guaranteeing an **85%+ net profit margin** under all circumstances.

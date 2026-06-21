@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { compilePromptPack } from '@/lib/prompt-compiler';
 import { resolveTechStack } from '@/lib/tech-resolver';
 import { supabase, supabaseAdmin } from '@/lib/supabase';
+import { checkRateLimit } from '@/lib/rate-limiter';
 import Stripe from 'stripe';
 
 /**
@@ -10,6 +11,16 @@ import Stripe from 'stripe';
  */
 export async function POST(request: NextRequest) {
   try {
+    // SEC-07: IP-Based Rate Limiting
+    const ip = (request as NextRequest & { ip?: string }).ip || request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || '127.0.0.1';
+    const rateLimit = checkRateLimit(ip);
+    if (rateLimit.limited) {
+      return NextResponse.json(
+        { error: `Too many compile requests. Please wait ${rateLimit.resetSeconds} seconds before compiling again.` },
+        { status: 429 }
+      );
+    }
+
     const body = await request.json();
     const { markdownText, roomId, sessionId, compileType, userConfig } = body;
 
@@ -76,7 +87,7 @@ export async function POST(request: NextRequest) {
               .single();
             if (data) {
               profileData = data;
-              if (data.is_lifetime || data.credits > 0) {
+              if (data.credits > 0) {
                 hasAccess = true;
               }
             }
@@ -91,11 +102,11 @@ export async function POST(request: NextRequest) {
                 hasAccess = true;
                 const isDeveloperPack = session.metadata?.tier === 'lifetime' || session.metadata?.tier === 'pro';
                 if (isDeveloperPack) {
-                  // Grant remaining 49 credits (+50 total minus 1 consumed now)
-                  await supabaseAdmin.from('profiles').update({ credits: (profileData?.credits || 0) + 49, is_lifetime: true }).eq('id', userId);
+                  // Grant remaining 74 credits (+75 total minus 1 consumed now)
+                  await supabaseAdmin.from('profiles').update({ credits: (profileData?.credits || 0) + 74, is_lifetime: true }).eq('id', userId);
                 } else {
-                  // Grant remaining 14 credits (+15 total minus 1 consumed now)
-                  await supabaseAdmin.from('profiles').update({ credits: (profileData?.credits || 0) + 14 }).eq('id', userId);
+                  // Grant remaining 19 credits (+20 total minus 1 consumed now)
+                  await supabaseAdmin.from('profiles').update({ credits: (profileData?.credits || 0) + 19 }).eq('id', userId);
                 }
               }
             } catch (err) {
@@ -119,8 +130,8 @@ export async function POST(request: NextRequest) {
             );
           }
 
-          // Decrement credit count if user is not lifetime and we didn't just credit them
-          if (profileData && !profileData.is_lifetime && profileData.credits > 0 && !sessionId) {
+          // Decrement credit count if user has credits remaining and this isn't a fresh checkout compile
+          if (profileData && profileData.credits > 0 && !sessionId) {
             const { error: updateError } = await supabaseAdmin
               .from('profiles')
               .update({ credits: profileData.credits - 1 })

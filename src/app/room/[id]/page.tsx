@@ -311,12 +311,14 @@ function RoomContent({ roomId }: { roomId: string }) {
               <span className="text-zinc-400 font-semibold">{user.email?.split('@')[0].toUpperCase()}</span>
               <span className="h-3 w-px bg-white/10" />
               {profile?.is_lifetime ? (
-                <span className="text-[9px] font-bold text-amber-400 font-mono">LIFETIME PRO</span>
-              ) : (
-                <span className="text-[9px] font-semibold text-zinc-400 font-mono">
-                  {profile?.credits ?? 0} {profile?.credits === 1 ? 'CREDIT' : 'CREDITS'}
-                </span>
-              )}
+                <>
+                  <span className="text-[9px] font-bold text-amber-400 font-mono">DEV PACK</span>
+                  <span className="h-3 w-px bg-white/10" />
+                </>
+              ) : null}
+              <span className="text-[9px] font-semibold text-zinc-400 font-mono">
+                {profile?.credits ?? 0} {profile?.credits === 1 ? 'CREDIT' : 'CREDITS'}
+              </span>
               <button
                 onClick={handleSignOut}
                 className="ml-1 text-zinc-500 hover:text-zinc-300 transition-colors cursor-pointer"

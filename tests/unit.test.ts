@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { cleanMdcRuleContent, parseMarkdownStream } from '../src/lib/prompt-compiler/parser';
 import { resolveTechStack } from '../src/lib/tech-resolver';
+import { obfuscateKey, deobfuscateKey } from '../src/lib/encryption';
 
 // Mock the global fetch object for registry.npmjs.org lookups in resolveTechStack tests
 global.fetch = vi.fn().mockImplementation(() =>
@@ -88,6 +89,29 @@ Welcome to Auxo.`;
       const input = `A pure python worker script doing background task pipelines.`;
       const result = await resolveTechStack(input);
       expect(result).toHaveLength(0);
+    });
+  });
+
+  describe('LocalStorage Key Encryption (SEC-08)', () => {
+
+    it('should encrypt keys to a non-plain-text representation', () => {
+      const rawKey = 'sk-ant-test-key-12345';
+      const obfuscated = obfuscateKey(rawKey);
+      expect(obfuscated).not.toBe(rawKey);
+      expect(obfuscated).not.toContain('sk-ant');
+    });
+
+    it('should correctly decrypt obfuscated keys back to plain-text', () => {
+      const rawKey = 'sk-or-gemini-key-999';
+      const obfuscated = obfuscateKey(rawKey);
+      const decrypted = deobfuscateKey(obfuscated);
+      expect(decrypted).toBe(rawKey);
+    });
+
+    it('should fall back to raw string if decrypting legacy/un-obfuscated keys', () => {
+      const legacyKey = 'sk-legacy-unencrypted-key';
+      const decrypted = deobfuscateKey(legacyKey);
+      expect(decrypted).toBe(legacyKey);
     });
   });
 

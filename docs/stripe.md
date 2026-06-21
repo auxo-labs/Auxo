@@ -64,12 +64,12 @@ When migrating from testing to a live production environment, complete these ste
 ### A. Product and Pricing Configuration
 You must create the corresponding product records in your Stripe Dashboard to map checkout sessions correctly:
 1. Go to your **Stripe Dashboard -> Products**.
-2. **Create Product 1 (PAYG Compile Pack):**
-   * Name: `Auxo 15x AI Compile Credit Pack`
-   * Pricing: `£4.99` (One-time fee)
-3. **Create Product 2 (Developer Pack):**
-   * Name: `Auxo Developer Pack`
+2. **Create Product 1 (Builder Pack):**
+   * Name: `Auxo 20x AI Compile Credit Pack`
    * Pricing: `£9.99` (One-time fee)
+3. **Create Product 2 (Founder/Developer Pack):**
+   * Name: `Auxo Developer Pack`
+   * Pricing: `£24.99` (One-time fee)
 
 ### B. Production Webhook Setup
 Once your application is deployed to your live URL (e.g. Vercel or custom domain):

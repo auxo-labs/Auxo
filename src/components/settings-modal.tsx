@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { X, Eye, EyeOff, Settings, Sparkles, Key } from 'lucide-react';
 import { UserConfig } from '@/lib/prompt-compiler';
+import { obfuscateKey, deobfuscateKey } from '@/lib/encryption';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -48,19 +49,22 @@ export function SettingsModal({ isOpen, onClose, onSave }: SettingsModalProps) {
   // API keys state
   const [openaiKey, setOpenaiKey] = React.useState(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('auxo-settings-openai-key') || '';
+      const raw = localStorage.getItem('auxo-settings-openai-key') || '';
+      return deobfuscateKey(raw);
     }
     return '';
   });
   const [anthropicKey, setAnthropicKey] = React.useState(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('auxo-settings-anthropic-key') || '';
+      const raw = localStorage.getItem('auxo-settings-anthropic-key') || '';
+      return deobfuscateKey(raw);
     }
     return '';
   });
   const [geminiKey, setGeminiKey] = React.useState(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('auxo-settings-gemini-key') || '';
+      const raw = localStorage.getItem('auxo-settings-gemini-key') || '';
+      return deobfuscateKey(raw);
     }
     return '';
   });
@@ -74,11 +78,11 @@ export function SettingsModal({ isOpen, onClose, onSave }: SettingsModalProps) {
 
   const handleSave = () => {
     localStorage.setItem('auxo-settings-provider', provider);
-    localStorage.setItem('auxo-settings-openai-key', openaiKey);
+    localStorage.setItem('auxo-settings-openai-key', obfuscateKey(openaiKey));
     localStorage.setItem('auxo-settings-openai-model', openaiModel);
-    localStorage.setItem('auxo-settings-anthropic-key', anthropicKey);
+    localStorage.setItem('auxo-settings-anthropic-key', obfuscateKey(anthropicKey));
     localStorage.setItem('auxo-settings-anthropic-model', anthropicModel);
-    localStorage.setItem('auxo-settings-gemini-key', geminiKey);
+    localStorage.setItem('auxo-settings-gemini-key', obfuscateKey(geminiKey));
     localStorage.setItem('auxo-settings-gemini-model', geminiModel);
 
     let apiKey = undefined;

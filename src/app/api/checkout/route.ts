@@ -37,11 +37,11 @@ export async function POST(request: NextRequest) {
 
     // Select pricing structure based on tier selection
     const isDeveloperPack = tier === 'lifetime' || tier === 'pro';
-    const priceAmount = isDeveloperPack ? 999 : 499; // £9.99 GBP vs £4.99 GBP
-    const productName = isDeveloperPack ? 'Auxo Developer Pack' : 'Auxo 15x AI Compile Credit Pack';
+    const priceAmount = isDeveloperPack ? 2499 : 999; // £24.99 GBP vs £9.99 GBP
+    const productName = isDeveloperPack ? 'Auxo Developer Pack' : 'Auxo 20x AI Compile Credit Pack';
     const productDesc = isDeveloperPack
-      ? '50 premium deep LLM compiles grounded in live package registry metadata.'
-      : '15 premium deep LLM compiles grounded in live package registry metadata.';
+      ? '75 premium deep LLM compiles grounded in live package registry metadata.'
+      : '20 premium deep LLM compiles grounded in live package registry metadata.';
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],

@@ -2,6 +2,7 @@ import * as React from 'react';
 import { supabase } from '@/lib/supabase';
 import { User as SupabaseUser } from '@supabase/supabase-js';
 import { UserConfig } from '@/lib/prompt-compiler';
+import { deobfuscateKey } from '@/lib/encryption';
 
 interface RoomSyncResult {
   markdownText: string;
@@ -55,13 +56,16 @@ export function useRoomSync(roomId: string): RoomSyncResult {
     let model = undefined;
 
     if (provider === 'openai') {
-      apiKey = localStorage.getItem('auxo-settings-openai-key') || '';
+      const rawKey = localStorage.getItem('auxo-settings-openai-key') || '';
+      apiKey = deobfuscateKey(rawKey);
       model = localStorage.getItem('auxo-settings-openai-model') || 'gpt-4o-mini';
     } else if (provider === 'anthropic') {
-      apiKey = localStorage.getItem('auxo-settings-anthropic-key') || '';
+      const rawKey = localStorage.getItem('auxo-settings-anthropic-key') || '';
+      apiKey = deobfuscateKey(rawKey);
       model = localStorage.getItem('auxo-settings-anthropic-model') || 'claude-sonnet-4-5';
     } else if (provider === 'gemini') {
-      apiKey = localStorage.getItem('auxo-settings-gemini-key') || '';
+      const rawKey = localStorage.getItem('auxo-settings-gemini-key') || '';
+      apiKey = deobfuscateKey(rawKey);
       model = localStorage.getItem('auxo-settings-gemini-model') || 'gemini-2.5-flash';
     }
 

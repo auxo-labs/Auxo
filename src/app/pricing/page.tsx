@@ -224,10 +224,10 @@ export default function PricingPage() {
               <Sparkles className="w-4 h-4" />
             </div>
 
-            <h3 className="text-xs font-mono tracking-widest text-zinc-200 uppercase font-bold">15x Cloud Compiles</h3>
+            <h3 className="text-xs font-mono tracking-widest text-zinc-200 uppercase font-bold">20x Cloud Compiles</h3>
             
             <div className="my-4">
-              <span className="font-serif text-3xl text-zinc-100 font-normal">£4.99</span>
+              <span className="font-serif text-3xl text-zinc-100 font-normal">£9.99</span>
               <span className="text-[10px] font-mono text-zinc-500 tracking-wider"> / ONE-TIME</span>
             </div>
 
@@ -238,7 +238,7 @@ export default function PricingPage() {
             <ul className="mt-6 space-y-2.5 text-[10px] font-mono text-zinc-500 border-t border-cyan-500/10 pt-4 flex-shrink-0">
               <li className="flex items-center gap-2">
                 <Check className="w-3 h-3 text-cyan-500 shrink-0" />
-                <span>15 deep AI compile credits</span>
+                <span>20 deep AI compile credits</span>
               </li>
               <li className="flex items-center gap-2">
                 <Check className="w-3 h-3 text-cyan-500 shrink-0" />
@@ -258,7 +258,7 @@ export default function PricingPage() {
               {purchasingTier === 'credits' ? (
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
               ) : (
-                'BUY CREDITS PACK'
+                'BUY BUILDER PACK'
               )}
             </button>
           </div>
@@ -273,21 +273,21 @@ export default function PricingPage() {
               <Sparkles className="w-4 h-4 text-zinc-300" />
             </div>
 
-            <h3 className="text-xs font-mono tracking-widest text-zinc-200 uppercase font-bold">Developer Pack</h3>
+            <h3 className="text-xs font-mono tracking-widest text-zinc-200 uppercase font-bold">Founder / Developer Pack</h3>
             
             <div className="my-4">
-              <span className="font-serif text-3xl text-zinc-100 font-normal">£9.99</span>
+              <span className="font-serif text-3xl text-zinc-100 font-normal">£24.99</span>
               <span className="text-[10px] font-mono text-zinc-500 tracking-wider"> / ONE-TIME</span>
             </div>
 
             <p className="text-[11px] text-zinc-400 leading-relaxed font-sans flex-grow">
-              50 premium cloud compilations. Complete high-priority access to our hosted high-speed LLM keys for all your workspace rooms, with no setup required.
+              75 premium cloud compilations. Complete high-priority access to our hosted high-speed LLM keys for all your workspace rooms, with no setup required.
             </p>
 
             <ul className="mt-6 space-y-2.5 text-[10px] font-mono text-zinc-500 border-t border-white/5 pt-4 flex-shrink-0">
               <li className="flex items-center gap-2">
                 <Check className="w-3 h-3 text-emerald-500 shrink-0" />
-                <span>50 deep AI compile credits</span>
+                <span>75 deep AI compile credits</span>
               </li>
               <li className="flex items-center gap-2">
                 <Check className="w-3 h-3 text-emerald-500 shrink-0" />
@@ -323,8 +323,8 @@ export default function PricingPage() {
                 <tr className="border-b border-white/5 text-zinc-500 text-[10px] tracking-wider">
                   <th className="pb-3 text-left font-semibold">CAPABILITY</th>
                   <th className="pb-3 text-left font-semibold">BYOK FREE</th>
-                  <th className="pb-3 text-left font-semibold">PAYG PACK</th>
-                  <th className="pb-3 text-left font-semibold">DEVELOPER PACK</th>
+                  <th className="pb-3 text-left font-semibold">BUILDER PACK</th>
+                  <th className="pb-3 text-left font-semibold">FOUNDER/DEV PACK</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/[0.02]">
@@ -337,8 +337,8 @@ export default function PricingPage() {
                 <tr>
                   <td className="py-3 text-zinc-300">Compilation Limits</td>
                   <td className="py-3">Infinite</td>
-                  <td className="py-3">15 Credits</td>
-                  <td className="py-3">50 Credits</td>
+                  <td className="py-3">20 Credits</td>
+                  <td className="py-3">75 Credits</td>
                 </tr>
                 <tr>
                   <td className="py-3 text-zinc-300">Scratchpad Limit</td>

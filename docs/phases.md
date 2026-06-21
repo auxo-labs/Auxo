@@ -141,13 +141,13 @@
 - [x] **Step 21.2:** Write Batch 1 unit tests validating local compiler parsers and NPM version resolutions.
 - [x] **Step 21.3:** Write Batch 2 integration tests targeting Stripe webhooks and API routing compilers.
 
+## Phase 22: Monetisation Upgrade & Security Hardening (Active Phase)
 
-## Phase 22: Student & Academic Compilation Support (Active Phase)
-
-- [ ] **Step 22.1:** Add keyword detection and local academic templates in `mock-compiler.ts` (e.g. thesis, essay, computer science homework, lab reports).
-- [ ] **Step 22.2:** Update `system-prompt.ts` with AI compiler guidelines for academic tone, citation compliance (APA/MLA/IEEE), and plagiarism prevention.
-- [ ] **Step 22.3:** Write unit tests in `tests/unit.test.ts` to validate student compilation outcomes.
-- [ ] **Step 22.4:** Verify full test execution and build checks.
+- [ ] **Step 22.1:** Refactor Stripe checkout API and UI prices/tier descriptions (Tier 2: £9.99 for 20 compiles; Tier 3: £24.99 for 75 compiles).
+- [ ] **Step 22.2:** Update Stripe Webhook handler and API Compile route to credit 20 compiles and 75 compiles respectively on Stripe webhook checkout completions.
+- [ ] **Step 22.3:** Implement SEC-08: Encrypt/obfuscate client-side BYOK keys stored in `localStorage` to protect against script-injection key scraping.
+- [ ] **Step 22.4:** Implement SEC-07: Integrate basic IP/user-based compilation rate limiting for `/api/compile` to protect against automated spamming.
+- [ ] **Step 22.5:** Update unit and integration tests to cover new pricing balances, rate-limits, and encryption, and run verify builds.
 
 ## Future Phases & Stretch Goals (DEFERRED - ABSOLUTE FEATURE FREEZE ENFORCED)
 
@@ -155,3 +155,17 @@
   - Upgrade the editor UI from a plain `<textarea>` to a more creative visual area - flashcards, notes etc.
   - Add real-time collaboration features.
 
+# potential future phases
+
+## Phase F1: Student & Academic Compilation Support
+
+- [ ] **Step F1.1:** Add keyword detection and local academic templates in `mock-compiler.ts` (e.g. thesis, essay, computer science homework, lab reports).
+- [ ] **Step F1.2:** Update `system-prompt.ts` with AI compiler guidelines for academic tone, citation compliance (APA/MLA/IEEE), and plagiarism prevention.
+- [ ] **Step F1.3:** Write unit tests in `tests/unit.test.ts` to validate student compilation outcomes.
+- [ ] **Step F1.4:** Verify full test execution and build checks.
+
+## Phase F2: Enterprise / Team Pack
+
+- [ ] **Step F2.1:** Implement uncapped hosted compilation endpoints for enterprise accounts.
+- [ ] **Step F2.2:** Build team shared room workspace folders and persistent history explorers.
+- [ ] **Step F2.3:** Integrate team unified billing management console and monthly Stripe subscriptions.
