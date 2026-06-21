@@ -14,6 +14,7 @@ export async function exportCompiledPackToZip(
 ): Promise<void> {
   const zip = new JSZip();
   zip.file('AGENTS.md', targetFiles.agentsMd);
+  zip.file('.windsurfrules', targetFiles.agentsMd);
   zip.file('CLAUDE.md', targetFiles.claudeMd);
   zip.file('phases.md', targetFiles.phasesMd);
   zip.file('README.md', targetFiles.readmeMd);

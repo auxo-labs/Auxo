@@ -3,8 +3,29 @@
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useState, useEffect, useRef } from 'react';
-import { ArrowRight, Shield, RefreshCw, Cpu, Layers } from 'lucide-react';
+import { ArrowRight, Shield, RefreshCw, Cpu, Layers, Terminal, Code, Compass, Zap, Sparkles, Laptop } from 'lucide-react';
 import { SupportModal } from '@/components/support-modal';
+
+function IdeLogo({ name, fallbackIcon: Icon, colorClass }: { name: string; fallbackIcon: React.ComponentType<{ className?: string }>; colorClass: string }) {
+  const [hasError, setHasError] = useState(false);
+  const logoPath = `/logos/${name.toLowerCase().replace(/\s+/g, '')}.svg`;
+
+  return (
+    <div className="w-5 h-5 flex items-center justify-center rounded border border-white/10 bg-white/5 overflow-hidden">
+      {hasError ? (
+        <Icon className={`w-3 h-3 ${colorClass}`} />
+      ) : (
+        /* eslint-disable-next-line @next/next/no-img-element */
+        <img
+          src={logoPath}
+          alt={`${name} Logo`}
+          className="w-3.5 h-3.5 object-contain animate-fade-in"
+          onError={() => setHasError(true)}
+        />
+      )}
+    </div>
+  );
+}
 
 export default function Home() {
   const router = useRouter();
@@ -92,7 +113,7 @@ export default function Home() {
 
         {/* Subtitle */}
         <p className="max-w-2xl mx-auto mt-6 text-sm sm:text-base text-zinc-400 font-sans leading-relaxed">
-          Turn chaotic, conversational product roadmaps into perfectly optimised context frameworks for 2026 AI IDEs (Cursor, Claude Code, Aider) in 60 seconds.
+          Auxo is a zero-auth context compiler for AI code assistants. It shards raw product roadmaps, requirements, and tech stack details into folder-scoped, prompt-optimized rule files—preventing attention degradation while saving up to <strong className="text-zinc-200">16.6% in token overhead</strong>.
         </p>
 
         {/* Action Button Section with fine line borders */}
@@ -121,48 +142,124 @@ export default function Home() {
           </div>
         </div>
 
+        {/* Compatible AI IDEs & Editors Showcase */}
+        <div className="mt-20 w-full max-w-5xl">
+          <h2 className="font-mono text-[10px] text-zinc-500 uppercase tracking-[0.2em] mb-6">
+            Compatible Cognitive IDEs & Agents
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+            
+            {/* Antigravity */}
+            <div className="p-4 rounded-lg border border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.02] transition-all duration-200 flex flex-col items-start text-left">
+              <div className="flex items-center gap-2 mb-2">
+                <IdeLogo name="Antigravity" fallbackIcon={Sparkles} colorClass="text-cyan-400" />
+                <span className="font-mono text-xs font-semibold text-zinc-200 tracking-wider">Antigravity</span>
+              </div>
+              <p className="text-[10px] text-zinc-500 leading-relaxed font-sans">
+                Generates <code className="text-accent text-[9px] font-mono">AGENTS.md</code> and high-level architecture maps to align advanced cognitive loops.
+              </p>
+            </div>
+
+            {/* Cursor */}
+            <div className="p-4 rounded-lg border border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.02] transition-all duration-200 flex flex-col items-start text-left">
+              <div className="flex items-center gap-2 mb-2">
+                <IdeLogo name="Cursor" fallbackIcon={Code} colorClass="text-purple-400" />
+                <span className="font-mono text-xs font-semibold text-zinc-200 tracking-wider">Cursor</span>
+              </div>
+              <p className="text-[10px] text-zinc-500 leading-relaxed font-sans">
+                Compiles folder-scoped <code className="text-accent text-[9px] font-mono">.cursor/rules/*.mdc</code> rule sets with YAML frontmatter.
+              </p>
+            </div>
+
+            {/* Claude Code */}
+            <div className="p-4 rounded-lg border border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.02] transition-all duration-200 flex flex-col items-start text-left">
+              <div className="flex items-center gap-2 mb-2">
+                <IdeLogo name="Claude Code" fallbackIcon={Terminal} colorClass="text-orange-400" />
+                <span className="font-mono text-xs font-semibold text-zinc-200 tracking-wider">Claude Code</span>
+              </div>
+              <p className="text-[10px] text-zinc-500 leading-relaxed font-sans">
+                Writes strict shell commands and tool policies in <code className="text-accent text-[9px] font-mono">CLAUDE.md</code> to halt token exploration.
+              </p>
+            </div>
+
+            {/* VS Code */}
+            <div className="p-4 rounded-lg border border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.02] transition-all duration-200 flex flex-col items-start text-left">
+              <div className="flex items-center gap-2 mb-2">
+                <IdeLogo name="VS Code" fallbackIcon={Laptop} colorClass="text-blue-400" />
+                <span className="font-mono text-xs font-semibold text-zinc-200 tracking-wider">VS Code</span>
+              </div>
+              <p className="text-[10px] text-zinc-500 leading-relaxed font-sans">
+                Grounds custom extensions and Copilot rules using root blueprints like <code className="text-accent text-[9px] font-mono">AGENTS.md</code>.
+              </p>
+            </div>
+
+            {/* Windsurf */}
+            <div className="p-4 rounded-lg border border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.02] transition-all duration-200 flex flex-col items-start text-left">
+              <div className="flex items-center gap-2 mb-2">
+                <IdeLogo name="Windsurf" fallbackIcon={Compass} colorClass="text-emerald-400" />
+                <span className="font-mono text-xs font-semibold text-zinc-200 tracking-wider">Windsurf</span>
+              </div>
+              <p className="text-[10px] text-zinc-500 leading-relaxed font-sans">
+                Builds global stack rules in <code className="text-accent text-[9px] font-mono">.windsurfrules</code> to ground the agent in stack invariants.
+              </p>
+            </div>
+
+            {/* Aider */}
+            <div className="p-4 rounded-lg border border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.02] transition-all duration-200 flex flex-col items-start text-left">
+              <div className="flex items-center gap-2 mb-2">
+                <IdeLogo name="Aider" fallbackIcon={Zap} colorClass="text-yellow-400" />
+                <span className="font-mono text-xs font-semibold text-zinc-200 tracking-wider">Aider</span>
+              </div>
+              <p className="text-[10px] text-zinc-500 leading-relaxed font-sans">
+                Generates precise chat blueprints and version-grounded packages to accelerate multi-file chat edits.
+              </p>
+            </div>
+
+          </div>
+        </div>
+
         {/* 5. Minimalist Bento Grid Section */}
-        <div className="grid gap-4 mt-24 text-left sm:grid-cols-3 w-full">
+        <div className="grid gap-4 mt-20 text-left sm:grid-cols-3 w-full">
           
           {/* Card 1 */}
           <div className="p-6 rounded-lg border border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.02] transition-all duration-150 relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-3 text-[10px] font-mono text-zinc-700 font-bold group-hover:text-zinc-600 transition-colors">
-              01 // BYOK
+              01 // BYOK PRIVACY
             </div>
             <div className="flex items-center justify-center w-8 h-8 rounded border border-white/10 bg-white/[0.02] text-zinc-400 mb-6">
               <Shield className="w-4 h-4" />
             </div>
-            <h3 className="text-xs font-mono tracking-widest text-zinc-200 uppercase font-bold">Bring Your Own Key</h3>
+            <h3 className="text-xs font-mono tracking-widest text-zinc-200 uppercase font-bold">Zero-Telemetry BYOK</h3>
             <p className="mt-2 text-xs text-zinc-400 leading-relaxed font-sans">
-              Compile prompts completely for free using your private Gemini, Anthropic, or OpenAI API key. Stored securely in client memory, bypassing hosted billing logic to grant you infinite cloud compilations.
+              Compile prompts completely for free using private OpenAI, Anthropic, or Gemini keys. Stored strictly in local browser memory with zero server telemetry or DB data leakage.
             </p>
           </div>
 
           {/* Card 2 */}
           <div className="p-6 rounded-lg border border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.02] transition-all duration-150 relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-3 text-[10px] font-mono text-zinc-700 font-bold group-hover:text-zinc-600 transition-colors">
-              02 // ORCHESTRATE
+              02 // OPTIMISE
             </div>
             <div className="flex items-center justify-center w-8 h-8 rounded border border-white/10 bg-white/[0.02] text-zinc-400 mb-6">
               <Cpu className="w-4 h-4" />
             </div>
-            <h3 className="text-xs font-mono tracking-widest text-zinc-200 uppercase font-bold">Multi-Agent Split parsing</h3>
+            <h3 className="text-xs font-mono tracking-widest text-zinc-200 uppercase font-bold">Context Sharding</h3>
             <p className="mt-2 text-xs text-zinc-400 leading-relaxed font-sans">
-              Avoids lost-in-the-middle context fragmentation. Splits goals, stack constraints, and pathing definitions into bite-sized scoped files.
+              Halts lost-in-the-middle context drift. Automatically shards requirements into file-scoped rules so your AI assistant only loads context relevant to what is currently open.
             </p>
           </div>
 
           {/* Card 3 */}
           <div className="p-6 rounded-lg border border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.02] transition-all duration-150 relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-3 text-[10px] font-mono text-zinc-700 font-bold group-hover:text-zinc-600 transition-colors">
-              03 // COMPILE
+              03 // DELIVER
             </div>
             <div className="flex items-center justify-center w-8 h-8 rounded border border-white/10 bg-white/[0.02] text-zinc-400 mb-6">
               <Layers className="w-4 h-4" />
             </div>
-            <h3 className="text-xs font-mono tracking-widest text-zinc-200 uppercase font-bold">Ready-to-Feed Zip</h3>
+            <h3 className="text-xs font-mono tracking-widest text-zinc-200 uppercase font-bold">Drop-in rule packages</h3>
             <p className="mt-2 text-xs text-zinc-400 leading-relaxed font-sans">
-              Press &quot;Compile Pack&quot; to download the exact file directory expected by Cursor, Aider, and Claude Code. Start coding with perfect context alignment.
+              Download the exact file structure expected by your AI IDE in one click. Drop the compiled directory into your workspace root to immediately ground your agent.
             </p>
           </div>
 
