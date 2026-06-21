@@ -33,23 +33,12 @@ function RoomContent({ roomId }: { roomId: string }) {
     userConfig,
     setUserConfig,
     usersCount,
-    setUsersCount,
     connectionStatus,
-    setConnectionStatus
+    broadcastTextChange
   } = useRoomSync(roomId);
 
   // ── UI / Controller State ──────────────────────────────────────────────────
-  const [compiledFiles, setCompiledFiles] = React.useState<CompiledPack | null>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const cached = localStorage.getItem(`auxo-compiled-room-${roomId}`);
-        if (cached) return JSON.parse(cached);
-      } catch (err) {
-        console.error('Failed to restore compiled files cache:', err);
-      }
-    }
-    return null;
-  });
+  const [compiledFiles, setCompiledFiles] = React.useState<CompiledPack | null>(null);
   const [activeFile, setActiveFile] = React.useState<string>('README.md');
   const [copiedLink, setCopiedLink] = React.useState(false);
   const [isCompiling, setIsCompiling] = React.useState(false);
@@ -291,13 +280,27 @@ function RoomContent({ roomId }: { roomId: string }) {
   }, [searchParams]);
 
 
-  // Mirror compiled files changes to LocalStorage
+  // Hydrate compiled files from localStorage after mount — must not run on server
+  // to avoid SSR/client HTML mismatch on the conditional DOWNLOAD PACK button.
+  React.useEffect(() => {
+    try {
+      const cached = localStorage.getItem(`auxo-compiled-room-${roomId}`);
+      if (cached) {
+        setTimeout(() => {
+          setCompiledFiles(JSON.parse(cached));
+        }, 0);
+      }
+    } catch (err) {
+      console.error('Failed to restore compiled files cache:', err);
+    }
+  }, [roomId]);
+
+  // Mirror compiled files to LocalStorage whenever they change (write-only — no
+  // delete on null to avoid clearing the cache before hydration completes).
   React.useEffect(() => {
     try {
       if (compiledFiles) {
         localStorage.setItem(`auxo-compiled-room-${roomId}`, JSON.stringify(compiledFiles));
-      } else {
-        localStorage.removeItem(`auxo-compiled-room-${roomId}`);
       }
     } catch (err) {
       console.error('Failed to cache compiled files:', err);
@@ -361,7 +364,7 @@ function RoomContent({ roomId }: { roomId: string }) {
 
           <div className="flex items-center gap-3">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo-nobg.png" alt="Auxo Logo" className="w-4 h-4 object-fill" />
+            <img src="/logo-nobg.png" alt="Auxo Logo" className="w-4 h-4 object-contain shrink-0" />
             <span className="font-mono text-xs font-semibold tracking-tight text-zinc-300">AUXO // BLUEPRINT</span>
             <span className="h-3 w-px bg-white/10" />
             <div className="flex items-center gap-1.5 px-2 py-0.5 border border-white/5 bg-white/[0.01] rounded">
@@ -372,11 +375,16 @@ function RoomContent({ roomId }: { roomId: string }) {
               {getConnectionIcon()}
               <span className="font-mono text-[8px] tracking-wider text-zinc-500 font-bold">{getConnectionText()}</span>
             </div>
-            <span className="h-3 w-px bg-white/10 hidden sm:inline" />
-            <div className="hidden sm:flex items-center gap-1 px-1.5 py-0.5 border border-white/5 bg-white/[0.01] rounded font-mono text-[9px] text-zinc-500">
-              <Users className="w-3.5 h-3.5 text-zinc-500" />
-              <span>{usersCount} {usersCount === 1 ? 'BUILDER' : 'BUILDERS'}</span>
-            </div>
+            {/* User presence badge — hidden for solo mode; logic preserved. Re-activate in collaboration phase. See docs/phases.md §28. */}
+            {false && (
+              <>
+                <span className="h-3 w-px bg-white/10 hidden sm:inline" />
+                <div className="hidden sm:flex items-center gap-1 px-1.5 py-0.5 border border-white/5 bg-white/[0.01] rounded font-mono text-[9px] text-zinc-500">
+                  <Users className="w-3.5 h-3.5 text-zinc-500" />
+                  <span>{usersCount} {usersCount === 1 ? 'BUILDER' : 'BUILDERS'}</span>
+                </div>
+              </>
+            )}
           </div>
         </div>
 
@@ -434,26 +442,28 @@ function RoomContent({ roomId }: { roomId: string }) {
             )}
           </button>
 
-          {/* Copy invite link */}
-          <button
-            onClick={handleCopyLink}
-            className="flex items-center justify-center gap-1.5 h-8 px-2.5 rounded border border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.03] text-[10px] font-mono font-semibold tracking-wider text-zinc-300 transition-colors cursor-pointer"
-          >
-            {copiedLink ? (
-              <>
-                <Check className="w-3 h-3 text-emerald-400" />
-                <span className="text-emerald-400">LINK COPIED</span>
-              </>
-            ) : (
-              <>
-                <Copy className="w-3 h-3 text-zinc-400" />
-                <span className="hidden lg:inline">INVITE</span>
-                <span className="hidden xl:inline px-1 py-0.5 rounded bg-zinc-800 border border-zinc-700/50 text-[8px] font-mono text-zinc-500 font-medium">
-                  {isMac ? '⌘⇧C' : 'Ctrl+Shift+C'}
-                </span>
-              </>
-            )}
-          </button>
+          {/* Invite/copy-link button — hidden for solo mode; handleCopyLink + Cmd⇧C shortcut preserved. Re-activate in collaboration phase. See docs/phases.md §28. */}
+          {false && (
+            <button
+              onClick={handleCopyLink}
+              className="flex items-center justify-center gap-1.5 h-8 px-2.5 rounded border border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.03] text-[10px] font-mono font-semibold tracking-wider text-zinc-300 transition-colors cursor-pointer"
+            >
+              {copiedLink ? (
+                <>
+                  <Check className="w-3 h-3 text-emerald-400" />
+                  <span className="text-emerald-400">LINK COPIED</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3 h-3 text-zinc-400" />
+                  <span className="hidden lg:inline">INVITE</span>
+                  <span className="hidden xl:inline px-1 py-0.5 rounded bg-zinc-800 border border-zinc-700/50 text-[8px] font-mono text-zinc-500 font-medium">
+                    {isMac ? '⌘⇧C' : 'Ctrl+Shift+C'}
+                  </span>
+                </>
+              )}
+            </button>
+          )}
 
           {/* Split Compile Button */}
           <div className="relative flex items-center shrink-0" ref={dropdownRef}>
@@ -529,7 +539,7 @@ function RoomContent({ roomId }: { roomId: string }) {
                   }`}
                 >
                   <span className="font-semibold text-[10px] tracking-wide">DEEP AI COMPILE</span>
-                  <span className="text-[9px] text-zinc-500 mt-0.5">Grounds details using OpenAI, Anthropic, or Gemini.</span>
+                  <span className="text-[9px] text-zinc-500 mt-0.5">Compiles via cloud credits using OpenAI, Anthropic, or Gemini.</span>
                 </button>
               </div>
             )}
@@ -603,11 +613,11 @@ function RoomContent({ roomId }: { roomId: string }) {
 
           {expandedPanel !== 'preview' && (
             <Editor
-              roomId={roomId}
               value={markdownText}
-              onChange={setMarkdownText}
-              onUsersChange={setUsersCount}
-              onStatusChange={setConnectionStatus}
+              onChange={(newVal) => {
+                setMarkdownText(newVal);
+                broadcastTextChange(newVal);
+              }}
               isExpanded={expandedPanel === 'editor'}
               onToggleExpand={() => setExpandedPanel(prev => prev === 'editor' ? 'none' : 'editor')}
               maxLength={profile?.is_lifetime || (userConfig && userConfig.provider !== 'premium' && userConfig.apiKey && userConfig.apiKey.trim() !== '') ? 30000 : 15000}

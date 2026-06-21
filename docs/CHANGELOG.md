@@ -2,6 +2,17 @@
 
 All notable changes to the **Auxo** project are documented here.
 
+## [1.9.1] - 2026-06-21
+
+### Added
+
+- **Realtime Connection Persistence**: Moved the Supabase Realtime synchronization, broadcast, and presence subscriptions from the `<Editor>` component lifecycle into the persistent `useRoomSync` hook. This keeps connection status active and displaying correctly as `SYNCED` even when the Editor panel is unmounted (e.g. when fullscreening the agent pack preview).
+
+### Changed
+
+- **Code Preview Pane Gutter**: Refactored the preview code viewer container layout to use a unified scroll wrapper (`overflow-auto`) with a `sticky left-0` gutter column to keep lines and numbers perfectly scroll-synchronized, preventing horizontal scroll clipping and height mismatches.
+- **Custom Browser Favicon Metadata**: Configured layout metadata to point to `/logo-nobg.png` as the default icon, shortcut icon, and apple-touch-icon, and instructed the removal of the default Next.js `favicon.ico` to prevent browser cache conflicts.
+
 ## [1.9.0] - 2026-06-21
 
 ### Added

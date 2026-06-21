@@ -196,7 +196,20 @@ This phase focuses on configuring environment variables, authentication redirect
 - [ ] **Step 27.5:** Run E2E local Stripe CLI simulation check to verify credit provisioning pipeline works.
 - [x] **Step 27.6:** Design, transparentize, and integrate the custom minimalist geometric brand logo inside the landing page and room workspace headers.
 
+## Phase 28: UI Cleanup & Solo-Mode Focus (Completed)
+
+- [x] **Step 28.1 (Invite Button):** Removed the "INVITE" / copy-link button from the room toolbar header. The `handleCopyLink` handler and `Cmd+Shift+C` keyboard shortcut remain intact. Button JSX preserved via `{false && (...)}` in `src/app/room/[id]/page.tsx` — re-activate for the collaboration phase.
+- [x] **Step 28.2 (Presence Badge):** Removed the active user count badge ("X BUILDERS") from the room header to avoid implying collaboration while single-user mode is the primary focus. Badge JSX preserved via `{false && (...)}` in `src/app/room/[id]/page.tsx`.
+- [x] **Step 28.3 (Preview Header):** Removed the `Eye` icon and `02 //` panel-index prefix from the compiled agent pack preview header (`src/components/preview.tsx`). Simplified to a clean `COMPILED AGENT PACK` label.
+- [x] **Step 28.4 (Preview Gutter Scroll Fix):** Fixed scroll bug in the compiled agent pack code viewer where vertical scrolling allowed scrolling past the text content leaving phantom line numbers in the gutter. Redesigned the container using an unified `overflow-auto` layout with a `sticky` gutter column to keep scroll bounds and line numbers perfectly synchronized.
+- [x] **Step 28.5 (Copy / SSR):** Fixed hydration mismatch on the room page caused by `compiledFiles` being initialised from `localStorage` inside a lazy `useState`. Moved localStorage reads into a `useEffect` so server and client HTML match on first render.
+- [x] **Step 28.6 (Homepage Copy):** Refreshed homepage — removed "ALIGNED WITH 2026 AI DEVELOPER SPECIFICATIONS" badge; headline updated to "Turn Ideas into Precision Agent Context."; subtitle tightened; CTA simplified to "NEW SANDBOX"; micro-copy updated to "No Account Required · Free BYOK Tier · One-Click Export".
+- [x] **Step 28.7 (Settings Modal):** Fixed outdated "Claude 3.5 Sonnet" model reference → "Claude Sonnet 4.5"; corrected reversed Anthropic model display name (`claude-4.5-sonnet` → `claude-sonnet-4-5`); simplified tier label to "CHOOSE COMPILATION ROUTE".
+- [x] **Step 28.8 (Optimality Page):** Removed fabricated `Auxo Architecture Group • Published June 2026 • Status: Verified` meta line. Replaced with plain `Published June 2026`.
+- [x] **Step 28.9 (Realtime Connection Persistence):** Moved the Supabase Realtime synchronization, broadcast, and presence subscription hooks from the `<Editor>` component into the persistent `useRoomSync` hook. This keeps the network channel connection alive and connection status correctly synchronized as `SYNCED` even when the Editor panel is unmounted (e.g., when the Preview agent pack panel is expanded to fullscreen).
+
 ## Future Phases & Stretch Goals (DEFERRED - ABSOLUTE FEATURE FREEZE ENFORCED)
+
 
 - [ ] **Scratchpad & Real-Time Collaboration Upgrades:**
   - Upgrade the editor UI from a plain `<textarea>` to a more creative visual area - flashcards, notes etc.

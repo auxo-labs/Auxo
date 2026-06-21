@@ -16,6 +16,7 @@ interface RoomSyncResult {
   setUsersCount: React.Dispatch<React.SetStateAction<number>>;
   connectionStatus: 'connecting' | 'connected' | 'disconnected';
   setConnectionStatus: React.Dispatch<React.SetStateAction<'connecting' | 'connected' | 'disconnected'>>;
+  broadcastTextChange: (text: string) => void;
 }
 
 /**
@@ -40,6 +41,7 @@ export function useRoomSync(roomId: string): RoomSyncResult {
   const [usersCount, setUsersCount] = React.useState<number>(1);
   const [connectionStatus, setConnectionStatus] = React.useState<'connecting' | 'connected' | 'disconnected'>('connecting');
   const [userConfig, setUserConfig] = React.useState<UserConfig>({ provider: 'premium' });
+  const channelRef = React.useRef<ReturnType<typeof supabase.channel> | null>(null);
 
   // Read configuration from LocalStorage on mount
   React.useEffect(() => {
@@ -154,6 +156,56 @@ export function useRoomSync(roomId: string): RoomSyncResult {
     }
   }, [roomId, markdownText]);
 
+  // Connect to Supabase Realtime channel persistently for this room
+  React.useEffect(() => {
+    setTimeout(() => {
+      setConnectionStatus('connecting');
+    }, 0);
+
+    const channel = supabase.channel(`room:${roomId}`, {
+      config: {
+        broadcast: { ack: false },
+        presence: { key: roomId }
+      }
+    });
+
+    channelRef.current = channel;
+
+    channel
+      .on('broadcast', { event: 'text-change' }, (payload) => {
+        const newText = payload.payload.text;
+        setMarkdownText(newText);
+      })
+      .on('presence', { event: 'sync' }, () => {
+        const state = channel.presenceState();
+        setUsersCount(Object.keys(state).length);
+      })
+      .subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') {
+          setConnectionStatus('connected');
+          await channel.track({ online_at: new Date().toISOString() });
+        } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
+          setConnectionStatus('disconnected');
+        }
+      });
+
+    return () => {
+      setConnectionStatus('disconnected');
+      channel.unsubscribe();
+      channelRef.current = null;
+    };
+  }, [roomId]);
+
+  const broadcastTextChange = React.useCallback((text: string) => {
+    if (channelRef.current) {
+      channelRef.current.send({
+        type: 'broadcast',
+        event: 'text-change',
+        payload: { text }
+      });
+    }
+  }, []);
+
   return {
     markdownText,
     setMarkdownText,
@@ -165,6 +217,7 @@ export function useRoomSync(roomId: string): RoomSyncResult {
     usersCount,
     setUsersCount,
     connectionStatus,
-    setConnectionStatus
+    setConnectionStatus,
+    broadcastTextChange
   };
 }

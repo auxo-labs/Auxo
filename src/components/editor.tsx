@@ -1,98 +1,48 @@
   'use client';
 
 import * as React from 'react';
-import { supabase } from '@/lib/supabase';
 import { Maximize2, Minimize2 } from 'lucide-react';
 
 interface EditorProps {
-  roomId: string;
   value: string;
   onChange: (value: string) => void;
-  onUsersChange: (count: number) => void;
-  onStatusChange: (status: 'connected' | 'connecting' | 'disconnected') => void;
   isExpanded?: boolean;
   onToggleExpand?: () => void;
   maxLength?: number;
 }
 
 export function Editor({
-  roomId,
   value,
   onChange,
-  onUsersChange,
-  onStatusChange,
   isExpanded,
   onToggleExpand,
   maxLength = 15000
 }: EditorProps) {
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
-  const channelRef = React.useRef<ReturnType<typeof supabase.channel> | null>(null);
+  const lastLocalValueRef = React.useRef(value);
 
+  // Preserve cursor selection state only when a remote update modifies the value asynchronously
   React.useEffect(() => {
-    onStatusChange('connecting');
-
-    const channel = supabase.channel(`room:${roomId}`, {
-      config: {
-        broadcast: { ack: false },
-        presence: { key: roomId }
+    if (value !== lastLocalValueRef.current) {
+      const textarea = textareaRef.current;
+      if (textarea && document.activeElement === textarea) {
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        setTimeout(() => {
+          if (textareaRef.current) {
+            textareaRef.current.selectionStart = start;
+            textareaRef.current.selectionEnd = end;
+          }
+        }, 0);
       }
-    });
-
-    channelRef.current = channel;
-
-    channel
-      .on('broadcast', { event: 'text-change' }, (payload) => {
-        const newText = payload.payload.text;
-        const textarea = textareaRef.current;
-        
-        if (textarea && document.activeElement === textarea) {
-          const start = textarea.selectionStart;
-          const end = textarea.selectionEnd;
-          
-          onChange(newText);
-          
-          setTimeout(() => {
-            if (textareaRef.current) {
-              textareaRef.current.selectionStart = start;
-              textareaRef.current.selectionEnd = end;
-            }
-          }, 0);
-        } else {
-          onChange(newText);
-        }
-      })
-      .on('presence', { event: 'sync' }, () => {
-        const state = channel.presenceState();
-        const userCount = Object.keys(state).length;
-        onUsersChange(userCount);
-      })
-      .subscribe(async (status) => {
-        if (status === 'SUBSCRIBED') {
-          onStatusChange('connected');
-          await channel.track({ online_at: new Date().toISOString() });
-        } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
-          onStatusChange('disconnected');
-        }
-      });
-
-    return () => {
-      onStatusChange('disconnected');
-      channel.unsubscribe();
-      channelRef.current = null;
-    };
-  }, [roomId, onChange, onUsersChange, onStatusChange]);
+      lastLocalValueRef.current = value;
+    }
+  }, [value]);
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newVal = e.target.value;
+    lastLocalValueRef.current = newVal;
     onChange(newVal);
-
-    if (channelRef.current) {
-      channelRef.current.send({
-        type: 'broadcast',
-        event: 'text-change',
-        payload: { text: newVal }
-      });
-    }
   };
 
   const wordCount = value.trim().split(/\s+/).filter(Boolean).length;

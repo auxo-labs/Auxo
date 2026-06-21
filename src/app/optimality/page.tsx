@@ -49,7 +49,7 @@ export default function OptimalityPage() {
             Optimising AI Agent Context Allocation in Modern Coding Environments
           </h1>
           <p className="text-xs font-mono text-zinc-500 uppercase tracking-wider">
-            Auxo Architecture Group &bull; Published June 2026 &bull; Status: Verified
+            Published June 2026
           </p>
         </div>
 

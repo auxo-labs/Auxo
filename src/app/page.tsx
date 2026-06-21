@@ -69,10 +69,10 @@ export default function Home() {
       <nav className="relative z-10 flex items-center justify-between px-8 h-16 border-b border-white/[0.03] bg-background/30 backdrop-blur-md">
         <div className="flex items-center gap-3">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo-nobg.png" alt="Auxo Logo" className="w-5 h-5 object-fill" />
+          <img src="/logo-nobg.png" alt="Auxo Logo" className="w-5 h-5 object-contain shrink-0" />
           <span className="font-mono text-sm tracking-wider font-semibold text-zinc-200">AUXO</span>
           <span className="h-4 w-px bg-white/10" />
-          <span className="font-mono text-[10px] text-zinc-500 tracking-widest uppercase">Auxo Sandbox</span>
+          <span className="font-mono text-[10px] text-zinc-500 tracking-widest uppercase">Context Compiler</span>
         </div>
         <div className="flex items-center gap-4">
           <Link
@@ -102,20 +102,14 @@ export default function Home() {
       {/* 4. Hero & Main Area */}
       <main className="relative z-10 flex flex-col items-center justify-center flex-1 max-w-5xl mx-auto px-6 py-20 text-center">
         
-        {/* Subtle spec compliance badge */}
-        <div className="inline-flex items-center gap-2 px-2.5 py-1 mb-8 text-[10px] font-mono tracking-wider text-zinc-400 border border-white/5 rounded bg-white/[0.01]">
-          <span className="w-1.5 h-1.5 bg-accent rounded-full" />
-          <span>ALIGNED WITH 2026 AI DEVELOPER SPECIFICATIONS</span>
-        </div>
-
         {/* Headline with high-contrast serif font (Refero style) */}
         <h1 className="text-4xl font-normal tracking-tight sm:text-7xl text-zinc-100 max-w-4xl leading-[1.08] selection:bg-zinc-800 font-serif">
-          Build Codebases Post-Scarcity.
+          Turn Ideas into Precision Agent Context.
         </h1>
 
         {/* Subtitle */}
         <p className="max-w-2xl mx-auto mt-6 text-sm sm:text-base text-zinc-400 font-sans leading-relaxed">
-          Auxo is a zero-auth context compiler for AI code assistants. It shards raw product roadmaps, requirements, and tech stack details into folder-scoped, prompt-optimized rule files—preventing attention degradation while saving up to <strong className="text-zinc-200">16.6% in token overhead</strong>.
+          Auxo compiles raw specs, requirements, and tech stack notes into folder-scoped, prompt-optimised rule files for AI coding agents—preventing attention degradation while saving up to <strong className="text-zinc-200">16.6% in token overhead</strong>.
         </p>
 
         {/* Action Button Section with fine line borders */}
@@ -129,18 +123,18 @@ export default function Home() {
               <RefreshCw className="w-3.5 h-3.5 animate-spin" />
             ) : (
               <>
-                <span>CREATE ANONYMOUS SANDBOX</span>
+                <span>NEW SANDBOX</span>
                 <ArrowRight className="w-3.5 h-3.5 ml-2 transition-transform duration-150 group-hover:translate-x-0.5" />
               </>
             )}
           </button>
           
           <div className="flex items-center gap-2.5 text-[10px] font-mono text-zinc-500 uppercase tracking-widest mt-1">
-            <span>Instant Sandbox</span>
+            <span>No Account Required</span>
             <span className="w-1 h-1 bg-zinc-700 rounded-full" />
-            <span>Frictionless Design</span>
+            <span>Free BYOK Tier</span>
             <span className="w-1 h-1 bg-zinc-700 rounded-full" />
-            <span>FREE BYOK TIER ACTIVE</span>
+            <span>One-Click Export</span>
           </div>
         </div>
 

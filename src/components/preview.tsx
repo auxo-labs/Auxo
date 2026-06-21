@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { FileText, Folder, FolderOpen, Terminal, Eye, Sparkles, AlertCircle, Copy, Check, Maximize2, Minimize2 } from 'lucide-react';
+import { FileText, Folder, FolderOpen, Terminal, Sparkles, AlertCircle, Copy, Check, Maximize2, Minimize2 } from 'lucide-react';
 import { CompiledPack } from '@/lib/prompt-compiler';
 
 interface PreviewProps {
@@ -51,7 +51,14 @@ export function Preview({ compiledFiles, activeFile, onActiveFileChange, isExpan
   };
 
   const currentContent = getCurrentContent();
-  const lines = currentContent.split('\n');
+  const rawLines = currentContent.split('\n');
+  // Trim trailing blank lines — without this every trailing \n renders an empty
+  // numbered gutter row, creating phantom scrollable space beneath real content.
+  let lastContentLine = rawLines.length - 1;
+  while (lastContentLine > 0 && rawLines[lastContentLine].trim() === '') {
+    lastContentLine--;
+  }
+  const lines = rawLines.slice(0, lastContentLine + 1);
 
   // List of dynamic rules generated under .cursor/rules
   const ruleFiles = compiledFiles ? Object.keys(compiledFiles.cursorRules) : [];
@@ -61,8 +68,8 @@ export function Preview({ compiledFiles, activeFile, onActiveFileChange, isExpan
       {/* Header bar */}
       <div className="flex items-center justify-between px-6 h-10 border-b border-white/[0.03] bg-zinc-950/40">
         <div className="flex items-center gap-3">
-          <span className="text-[10px] font-mono tracking-widest text-zinc-500 uppercase flex items-center gap-1.5">
-            <Eye className="w-3.5 h-3.5 text-zinc-500" /> 02 // compiled_agent_pack
+          <span className="text-[10px] font-mono tracking-widest text-zinc-500 uppercase">
+            COMPILED AGENT PACK
           </span>
           {onToggleExpand && (
             <button
@@ -225,22 +232,22 @@ export function Preview({ compiledFiles, activeFile, onActiveFileChange, isExpan
             </div>
 
             {/* Structured File lines */}
-            <div className="flex-1 overflow-y-auto p-6 flex font-mono text-xs text-zinc-300 leading-relaxed bg-[#09090b]/10 selection:bg-zinc-800">
-              
-              {/* Gutter Column */}
-              <div className="text-zinc-600 text-right pr-5 select-none border-r border-white/[0.03] w-10 shrink-0 select-none">
-                {lines.map((_, index) => (
-                  <div key={index} className="h-5">{index + 1}</div>
-                ))}
+            <div className="flex-1 overflow-auto overscroll-none py-6 font-mono text-xs text-zinc-300 leading-relaxed bg-[#09090b]/10 selection:bg-zinc-800">
+              <div className="flex min-w-max pr-6">
+                {/* Gutter Column */}
+                <div className="sticky left-0 text-zinc-600 text-right pl-6 pr-4 select-none border-r border-white/[0.03] w-16 shrink-0 bg-[#0a0a0c] z-10">
+                  {lines.map((_, index) => (
+                    <div key={index} className="h-5">{index + 1}</div>
+                  ))}
+                </div>
+
+                {/* Code Column */}
+                <pre className="pl-5 whitespace-pre font-mono flex-1">
+                  {lines.map((line, index) => (
+                    <div key={index} className="h-5">{line}</div>
+                  ))}
+                </pre>
               </div>
-
-              {/* Code Column */}
-              <pre className="pl-5 overflow-x-auto whitespace-pre font-mono flex-1">
-                {lines.map((line, index) => (
-                  <div key={index} className="h-5">{line}</div>
-                ))}
-              </pre>
-
             </div>
           </div>
         </div>

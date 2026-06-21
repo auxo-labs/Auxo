@@ -21,6 +21,11 @@ const playfairDisplay = Playfair_Display({
 export const metadata: Metadata = {
   title: "Auxo | Collaborative AI Playground",
   description: "Zero-auth collaborative playground to convert messy software ideas into AGENTS.md, CLAUDE.md, and .cursor/rules/ files for 2026 AI IDEs.",
+  icons: {
+    icon: "/logo-nobg.png",
+    shortcut: "/logo-nobg.png",
+    apple: "/logo-nobg.png",
+  },
 };
 
 export default function RootLayout({
