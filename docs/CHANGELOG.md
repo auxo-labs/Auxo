@@ -11,6 +11,8 @@ All notable changes to the **Auxo** project are documented here.
 - **Phase 25 BYOK privacy modal upgrades**: Added the "Your Key. Your Privacy." trust banner callout inside [settings-modal.tsx](../src/components/settings-modal.tsx) detailing client-side storage and transient Edge header transit.
 - **XOR key obfuscation documentation**: Documented symmetric XOR client-side key storage and edge transient HTTPS headers transit inside the technical optimality specs page [page.tsx](../src/app/optimality/page.tsx).
 - **Phase 26 prompt pack optimality analysis report**: Completed a full quality audit on generated files and created the research report [prompt_analysis.md](prompt_analysis.md) summarizing token and context window findings.
+- **Minimalist Brand Logo Integration**: Mounted custom transparent geometric monogram `logo-nobg.png` inside the landing page and room workspace header bars with aspect-fill scaling to preserve original proportions.
+- **Supabase Authentication redirects configuration**: Set up redirect parameters and wildcard links (`https://auxo.wo0.dev/room/*`) inside the Supabase Auth console.
 
 ### Changed
 

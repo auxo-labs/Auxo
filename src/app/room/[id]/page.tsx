@@ -360,6 +360,8 @@ function RoomContent({ roomId }: { roomId: string }) {
           )}
 
           <div className="flex items-center gap-3">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo-nobg.png" alt="Auxo Logo" className="w-4 h-4 object-fill" />
             <span className="font-mono text-xs font-semibold tracking-tight text-zinc-300">AUXO // BLUEPRINT</span>
             <span className="h-3 w-px bg-white/10" />
             <div className="flex items-center gap-1.5 px-2 py-0.5 border border-white/5 bg-white/[0.01] rounded">

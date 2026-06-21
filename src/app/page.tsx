@@ -68,6 +68,8 @@ export default function Home() {
       {/* 3. Minimal Navigation Bar */}
       <nav className="relative z-10 flex items-center justify-between px-8 h-16 border-b border-white/[0.03] bg-background/30 backdrop-blur-md">
         <div className="flex items-center gap-3">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo-nobg.png" alt="Auxo Logo" className="w-5 h-5 object-fill" />
           <span className="font-mono text-sm tracking-wider font-semibold text-zinc-200">AUXO</span>
           <span className="h-4 w-px bg-white/10" />
           <span className="font-mono text-[10px] text-zinc-500 tracking-widest uppercase">Auxo Sandbox</span>

@@ -184,7 +184,17 @@ This phase focuses on performing a comprehensive technical audit on the generate
 - [x] **Step 26.2:** Analyze `CLAUDE.md` safe commands triggers and runtime constraints.
 - [x] **Step 26.3:** Audit generated `.cursor/rules/*.mdc` files (`ui-theme.mdc`, `esrs-compliance.mdc`) to ensure the frontmatter structures, path globs, and internal logic guidelines are fully optimized for attention retention and prevent lost-in-the-middle issues.
 - [x] **Step 26.4:** Benchmark compiled templates size against token thresholds and refine default compiler configurations in `system-prompt.ts`.
-- [x] **Step 26.5:** Generate a comparison research report summarizing the prompt analysis and compile optimization outcomes in `docs/prompt_analysis.md`.
+
+## Phase 27: Stripe Billing & Supabase Production Setup (In Progress)
+
+This phase focuses on configuring environment variables, authentication redirect rules, custom branding assets, and Stripe billing pipelines.
+
+- [x] **Step 27.1:** Execute SQL database schema migrations (profiles, projects, triggers, RLS policies) in the Supabase SQL editor.
+- [x] **Step 27.2:** Configure Redirect URLs and site domain settings in the Supabase Authentication console.
+- [ ] **Step 27.3:** Register the Webhook Endpoint on Stripe Developer Dashboard pointing to `/api/webhooks/stripe`.
+- [ ] **Step 27.4:** Configure production API keys and webhook signing secret variables in the hosting environment (e.g. Vercel).
+- [ ] **Step 27.5:** Run E2E local Stripe CLI simulation check to verify credit provisioning pipeline works.
+- [x] **Step 27.6:** Design, transparentize, and integrate the custom minimalist geometric brand logo inside the landing page and room workspace headers.
 
 ## Future Phases & Stretch Goals (DEFERRED - ABSOLUTE FEATURE FREEZE ENFORCED)
 
