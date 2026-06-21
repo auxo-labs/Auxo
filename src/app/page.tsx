@@ -3,23 +3,23 @@
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useState, useEffect, useRef } from 'react';
-import { ArrowRight, Shield, RefreshCw, Cpu, Layers, Terminal, Code, Compass, Zap, Sparkles, Laptop } from 'lucide-react';
+import { ArrowRight, Shield, RefreshCw, Cpu, Layers, Terminal, Code, Compass, Sparkles, Laptop } from 'lucide-react';
 import { SupportModal } from '@/components/support-modal';
 
 function IdeLogo({ name, fallbackIcon: Icon, colorClass }: { name: string; fallbackIcon: React.ComponentType<{ className?: string }>; colorClass: string }) {
   const [hasError, setHasError] = useState(false);
-  const logoPath = `/logos/${name.toLowerCase().replace(/\s+/g, '')}.svg`;
+  const logoPath = `/logos/${name.toLowerCase().replace(/\s+/g, '')}.png`;
 
   return (
-    <div className="w-5 h-5 flex items-center justify-center rounded border border-white/10 bg-white/5 overflow-hidden">
+    <div className="w-10 h-10 flex items-center justify-center rounded border border-white/10 bg-white/5 overflow-hidden">
       {hasError ? (
-        <Icon className={`w-3 h-3 ${colorClass}`} />
+        <Icon className={`w-5 h-5 ${colorClass}`} />
       ) : (
         /* eslint-disable-next-line @next/next/no-img-element */
         <img
           src={logoPath}
           alt={`${name} Logo`}
-          className="w-3.5 h-3.5 object-contain animate-fade-in"
+          className="w-6 h-6 object-contain animate-fade-in"
           onError={() => setHasError(true)}
         />
       )}
@@ -143,76 +143,40 @@ export default function Home() {
         </div>
 
         {/* Compatible AI IDEs & Editors Showcase */}
-        <div className="mt-20 w-full max-w-5xl">
-          <h2 className="font-mono text-[10px] text-zinc-500 uppercase tracking-[0.2em] mb-6">
+        <div className="mt-16 w-full max-w-4xl border-t border-b border-white/[0.03] py-5">
+          <h2 className="font-mono text-[9px] text-zinc-500 uppercase tracking-[0.25em] mb-4">
             Compatible Cognitive IDEs & Agents
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
             
             {/* Antigravity */}
-            <div className="p-4 rounded-lg border border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.02] transition-all duration-200 flex flex-col items-start text-left">
-              <div className="flex items-center gap-2 mb-2">
-                <IdeLogo name="Antigravity" fallbackIcon={Sparkles} colorClass="text-cyan-400" />
-                <span className="font-mono text-xs font-semibold text-zinc-200 tracking-wider">Antigravity</span>
-              </div>
-              <p className="text-[10px] text-zinc-500 leading-relaxed font-sans">
-                Generates <code className="text-accent text-[9px] font-mono">AGENTS.md</code> and high-level architecture maps to align advanced cognitive loops.
-              </p>
+            <div className="flex items-center gap-2 opacity-50 hover:opacity-80 transition-all duration-150 cursor-default">
+              <IdeLogo name="Antigravity" fallbackIcon={Sparkles} colorClass="text-cyan-400" />
+              <span className="font-mono text-xs text-zinc-300 tracking-wider">Antigravity</span>
             </div>
 
             {/* Cursor */}
-            <div className="p-4 rounded-lg border border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.02] transition-all duration-200 flex flex-col items-start text-left">
-              <div className="flex items-center gap-2 mb-2">
-                <IdeLogo name="Cursor" fallbackIcon={Code} colorClass="text-purple-400" />
-                <span className="font-mono text-xs font-semibold text-zinc-200 tracking-wider">Cursor</span>
-              </div>
-              <p className="text-[10px] text-zinc-500 leading-relaxed font-sans">
-                Compiles folder-scoped <code className="text-accent text-[9px] font-mono">.cursor/rules/*.mdc</code> rule sets with YAML frontmatter.
-              </p>
+            <div className="flex items-center gap-2 opacity-50 hover:opacity-80 transition-all duration-150 cursor-default">
+              <IdeLogo name="Cursor" fallbackIcon={Code} colorClass="text-purple-400" />
+              <span className="font-mono text-xs text-zinc-300 tracking-wider">Cursor</span>
             </div>
 
-            {/* Claude Code */}
-            <div className="p-4 rounded-lg border border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.02] transition-all duration-200 flex flex-col items-start text-left">
-              <div className="flex items-center gap-2 mb-2">
-                <IdeLogo name="Claude Code" fallbackIcon={Terminal} colorClass="text-orange-400" />
-                <span className="font-mono text-xs font-semibold text-zinc-200 tracking-wider">Claude Code</span>
-              </div>
-              <p className="text-[10px] text-zinc-500 leading-relaxed font-sans">
-                Writes strict shell commands and tool policies in <code className="text-accent text-[9px] font-mono">CLAUDE.md</code> to halt token exploration.
-              </p>
+            {/* Claude */}
+            <div className="flex items-center gap-2 opacity-50 hover:opacity-80 transition-all duration-150 cursor-default">
+              <IdeLogo name="Claude" fallbackIcon={Terminal} colorClass="text-orange-400" />
+              <span className="font-mono text-xs text-zinc-300 tracking-wider">Claude Code</span>
             </div>
 
             {/* VS Code */}
-            <div className="p-4 rounded-lg border border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.02] transition-all duration-200 flex flex-col items-start text-left">
-              <div className="flex items-center gap-2 mb-2">
-                <IdeLogo name="VS Code" fallbackIcon={Laptop} colorClass="text-blue-400" />
-                <span className="font-mono text-xs font-semibold text-zinc-200 tracking-wider">VS Code</span>
-              </div>
-              <p className="text-[10px] text-zinc-500 leading-relaxed font-sans">
-                Grounds custom extensions and Copilot rules using root blueprints like <code className="text-accent text-[9px] font-mono">AGENTS.md</code>.
-              </p>
+            <div className="flex items-center gap-2 opacity-50 hover:opacity-80 transition-all duration-150 cursor-default">
+              <IdeLogo name="VS Code" fallbackIcon={Laptop} colorClass="text-blue-400" />
+              <span className="font-mono text-xs text-zinc-300 tracking-wider">VS Code</span>
             </div>
 
             {/* Windsurf */}
-            <div className="p-4 rounded-lg border border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.02] transition-all duration-200 flex flex-col items-start text-left">
-              <div className="flex items-center gap-2 mb-2">
-                <IdeLogo name="Windsurf" fallbackIcon={Compass} colorClass="text-emerald-400" />
-                <span className="font-mono text-xs font-semibold text-zinc-200 tracking-wider">Windsurf</span>
-              </div>
-              <p className="text-[10px] text-zinc-500 leading-relaxed font-sans">
-                Builds global stack rules in <code className="text-accent text-[9px] font-mono">.windsurfrules</code> to ground the agent in stack invariants.
-              </p>
-            </div>
-
-            {/* Aider */}
-            <div className="p-4 rounded-lg border border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.02] transition-all duration-200 flex flex-col items-start text-left">
-              <div className="flex items-center gap-2 mb-2">
-                <IdeLogo name="Aider" fallbackIcon={Zap} colorClass="text-yellow-400" />
-                <span className="font-mono text-xs font-semibold text-zinc-200 tracking-wider">Aider</span>
-              </div>
-              <p className="text-[10px] text-zinc-500 leading-relaxed font-sans">
-                Generates precise chat blueprints and version-grounded packages to accelerate multi-file chat edits.
-              </p>
+            <div className="flex items-center gap-2 opacity-50 hover:opacity-80 transition-all duration-150 cursor-default">
+              <IdeLogo name="Windsurf" fallbackIcon={Compass} colorClass="text-emerald-400" />
+              <span className="font-mono text-xs text-zinc-300 tracking-wider">Windsurf</span>
             </div>
 
           </div>
