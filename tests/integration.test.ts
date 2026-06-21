@@ -217,6 +217,119 @@ describe('Batch 2: Webhook and API Integration Tests', () => {
       expect(response.status).toBe(200);
       expect(data.agentsMd).toBe('# AGENTS TEST');
     });
+
+    it('should reject basic compile calls exceeding 15,000 characters', async () => {
+      const payload = {
+        markdownText: 'a'.repeat(15001),
+        roomId: 'room-uuid',
+        compileType: 'basic'
+      };
+
+      const request = new NextRequest('http://localhost/api/compile', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+
+      const response = await compilePOST(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(400);
+      expect(data.error).toContain('exceeds the 15,000 character limit');
+    });
+
+    it('should reject BYOK compiles exceeding 30,000 characters', async () => {
+      const payload = {
+        markdownText: 'a'.repeat(30001),
+        roomId: 'room-uuid',
+        compileType: 'premium',
+        userConfig: {
+          provider: 'gemini',
+          apiKey: 'AIzaSy-TestKey',
+          model: 'gemini-2.5-flash'
+        }
+      };
+
+      const request = new NextRequest('http://localhost/api/compile', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+
+      const response = await compilePOST(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(400);
+      expect(data.error).toContain('exceeds the 30,000 character limit');
+    });
+
+    it('should allow BYOK compiles under 30,000 characters', async () => {
+      const payload = {
+        markdownText: 'a'.repeat(25000),
+        roomId: 'room-uuid',
+        compileType: 'premium',
+        userConfig: {
+          provider: 'gemini',
+          apiKey: 'AIzaSy-TestKey',
+          model: 'gemini-2.5-flash'
+        }
+      };
+
+      const request = new NextRequest('http://localhost/api/compile', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+
+      const response = await compilePOST(request);
+      expect(response.status).toBe(200);
+    });
+
+    it('should allow hosted Developer Pack compiles under 30,000 characters', async () => {
+      process.env.STRIPE_SECRET_KEY = 'sk_test';
+      mockSingle.mockResolvedValueOnce({
+        data: { credits: 10, is_lifetime: true },
+        error: null
+      });
+
+      const payload = {
+        markdownText: 'a'.repeat(20000),
+        roomId: 'room-uuid',
+        compileType: 'premium'
+      };
+
+      const request = new NextRequest('http://localhost/api/compile', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer mock-token' },
+        body: JSON.stringify(payload)
+      });
+
+      const response = await compilePOST(request);
+      expect(response.status).toBe(200);
+    });
+
+    it('should reject hosted standard compiles exceeding 15,000 characters', async () => {
+      process.env.STRIPE_SECRET_KEY = 'sk_test';
+      mockSingle.mockResolvedValueOnce({
+        data: { credits: 10, is_lifetime: false },
+        error: null
+      });
+
+      const payload = {
+        markdownText: 'a'.repeat(16000),
+        roomId: 'room-uuid',
+        compileType: 'premium'
+      };
+
+      const request = new NextRequest('http://localhost/api/compile', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer mock-token' },
+        body: JSON.stringify(payload)
+      });
+
+      const response = await compilePOST(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(400);
+      expect(data.error).toContain('exceeds the 15,000 character limit');
+    });
   });
 
 });

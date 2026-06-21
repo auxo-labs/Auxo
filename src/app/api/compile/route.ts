@@ -22,12 +22,27 @@ export async function POST(request: NextRequest) {
 
     // 1. Basic Compile Flow (Free, Instant, Local offline fallback)
     if (compileType === 'basic') {
+      if (markdownText.length > 15000) {
+        return NextResponse.json(
+          { error: 'Scratchpad content exceeds the 15,000 character limit for standard compiles.' },
+          { status: 400 }
+        );
+      }
       const compiledPack = await compilePromptPack(markdownText, [], true);
       return NextResponse.json(compiledPack);
     }
 
     // 2. Premium Compile Flow (Auth & Payment Gated unless custom API key is present)
     const hasUserKey = userConfig && userConfig.provider !== 'premium' && userConfig.apiKey && userConfig.apiKey.trim() !== '';
+
+    if (hasUserKey) {
+      if (markdownText.length > 30000) {
+        return NextResponse.json(
+          { error: 'Scratchpad content exceeds the 30,000 character limit for BYOK compiles.' },
+          { status: 400 }
+        );
+      }
+    }
 
     if (!hasUserKey) {
       const authHeader = request.headers.get('Authorization');
@@ -95,6 +110,15 @@ export async function POST(request: NextRequest) {
             );
           }
 
+          // Enforce limit based on tier
+          const limit = profileData?.is_lifetime ? 30000 : 15000;
+          if (markdownText.length > limit) {
+            return NextResponse.json(
+              { error: `Scratchpad content exceeds the ${limit.toLocaleString()} character limit for your tier.` },
+              { status: 400 }
+            );
+          }
+
           // Decrement credit count if user is not lifetime and we didn't just credit them
           if (profileData && !profileData.is_lifetime && profileData.credits > 0 && !sessionId) {
             const { error: updateError } = await supabaseAdmin
@@ -125,6 +149,25 @@ export async function POST(request: NextRequest) {
 
             if (session.client_reference_id !== roomId) {
               return NextResponse.json({ error: 'Checkout session room ID mismatch' }, { status: 403 });
+            }
+
+            // Enforce limit based on Stripe session metadata tier
+            const isDeveloperPack = session.metadata?.tier === 'lifetime' || session.metadata?.tier === 'pro';
+            const limit = isDeveloperPack ? 30000 : 15000;
+            if (markdownText.length > limit) {
+              return NextResponse.json(
+                { error: `Scratchpad content exceeds the ${limit.toLocaleString()} character limit for your tier.` },
+                { status: 400 }
+              );
+            }
+          } else {
+            // fallback mock limit
+            const limit = 15000;
+            if (markdownText.length > limit) {
+              return NextResponse.json(
+                { error: `Scratchpad content exceeds the ${limit.toLocaleString()} character limit for your tier.` },
+                { status: 400 }
+              );
             }
           }
         }
