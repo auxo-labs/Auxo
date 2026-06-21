@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
-import { ArrowLeft, Copy, Check, Play, Users, Download, User, LogOut, Settings, ChevronDown } from 'lucide-react';
+import { ArrowLeft, Copy, Check, Play, Users, Download, User, LogOut, Settings, ChevronDown, ChevronRight } from 'lucide-react';
 import { Editor } from '@/components/editor';
 import { Preview } from '@/components/preview';
 import { CompiledPack } from '@/lib/prompt-compiler';
@@ -13,6 +13,7 @@ import { useShortcuts } from './hooks/useShortcuts';
 import { supabase } from '@/lib/supabase';
 import { AuthModal } from '@/components/auth-modal';
 import { SettingsModal } from '@/components/settings-modal';
+import { ProjectSidebar } from '@/components/project-sidebar';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -51,7 +52,16 @@ function RoomContent({ roomId }: { roomId: string }) {
   const [lastCompileType, setLastCompileType] = React.useState<'basic' | 'premium'>('basic');
   const [compileMode, setCompileMode] = React.useState<'basic' | 'premium'>('basic');
   const [showCompileDropdown, setShowCompileDropdown] = React.useState(false);
+  const [sidebarOpen, setSidebarOpen] = React.useState(false);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
+
+  // Sync default sidebar state on load
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const isLarge = window.innerWidth >= 1024;
+      setSidebarOpen(isLarge);
+    }
+  }, []);
 
   // Close dropdown on click outside
   React.useEffect(() => {
@@ -119,6 +129,28 @@ function RoomContent({ roomId }: { roomId: string }) {
         const files: CompiledPack = await response.json();
         setCompiledFiles(files);
         setActiveFile('README.md');
+
+        // Upsert to user's history if authenticated
+        if (user) {
+          try {
+            const { title, preview } = getProjectTitleAndPreview(textToCompile);
+            await supabase
+              .from('projects')
+              .upsert(
+                {
+                  user_id: user.id,
+                  room_id: roomId,
+                  title,
+                  preview_text: preview,
+                  updated_at: new Date().toISOString()
+                },
+                { onConflict: 'user_id,room_id' }
+              );
+          } catch (err) {
+            console.error('Failed to upsert project record:', err);
+          }
+        }
+
         return files;
       }
 
@@ -180,6 +212,27 @@ function RoomContent({ roomId }: { roomId: string }) {
       const files: CompiledPack = await response.json();
       setCompiledFiles(files);
       setActiveFile('README.md');
+
+      // Upsert to user's history if authenticated
+      if (user) {
+        try {
+          const { title, preview } = getProjectTitleAndPreview(textToCompile);
+          await supabase
+            .from('projects')
+            .upsert(
+              {
+                user_id: user.id,
+                room_id: roomId,
+                title,
+                preview_text: preview,
+                updated_at: new Date().toISOString()
+              },
+              { onConflict: 'user_id,room_id' }
+            );
+        } catch (err) {
+          console.error('Failed to upsert project record:', err);
+        }
+      }
       
       // Refresh user profile in background to decrement credit balance
       await refreshProfile();
@@ -230,6 +283,31 @@ function RoomContent({ roomId }: { roomId: string }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
+  // Hydrate compiled files from LocalStorage on mount
+  React.useEffect(() => {
+    try {
+      const cached = localStorage.getItem(`auxo-compiled-room-${roomId}`);
+      if (cached) {
+        setCompiledFiles(JSON.parse(cached));
+      }
+    } catch (err) {
+      console.error('Failed to restore compiled files cache:', err);
+    }
+  }, [roomId]);
+
+  // Mirror compiled files changes to LocalStorage
+  React.useEffect(() => {
+    try {
+      if (compiledFiles) {
+        localStorage.setItem(`auxo-compiled-room-${roomId}`, JSON.stringify(compiledFiles));
+      } else {
+        localStorage.removeItem(`auxo-compiled-room-${roomId}`);
+      }
+    } catch (err) {
+      console.error('Failed to cache compiled files:', err);
+    }
+  }, [roomId, compiledFiles]);
+
   // Global keyboard shortcuts hook
   useShortcuts({
     onCompile: () => handleCompile(compileMode),
@@ -274,6 +352,16 @@ function RoomContent({ roomId }: { roomId: string }) {
           >
             <ArrowLeft className="w-3.5 h-3.5" />
           </button>
+
+          {user && !sidebarOpen && (
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="flex items-center justify-center w-7 h-7 rounded border border-white/5 hover:border-white/10 hover:bg-white/[0.02] transition-all text-zinc-400 hover:text-zinc-200 cursor-pointer animate-fade-in animate-duration-300"
+              title="Open project history sidebar"
+            >
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          )}
 
           <div className="flex items-center gap-3">
             <span className="font-mono text-xs font-semibold tracking-tight text-zinc-300">AUXO // BLUEPRINT</span>
@@ -499,33 +587,47 @@ function RoomContent({ roomId }: { roomId: string }) {
         </div>
       )}
 
-      {/* Main split-panel layout */}
-      <div className={`grid flex-1 overflow-hidden h-[calc(100vh-3.5rem)] ${
-        expandedPanel === 'none' ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1'
-      }`}>
-
-        {expandedPanel !== 'preview' && (
-          <Editor
-            roomId={roomId}
-            value={markdownText}
-            onChange={setMarkdownText}
-            onUsersChange={setUsersCount}
-            onStatusChange={setConnectionStatus}
-            isExpanded={expandedPanel === 'editor'}
-            onToggleExpand={() => setExpandedPanel(prev => prev === 'editor' ? 'none' : 'editor')}
-            maxLength={profile?.is_lifetime || (userConfig && userConfig.provider !== 'premium' && userConfig.apiKey && userConfig.apiKey.trim() !== '') ? 30000 : 15000}
+      {/* Main split-panel layout with real-time projects sidebar wrapper */}
+      <div className="flex flex-row w-full h-[calc(100vh-3.5rem)] overflow-hidden">
+        
+        {user && (
+          <ProjectSidebar
+            activeRoomId={roomId}
+            user={user}
+            isOpen={sidebarOpen}
+            onToggle={() => setSidebarOpen(false)}
           />
         )}
 
-        {expandedPanel !== 'editor' && (
-          <Preview
-            compiledFiles={compiledFiles}
-            activeFile={activeFile}
-            onActiveFileChange={setActiveFile}
-            isExpanded={expandedPanel === 'preview'}
-            onToggleExpand={() => setExpandedPanel(prev => prev === 'preview' ? 'none' : 'preview')}
-          />
-        )}
+        <div className={`grid flex-1 overflow-hidden h-full ${
+          expandedPanel === 'none' ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1'
+        }`}>
+
+          {expandedPanel !== 'preview' && (
+            <Editor
+              roomId={roomId}
+              value={markdownText}
+              onChange={setMarkdownText}
+              onUsersChange={setUsersCount}
+              onStatusChange={setConnectionStatus}
+              isExpanded={expandedPanel === 'editor'}
+              onToggleExpand={() => setExpandedPanel(prev => prev === 'editor' ? 'none' : 'editor')}
+              maxLength={profile?.is_lifetime || (userConfig && userConfig.provider !== 'premium' && userConfig.apiKey && userConfig.apiKey.trim() !== '') ? 30000 : 15000}
+            />
+          )}
+
+          {expandedPanel !== 'editor' && (
+            <Preview
+              compiledFiles={compiledFiles}
+              activeFile={activeFile}
+              onActiveFileChange={setActiveFile}
+              isExpanded={expandedPanel === 'preview'}
+              onToggleExpand={() => setExpandedPanel(prev => prev === 'preview' ? 'none' : 'preview')}
+              isCompiling={isCompiling}
+            />
+          )}
+
+        </div>
 
       </div>
 
@@ -560,4 +662,32 @@ export default function RoomPage({ params }: PageProps) {
       <RoomContent roomId={roomId} />
     </Suspense>
   );
+}
+
+export function getProjectTitleAndPreview(text: string) {
+  const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+  let title = 'Untitled Sandbox';
+  if (lines.length > 0) {
+    // Extract first line and remove markdown header syntax
+    const firstLine = lines[0];
+    title = firstLine.replace(/^#+\s+/, '').trim();
+    if (title.length > 50) {
+      title = title.substring(0, 47) + '...';
+    }
+  }
+  
+  // Preview snippet: get next non-empty line or first line if none other exists
+  let preview = '';
+  const textWithoutTitle = lines.slice(1).join(' ');
+  if (textWithoutTitle) {
+    preview = textWithoutTitle;
+  } else if (lines.length > 0) {
+    preview = lines[0];
+  }
+  
+  if (preview.length > 80) {
+    preview = preview.substring(0, 77) + '...';
+  }
+  
+  return { title, preview };
 }

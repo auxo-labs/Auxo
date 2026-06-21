@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { cleanMdcRuleContent, parseMarkdownStream } from '../src/lib/prompt-compiler/parser';
 import { resolveTechStack } from '../src/lib/tech-resolver';
 import { obfuscateKey, deobfuscateKey } from '../src/lib/encryption';
+import { getProjectTitleAndPreview } from '../src/app/room/[id]/page';
 
 // Mock the global fetch object for registry.npmjs.org lookups in resolveTechStack tests
 global.fetch = vi.fn().mockImplementation(() =>
@@ -112,6 +113,33 @@ Welcome to Auxo.`;
       const legacyKey = 'sk-legacy-unencrypted-key';
       const decrypted = deobfuscateKey(legacyKey);
       expect(decrypted).toBe(legacyKey);
+    });
+  });
+
+  describe('getProjectTitleAndPreview()', () => {
+    it('should extract title from first line and clean header markdown', () => {
+      const text = `#  My Project Title \nThis is a preview line.`;
+      const { title, preview } = getProjectTitleAndPreview(text);
+      expect(title).toBe('My Project Title');
+      expect(preview).toBe('This is a preview line.');
+    });
+
+    it('should handle empty or header-only content gracefully', () => {
+      const text = `### Simple Header Only`;
+      const { title, preview } = getProjectTitleAndPreview(text);
+      expect(title).toBe('Simple Header Only');
+      expect(preview).toBe('### Simple Header Only');
+    });
+
+    it('should truncate titles longer than 50 chars and previews longer than 80 chars', () => {
+      const longTitle = 'a'.repeat(60);
+      const longPreview = 'b'.repeat(100);
+      const text = `# ${longTitle}\n${longPreview}`;
+      const { title, preview } = getProjectTitleAndPreview(text);
+      expect(title).toHaveLength(50);
+      expect(title.endsWith('...')).toBe(true);
+      expect(preview).toHaveLength(80);
+      expect(preview.endsWith('...')).toBe(true);
     });
   });
 

@@ -154,7 +154,27 @@
 - [x] **Step 23.1:** Update hero subtitle and bento descriptions in `page.tsx` for clearer context matrix pitch.
 - [x] **Step 23.2:** Design and implement the "Compatible AI IDEs & Editors" section in `page.tsx`.
 - [x] **Step 23.3:** Run build and verify changes.
-- [x] **Step 23.4:** Update homepage UI - overhaul, add IDE logos etc.
+- [x] **Step 23.4:** Update homepage UI - overhaul, add IDE logos etc. Also while user is waiting for deep AI compile - add some sort of scrolling wheel or bar so they can see the progress of the compilation.
+
+## Phase 24: Previous Projects Sidebar (Logged-In Users)
+
+- [x] **Step 24.1:** Create a `projects` table in Supabase linked to `auth.users` with columns `id`, `user_id`, `room_id`, `title`, `preview_text`, `created_at`, and `updated_at`. Enable a `UNIQUE(user_id, room_id)` constraint and configure RLS policies allowing select/insert/update/delete operations restricted to `auth.uid() = user_id`.
+- [x] **Step 24.2:** On each successful compilation inside the room, if the user is authenticated, upsert a project record targeting the `(user_id, room_id)` key, updating `title` (derived from the first line of the scratchpad), `preview_text` (snippet of scratchpad), and `updated_at`.
+- [x] **Step 24.3:** Build a collapsible left sidebar panel in the room viewport (`src/app/room/[id]/page.tsx`) that fetches and displays the user's project history sorted by `updated_at DESC`.
+- [x] **Step 24.4:** Allow users to delete saved projects directly from the sidebar via a Trash icon trigger, executing a Supabase database deletion and updating client state.
+- [x] **Step 24.5:** Hide the sidebar entirely for anonymous users. For logged-in users with empty project lists, render a clean empty-state guidance card with a button to trigger a new sandbox.
+- [x] **Step 24.6:** Run build and lint verification checks.
+- get rid of Auxo Architecture Group • Published June 2026 • Status: Verified in optimality page
+
+## Phase 25: BYOK Privacy & Trust Messaging
+
+This phase focuses on surfacing the privacy and security guarantees of BYOK mode clearly to users, so they understand exactly what Auxo stores (nothing) vs. what stays on their device (everything).
+
+- [ ] **Step 25.1:** Add a prominent **"Your Key. Your Privacy."** trust callout panel inside the Settings Modal. It must explain that keys are stored client-side in LocalStorage using XOR + Base64 encryption, and transit to the Next.js compile API securely via HTTPS strictly as a transient header (never logged, cached, or stored on disk) due to browser CORS policies.
+- [ ] **Step 25.2:** Add a green-glowing **"PRIVATE BYOK" compiler indicator badge** in the room navbar when BYOK is active, indicating that compilation requests bypass credit checks and database storage.
+- [ ] **Step 25.3:** Document the XOR encryption mechanism and security profile on the technical optimality specs page (`/optimality`).
+- [ ] **Step 25.4:** Update the landing page BYOK bento card copy to highlight the secure HTTPS transient transit and client-side encryption guarantees.
+- [ ] **Step 25.5:** Run build and lint verification checks.
 
 ## Future Phases & Stretch Goals (DEFERRED - ABSOLUTE FEATURE FREEZE ENFORCED)
 

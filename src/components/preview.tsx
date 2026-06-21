@@ -10,9 +10,10 @@ interface PreviewProps {
   onActiveFileChange: (fileName: string) => void;
   isExpanded?: boolean;
   onToggleExpand?: () => void;
+  isCompiling?: boolean;
 }
 
-export function Preview({ compiledFiles, activeFile, onActiveFileChange, isExpanded, onToggleExpand }: PreviewProps) {
+export function Preview({ compiledFiles, activeFile, onActiveFileChange, isExpanded, onToggleExpand, isCompiling }: PreviewProps) {
   const [expandedFolders, setExpandedFolders] = React.useState<Record<string, boolean>>({
     root: true,
     cursor: true,
@@ -80,7 +81,22 @@ export function Preview({ compiledFiles, activeFile, onActiveFileChange, isExpan
         )}
       </div>
 
-      {!hasFiles ? (
+      {isCompiling ? (
+        <div className="flex flex-col items-center justify-center flex-1 p-8 text-center text-zinc-400 animate-fade-in">
+          <div className="relative w-12 h-12 flex items-center justify-center mb-4">
+            {/* Ambient background glow */}
+            <div className="absolute inset-0 bg-accent/20 rounded-full blur-md animate-pulse" />
+            {/* Spinning double-ring border */}
+            <div className="absolute inset-0 border border-transparent border-t-accent rounded-full animate-spin duration-1000" />
+            <div className="absolute inset-1.5 border border-transparent border-b-accent/50 rounded-full animate-spin duration-700 reverse" />
+            <Sparkles className="w-5 h-5 text-accent animate-pulse" />
+          </div>
+          <h3 className="text-xs font-mono tracking-widest text-zinc-300 uppercase font-bold">Compiling Agent Pack</h3>
+          <p className="max-w-xs mt-2 text-[9px] font-mono text-zinc-500 leading-relaxed uppercase tracking-wider animate-pulse">
+            Resolving stack versioning & compiling prompt files...
+          </p>
+        </div>
+      ) : !hasFiles ? (
         <div className="flex flex-col items-center justify-center flex-1 p-8 text-center text-zinc-500">
           <AlertCircle className="w-6 h-6 text-zinc-600 mb-3" />
           <h3 className="text-xs font-mono tracking-wider text-zinc-400 uppercase">Awaiting Compilation</h3>
