@@ -74,12 +74,13 @@ export async function POST(request: NextRequest) {
               const session = await stripe.checkout.sessions.retrieve(sessionId);
               if (session.payment_status === 'paid' && session.client_reference_id === userId) {
                 hasAccess = true;
-                const isLifetime = session.metadata?.tier === 'lifetime';
-                if (isLifetime) {
-                  await supabaseAdmin.from('profiles').update({ is_lifetime: true }).eq('id', userId);
+                const isDeveloperPack = session.metadata?.tier === 'lifetime' || session.metadata?.tier === 'pro';
+                if (isDeveloperPack) {
+                  // Grant remaining 49 credits (+50 total minus 1 consumed now)
+                  await supabaseAdmin.from('profiles').update({ credits: (profileData?.credits || 0) + 49 }).eq('id', userId);
                 } else {
-                  // Grant remaining 2 credits (+3 total minus 1 consumed now)
-                  await supabaseAdmin.from('profiles').update({ credits: (profileData?.credits || 0) + 2 }).eq('id', userId);
+                  // Grant remaining 14 credits (+15 total minus 1 consumed now)
+                  await supabaseAdmin.from('profiles').update({ credits: (profileData?.credits || 0) + 14 }).eq('id', userId);
                 }
               }
             } catch (err) {

@@ -28,9 +28,9 @@ export function SettingsModal({ isOpen, onClose, onSave }: SettingsModalProps) {
   });
   const [anthropicModel, setAnthropicModel] = React.useState(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('auxo-settings-anthropic-model') || 'claude-3-5-sonnet-20241022';
+      return localStorage.getItem('auxo-settings-anthropic-model') || 'claude-sonnet-4-5';
     }
-    return 'claude-3-5-sonnet-20241022';
+    return 'claude-sonnet-4-5';
   });
   const [geminiModel, setGeminiModel] = React.useState(() => {
     if (typeof window !== 'undefined') {
@@ -119,33 +119,66 @@ export function SettingsModal({ isOpen, onClose, onSave }: SettingsModalProps) {
 
           <div className="space-y-3">
             <label className="block text-[10px] font-mono text-zinc-400 tracking-wider">
-              COMPILATION ROUTE
+              SELECT COMPILER ROUTING TIER
             </label>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 gap-2.5">
+              
+              {/* Option 1: Auxo Cloud */}
               <button
                 type="button"
                 onClick={() => setProvider('premium')}
-                className={`flex items-center justify-center gap-2 h-9 rounded border font-mono text-[10px] font-semibold tracking-wider transition-all cursor-pointer ${
+                className={`flex flex-col text-left p-3.5 rounded-lg border transition-all cursor-pointer group ${
                   provider === 'premium'
-                    ? 'border-white/10 bg-white/5 text-zinc-100'
-                    : 'border-white/5 bg-white/[0.01] text-zinc-500 hover:text-zinc-300'
+                    ? 'border-cyan-500/30 bg-cyan-950/10 text-zinc-100 shadow-[0_0_15px_rgba(6,182,212,0.05)]'
+                    : 'border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.02] text-zinc-400'
                 }`}
               >
-                <Sparkles className="w-3.5 h-3.5" />
-                AUXO CLOUD
+                <div className="flex items-center justify-between w-full">
+                  <span className="font-mono text-xs font-bold tracking-wide flex items-center gap-1.5 text-zinc-200">
+                    <Sparkles className={`w-3.5 h-3.5 ${provider === 'premium' ? 'text-cyan-400 animate-pulse' : 'text-zinc-500'}`} />
+                    AUXO CLOUD
+                  </span>
+                  <span className={`font-mono text-[9px] font-bold px-2 py-0.5 rounded ${
+                    provider === 'premium' ? 'bg-cyan-500/10 text-cyan-400' : 'bg-zinc-800 text-zinc-500'
+                  }`}>
+                    CLOUD CREDITS
+                  </span>
+                </div>
+                <p className="text-[10px] font-sans text-zinc-500 mt-1.5 leading-relaxed">
+                  No keys needed. Secure, high-speed hosted compiles leveraging Claude 3.5 Sonnet. Requires cloud compile credits.
+                </p>
               </button>
+
+              {/* Option 2: Bring Your Own Key */}
               <button
                 type="button"
-                onClick={() => setProvider('gemini')} // Default to Gemini on BYOK switch
-                className={`flex items-center justify-center gap-2 h-9 rounded border font-mono text-[10px] font-semibold tracking-wider transition-all cursor-pointer ${
+                onClick={() => {
+                  if (provider === 'premium') {
+                    setProvider('gemini'); // Default back to gemini when moving to BYOK
+                  }
+                }}
+                className={`flex flex-col text-left p-3.5 rounded-lg border transition-all cursor-pointer group ${
                   provider !== 'premium'
-                    ? 'border-white/10 bg-white/5 text-zinc-100'
-                    : 'border-white/5 bg-white/[0.01] text-zinc-500 hover:text-zinc-300'
+                    ? 'border-amber-500/30 bg-amber-950/10 text-zinc-100 shadow-[0_0_15px_rgba(245,158,11,0.05)]'
+                    : 'border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.02] text-zinc-400'
                 }`}
               >
-                <Key className="w-3.5 h-3.5" />
-                BRING YOUR KEY
+                <div className="flex items-center justify-between w-full">
+                  <span className="font-mono text-xs font-bold tracking-wide flex items-center gap-1.5 text-zinc-200">
+                    <Key className={`w-3.5 h-3.5 ${provider !== 'premium' ? 'text-amber-400' : 'text-zinc-500'}`} />
+                    BRING YOUR KEY (BYOK)
+                  </span>
+                  <span className={`font-mono text-[9px] font-bold px-2 py-0.5 rounded ${
+                    provider !== 'premium' ? 'bg-amber-500/10 text-amber-400' : 'bg-zinc-800 text-zinc-500'
+                  }`}>
+                    £0 / FREE
+                  </span>
+                </div>
+                <p className="text-[10px] font-sans text-zinc-500 mt-1.5 leading-relaxed">
+                  Compile completely for free. Routes infinite runs directly through your own Gemini, Anthropic, or OpenAI API key. Stored safely in client memory.
+                </p>
               </button>
+
             </div>
           </div>
 
@@ -228,8 +261,9 @@ export function SettingsModal({ isOpen, onClose, onSave }: SettingsModalProps) {
                       onChange={(e) => setAnthropicModel(e.target.value)}
                       className="w-full h-8 px-2 rounded bg-zinc-900 border border-white/5 text-zinc-200 text-xs font-mono focus:outline-none focus:border-white/10"
                     >
-                      <option value="claude-3-5-sonnet-20241022">claude-3-5-sonnet (Recommended)</option>
-                      <option value="claude-3-7-sonnet">claude-3-7-sonnet</option>
+                      <option value="claude-sonnet-4-5">claude-4.5-sonnet (Recommended)</option>
+                      <option value="claude-3-7-sonnet">claude-3.7-sonnet</option>
+                      <option value="claude-3-5-sonnet-20241022">claude-3.5-sonnet</option>
                     </select>
                   </div>
 
@@ -300,18 +334,7 @@ export function SettingsModal({ isOpen, onClose, onSave }: SettingsModalProps) {
             </div>
           )}
 
-          {provider === 'premium' && (
-            <div className="p-3.5 rounded bg-zinc-900/50 border border-white/5 text-[10px] font-mono text-zinc-400 leading-relaxed space-y-2">
-              <p>
-                <strong>Auxo Cloud</strong> uses our high-speed hosted keys to compile your prompts securely. 
-              </p>
-              <ul className="list-disc pl-4 space-y-1 text-zinc-500">
-                <li>Requires 1 compilation credit per run</li>
-                <li>Zero configuration or billing overhead for you</li>
-                <li>Leverages Claude-3.5-Sonnet as the fallback model</li>
-              </ul>
-            </div>
-          )}
+
 
           <div className="flex gap-2 pt-2">
             <button

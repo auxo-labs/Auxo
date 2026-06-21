@@ -38,27 +38,29 @@ export function useRoomSync(roomId: string): RoomSyncResult {
   const [profile, setProfile] = React.useState<{ credits: number; is_lifetime: boolean } | null>(null);
   const [usersCount, setUsersCount] = React.useState<number>(1);
   const [connectionStatus, setConnectionStatus] = React.useState<'connecting' | 'connected' | 'disconnected'>('connecting');
-  const [userConfig, setUserConfig] = React.useState<UserConfig>(() => {
-    if (typeof window !== 'undefined') {
-      const provider = (localStorage.getItem('auxo-settings-provider') || 'premium') as UserConfig['provider'];
-      let apiKey = undefined;
-      let model = undefined;
+  const [userConfig, setUserConfig] = React.useState<UserConfig>({ provider: 'premium' });
 
-      if (provider === 'openai') {
-        apiKey = localStorage.getItem('auxo-settings-openai-key') || '';
-        model = localStorage.getItem('auxo-settings-openai-model') || 'gpt-4o-mini';
-      } else if (provider === 'anthropic') {
-        apiKey = localStorage.getItem('auxo-settings-anthropic-key') || '';
-        model = localStorage.getItem('auxo-settings-anthropic-model') || 'claude-3-5-sonnet-20241022';
-      } else if (provider === 'gemini') {
-        apiKey = localStorage.getItem('auxo-settings-gemini-key') || '';
-        model = localStorage.getItem('auxo-settings-gemini-model') || 'gemini-2.5-flash';
-      }
+  // Read configuration from LocalStorage on mount
+  React.useEffect(() => {
+    const provider = (localStorage.getItem('auxo-settings-provider') || 'premium') as UserConfig['provider'];
+    let apiKey = undefined;
+    let model = undefined;
 
-      return { provider, apiKey, model };
+    if (provider === 'openai') {
+      apiKey = localStorage.getItem('auxo-settings-openai-key') || '';
+      model = localStorage.getItem('auxo-settings-openai-model') || 'gpt-4o-mini';
+    } else if (provider === 'anthropic') {
+      apiKey = localStorage.getItem('auxo-settings-anthropic-key') || '';
+      model = localStorage.getItem('auxo-settings-anthropic-model') || 'claude-sonnet-4-5';
+    } else if (provider === 'gemini') {
+      apiKey = localStorage.getItem('auxo-settings-gemini-key') || '';
+      model = localStorage.getItem('auxo-settings-gemini-model') || 'gemini-2.5-flash';
     }
-    return { provider: 'premium' };
-  });
+
+    setTimeout(() => {
+      setUserConfig({ provider, apiKey, model });
+    }, 0);
+  }, []);
 
   const isMountedRef = React.useRef(false);
 

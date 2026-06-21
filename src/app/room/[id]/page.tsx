@@ -327,14 +327,23 @@ function RoomContent({ roomId }: { roomId: string }) {
             </div>
           )}
 
-          {/* Settings gear button */}
+          {/* Keys & Routing / Settings button */}
           <button
             onClick={() => setIsSettingsModalOpen(true)}
-            className="flex items-center justify-center gap-1.5 h-8 px-2.5 rounded border border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.03] text-[10px] font-mono font-semibold tracking-wider text-zinc-300 transition-colors cursor-pointer"
-            title="Compiler Settings"
+            className="flex items-center justify-center gap-2 h-8 px-2.5 rounded border border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.03] text-[10px] font-mono font-semibold tracking-wider text-zinc-300 transition-colors cursor-pointer"
+            title="Compiler Setup (Cloud vs BYOK)"
           >
-            <Settings className="w-3.5 h-3.5 text-zinc-400" />
-            <span className="hidden lg:inline">SETTINGS</span>
+            <Settings className="w-3.5 h-3.5 text-zinc-400 font-bold" />
+            <span className="hidden lg:inline">KEYS & ROUTING</span>
+            {userConfig.provider === 'premium' ? (
+              <span className="px-1.5 py-0.5 rounded bg-cyan-950/40 border border-cyan-500/20 text-cyan-400 text-[8px] font-bold tracking-wider">
+                CLOUD
+              </span>
+            ) : (
+              <span className="px-1.5 py-0.5 rounded bg-amber-950/40 border border-amber-500/20 text-amber-400 text-[8px] font-bold tracking-wider uppercase">
+                BYOK: {userConfig.provider}
+              </span>
+            )}
           </button>
 
           {/* Copy invite link */}

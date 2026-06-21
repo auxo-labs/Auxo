@@ -51,6 +51,12 @@ export default function Home() {
         </div>
         <div className="flex items-center gap-4">
           <Link
+            href="/pricing"
+            className="font-mono text-[10px] text-zinc-400 hover:text-zinc-200 tracking-wider transition-colors mr-2 uppercase"
+          >
+            Pricing
+          </Link>
+          <Link
             href="/optimality"
             className="font-mono text-[10px] text-zinc-400 hover:text-zinc-200 tracking-wider transition-colors mr-2 uppercase"
           >
@@ -103,7 +109,7 @@ export default function Home() {
             <span className="w-1 h-1 bg-zinc-700 rounded-full" />
             <span>Frictionless Design</span>
             <span className="w-1 h-1 bg-zinc-700 rounded-full" />
-            <span>Accounts Coming Soon</span>
+            <span>FREE BYOK TIER ACTIVE</span>
           </div>
         </div>
 
@@ -113,14 +119,14 @@ export default function Home() {
           {/* Card 1 */}
           <div className="p-6 rounded-lg border border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.02] transition-all duration-150 relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-3 text-[10px] font-mono text-zinc-700 font-bold group-hover:text-zinc-600 transition-colors">
-              01 // SPEED
+              01 // BYOK
             </div>
             <div className="flex items-center justify-center w-8 h-8 rounded border border-white/10 bg-white/[0.02] text-zinc-400 mb-6">
               <Shield className="w-4 h-4" />
             </div>
-            <h3 className="text-xs font-mono tracking-widest text-zinc-200 uppercase font-bold">Frictionless Quick Start</h3>
+            <h3 className="text-xs font-mono tracking-widest text-zinc-200 uppercase font-bold">Bring Your Own Key</h3>
             <p className="mt-2 text-xs text-zinc-400 leading-relaxed font-sans">
-              Start editing and compiling context packs instantly without jumping through account setup or email verification hoops. Save blueprints locally, with cloud workspace dashboards arriving in our next phase.
+              Compile prompts completely for free using your private Gemini, Anthropic, or OpenAI API key. Stored securely in client memory, bypassing hosted billing logic to grant you infinite cloud compilations.
             </p>
           </div>
 
@@ -157,7 +163,12 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="relative z-10 py-8 text-center border-t border-white/[0.03] mt-auto">
+      <footer className="relative z-10 py-8 text-center border-t border-white/[0.03] mt-auto flex flex-col gap-2.5">
+        <div className="flex items-center justify-center gap-6 font-mono text-[10px] text-zinc-500 uppercase tracking-widest">
+          <Link href="/pricing" className="hover:text-zinc-300 transition-colors">Pricing</Link>
+          <span className="w-1 h-1 bg-zinc-800 rounded-full" />
+          <Link href="/optimality" className="hover:text-zinc-300 transition-colors">Optimality Specs</Link>
+        </div>
         <span className="font-mono text-[9px] text-zinc-600 tracking-widest uppercase">
           &copy; 2026 AUXO INTELLECTUAL PROPERTY LABS. ALL RIGHTS RELEASED.
         </span>

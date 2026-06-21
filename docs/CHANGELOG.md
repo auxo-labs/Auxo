@@ -2,6 +2,25 @@
 
 All notable changes to the **Auxo** project are documented here.
 
+## [1.7.0] - 2026-06-21
+
+### Added
+- **Developer Pack (Bounded Premium Tier)**: Added a bounded 50-credit Developer Pack (£49 one-time) in place of the Unlimited Lifetime Pass to completely prevent hosted API key token abuse.
+- **Interactive Pricing Route**: Built a premium dark-themed `/pricing` page featuring three tier comparison cards (Free BYOK, PAYG 3x Credits for £15, and Developer Pack 50x Credits for £49) alongside a detailed capabilities matrix.
+- **Stripe Gated Webhooks**: Connected Stripe checkout sessions to credit user account profiles with 50 compiles upon developer pack checkout verification.
+
+### Changed
+- **Settings Dialog Routing Relabel**: Changed compiler options tag label from "PAYG / LIFETIME" to "CLOUD CREDITS".
+
+## [1.6.0] - 2026-06-21
+
+### Added
+- **Dynamic Routing Badges:** Added compiler route status indicators (`CLOUD` and `BYOK: [PROVIDER]`) inside the workspace room navbar settings button to immediately show active compilation states.
+- **Redesigned Compiler Settings Dialog:** Rewrote the setup modal to present rich comparative column-like cards comparing Auxo Cloud (credits/lifetime pricing) and Bring Your Key (free tier details).
+
+### Fixed
+- **Hydration Mismatch Mitigation:** Deferred reading BYOK credentials from browser LocalStorage to client-side mount lifecycle effects, resolving Next.js hydration mismatches on secondary tabs.
+
 ## [1.5.0] - 2026-06-20
 
 ### Changed

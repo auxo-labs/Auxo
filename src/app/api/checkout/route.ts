@@ -36,12 +36,12 @@ export async function POST(request: NextRequest) {
     const origin = `${protocol}://${host}`;
 
     // Select pricing structure based on tier selection
-    const isLifetime = tier === 'lifetime';
-    const priceAmount = isLifetime ? 9900 : 1500; // £99.00 GBP vs £15.00 GBP
-    const productName = isLifetime ? 'Auxo Lifetime Pro Pass' : 'Auxo 3x AI Compile Credit Pack';
-    const productDesc = isLifetime
-      ? 'Unlimited premium deep LLM compiles grounded in live package registry metadata.'
-      : '3 premium deep LLM compiles grounded in live package registry metadata.';
+    const isDeveloperPack = tier === 'lifetime' || tier === 'pro';
+    const priceAmount = isDeveloperPack ? 999 : 499; // £9.99 GBP vs £4.99 GBP
+    const productName = isDeveloperPack ? 'Auxo Developer Pack' : 'Auxo 15x AI Compile Credit Pack';
+    const productDesc = isDeveloperPack
+      ? '50 premium deep LLM compiles grounded in live package registry metadata.'
+      : '15 premium deep LLM compiles grounded in live package registry metadata.';
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
       metadata: {
         roomId,
         userId,
-        tier: isLifetime ? 'lifetime' : 'credits',
+        tier: isDeveloperPack ? 'lifetime' : 'credits',
       },
       success_url: `${origin}/room/${roomId}?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/room/${roomId}`,

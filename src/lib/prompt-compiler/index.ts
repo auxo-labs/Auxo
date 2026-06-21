@@ -27,7 +27,7 @@ export async function compilePromptPack(
     if (provider === 'openai') {
       return await callOpenAI(apiKey, model || 'gpt-4o-mini', rawMarkdown, techSignatures);
     } else if (provider === 'anthropic') {
-      return await callAnthropic(apiKey, model || 'claude-3-5-sonnet-20241022', rawMarkdown, techSignatures);
+      return await callAnthropic(apiKey, model || 'claude-sonnet-4-5', rawMarkdown, techSignatures);
     } else if (provider === 'gemini') {
       return await callGemini(apiKey, model || 'gemini-2.5-flash', rawMarkdown, techSignatures);
     }
@@ -39,7 +39,7 @@ export async function compilePromptPack(
   if (!forceBasic && openAIKey) {
     return await callOpenAI(openAIKey, 'gpt-4o-mini', rawMarkdown, techSignatures);
   } else if (!forceBasic && anthropicKey) {
-    return await callAnthropic(anthropicKey, 'claude-3-5-sonnet-20241022', rawMarkdown, techSignatures);
+    return await callAnthropic(anthropicKey, 'claude-sonnet-4-5', rawMarkdown, techSignatures);
   } else {
     return localMockCompile(rawMarkdown, techSignatures);
   }
