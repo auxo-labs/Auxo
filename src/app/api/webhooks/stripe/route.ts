@@ -12,7 +12,12 @@ export async function POST(request: NextRequest) {
 
     let event: Stripe.Event;
 
-    // Verify webhook signature in production if secret is configured
+    // Verify webhook signature in production strictly
+    if (process.env.NODE_ENV === 'production' && !webhookSecret) {
+      console.error('STRIPE_WEBHOOK_SECRET is missing in production. Webhooks blocked.');
+      return NextResponse.json({ error: 'Webhook Error: Missing signature secret configuration' }, { status: 500 });
+    }
+
     if (webhookSecret) {
       try {
         event = stripe.webhooks.constructEvent(payload, sig, webhookSecret);
@@ -22,7 +27,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: `Webhook Error: ${errorMessage}` }, { status: 400 });
       }
     } else {
-      // In development / fallback: parse directly
+      // In development fallback: parse directly
       console.warn('STRIPE_WEBHOOK_SECRET is missing. Parsing webhook payload directly without verification.');
       event = JSON.parse(payload);
     }

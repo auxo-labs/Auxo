@@ -2,6 +2,19 @@
 
 All notable changes to the **Auxo** project are documented here.
 
+## [1.8.0] - 2026-06-21
+
+### Added
+- **Support Fallback Modal**: Built a glassmorphic support modal on the landing page navbar with room UUID copying and mailto actions.
+- **Automated Testing Suite (Vitest)**: Installed Vitest and configured test suites under `tests/unit.test.ts` (Batch 1 unit tests) and `tests/integration.test.ts` (Batch 2 integration tests).
+- **Security Mapping & Test Plan**: Documented centralized safety controls (`docs/security.md`) and manual test procedures (`docs/TESTING.md`) covering Supabase RLS, input rate control, and LocalStorage corruption handlers.
+- **Scratchpad Input Gating**: Enforced client-side 30,000 character limit constraints in the scratchpad editor to mitigate payload spikes.
+- **LocalStorage Recovery Checks**: Implemented schema validation logic on startup configurations to purge corrupt settings keys dynamically.
+
+### Fixed
+- **Stripe Test Mock Constructor**: Refactored the Stripe library mock in integration tests to use a constructible ES6 class, resolving runtime instantiating failures.
+- **Database Mock Method Chains**: Refactored the Supabase query mocks to support chained `.select().eq().single()` operations, allowing webhook tests to pass cleanly.
+
 ## [1.7.0] - 2026-06-21
 
 ### Added

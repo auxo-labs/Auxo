@@ -106,8 +106,8 @@ export function Editor({ roomId, value, onChange, onUsersChange, onStatusChange,
             </button>
           )}
         </div>
-        <span className="text-[10px] text-zinc-600 font-mono">
-          {wordCount} words &bull; {characterCount} chars
+        <span className={`text-[10px] font-mono ${characterCount >= 30000 ? 'text-rose-500 font-bold animate-pulse' : characterCount > 27000 ? 'text-amber-500' : 'text-zinc-600'}`}>
+          {wordCount} words &bull; {characterCount.toLocaleString()} / 30,000 chars
         </span>
       </div>
 
@@ -117,6 +117,7 @@ export function Editor({ roomId, value, onChange, onUsersChange, onStatusChange,
           ref={textareaRef}
           value={value}
           onChange={handleTextChange}
+          maxLength={30000}
           className="w-full h-full p-8 bg-transparent outline-none resize-none text-zinc-300 font-mono text-sm leading-relaxed selection:bg-zinc-800 focus:text-zinc-100"
           placeholder="Paste raw chaotic notes or outline your app here..."
           spellCheck="false"

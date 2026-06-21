@@ -14,7 +14,13 @@ export function SettingsModal({ isOpen, onClose, onSave }: SettingsModalProps) {
   // Config state
   const [provider, setProvider] = React.useState<UserConfig['provider']>(() => {
     if (typeof window !== 'undefined') {
-      return (localStorage.getItem('auxo-settings-provider') as UserConfig['provider']) || 'premium';
+      const saved = localStorage.getItem('auxo-settings-provider');
+      const valid = ['premium', 'openai', 'anthropic', 'gemini'];
+      if (saved && valid.includes(saved)) {
+        return saved as UserConfig['provider'];
+      }
+      localStorage.setItem('auxo-settings-provider', 'premium');
+      return 'premium';
     }
     return 'premium';
   });

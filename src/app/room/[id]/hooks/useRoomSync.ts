@@ -42,7 +42,15 @@ export function useRoomSync(roomId: string): RoomSyncResult {
 
   // Read configuration from LocalStorage on mount
   React.useEffect(() => {
-    const provider = (localStorage.getItem('auxo-settings-provider') || 'premium') as UserConfig['provider'];
+    let provider = localStorage.getItem('auxo-settings-provider') as UserConfig['provider'];
+    
+    // Safety check: Validate provider format to mitigate corrupted settings keys.
+    const validProviders = ['premium', 'openai', 'anthropic', 'gemini'];
+    if (!provider || !validProviders.includes(provider)) {
+      provider = 'premium';
+      localStorage.setItem('auxo-settings-provider', 'premium');
+    }
+
     let apiKey = undefined;
     let model = undefined;
 

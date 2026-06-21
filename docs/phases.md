@@ -128,10 +128,18 @@
 
 ## Phase 20: Pre-Flight Checklist & Security Hardening
 
-- [ ] **Step 20.1 (Security):** Enable strict Row Level Security (RLS) policies on `public.profiles` table in Supabase so users can only view or update their own row.
-- [ ] **Step 20.2 (Security):** Implement and enforce Stripe webhook signature verification (`stripe-signature`) using the Webhook secret in `src/app/api/webhooks/stripe/route.ts`.
-- [ ] **Step 20.3 (Edge Cases):** Add client-side character limit validation to the scratchpad textarea to avoid expensive payload spikes or timeouts on massive text compiles.
-- [ ] **Step 20.4 (Edge Cases):** Validate that local storage hydration logic clears any malformed/corrupt keys from previous app iterations rather than causing room viewport layout crashes.
+- [x] **Step 20.1 (Security):** Enable strict Row Level Security (RLS) policies on `public.profiles` table in Supabase so users can only view their own row.
+- [x] **Step 20.2 (Security):** Implement and enforce Stripe webhook signature verification (`stripe-signature`) using the Webhook secret in `src/app/api/webhooks/stripe/route.ts`.
+- [x] **Step 20.3 (Edge Cases):** Add client-side character limit validation to the scratchpad textarea to avoid expensive payload spikes or timeouts on massive text compiles.
+- [x] **Step 20.4 (Edge Cases):** Validate that local storage hydration logic clears any malformed/corrupt keys from previous app iterations rather than causing room viewport layout crashes.
+- [x] **Step 20.5:** Update the core manual test matrix in `docs/TESTING.md` with new test scenarios `TC-11` to `TC-15` covering safety policies and limits.
+- [x] **Step 20.6:** Establish a centralized security mapping document `docs/security.md` tracking risk controls `SEC-01` to `SEC-11` for developer reviews.
+
+## Phase 21: Automated Testing Suite Setup & Implementations
+
+- [x] **Step 21.1:** Scaffold test framework by installing `vitest` and adding the `"test"` run script inside `package.json`.
+- [x] **Step 21.2:** Write Batch 1 unit tests validating local compiler parsers and NPM version resolutions.
+- [x] **Step 21.3:** Write Batch 2 integration tests targeting Stripe webhooks and API routing compilers.
 
 ## Future Phases & Stretch Goals (DEFERRED - ABSOLUTE FEATURE FREEZE ENFORCED)
 
