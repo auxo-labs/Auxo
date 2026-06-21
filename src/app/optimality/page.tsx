@@ -43,7 +43,7 @@ export default function OptimalityPage() {
         <div className="border-b border-white/5 pb-6 mb-10">
           <div className="inline-flex items-center gap-2 px-2.5 py-1 mb-6 text-[10px] font-mono tracking-wider text-accent border border-accent/15 rounded bg-accent/[0.01]">
             <span className="w-1.5 h-1.5 bg-accent rounded-full animate-pulse" />
-            <span>WHITE PAPER // EMPIRICAL STUDY</span>
+            <span>{"WHITE PAPER // EMPIRICAL STUDY"}</span>
           </div>
           <h1 className="text-2xl sm:text-4xl md:text-5xl font-normal tracking-tight text-zinc-100 leading-[1.15] font-serif mb-4">
             Optimising AI Agent Context Allocation in Modern Coding Environments
@@ -147,6 +147,13 @@ export default function OptimalityPage() {
           <p className="text-xs leading-relaxed mb-4 text-zinc-400">
             For teams utilizing the Bring Your Own Key (BYOK) compile tier, Auxo enforces a strict zero-retention security profile. User-supplied API keys (OpenAI, Anthropic, or Gemini) are obfuscated in browser memory using symmetric XOR-based mask arrays combined with Base64 encoding. This protects keys against cross-site scripting (XSS) client-side cache scraping.
           </p>
+          <div className="p-4 rounded border border-white/5 bg-zinc-950/40 font-mono text-[10px] text-zinc-400 mb-4 select-all">
+            <span className="text-zinc-500">{"// Symmetric XOR-based encryption mask mapping:"}</span>
+            <br />
+            C[i] = K[i] ^ S[i % len(S)]
+            <br />
+            <span className="text-zinc-500">where K = raw key bytes, S = dynamic salt key, C = cipher output array.</span>
+          </div>
           <p className="text-xs leading-relaxed text-zinc-400">
             During compilation cycles, keys are transmitted strictly over TLS-encrypted HTTPS connections within transient request headers to the compilation handler. Keys are processed in-memory on the Edge compiler and are never logged, cached, or persisted to disk. Requests bypass Supabase credit gating entirely, maintaining a true zero-audit footprint for business IP.
           </p>
@@ -210,10 +217,10 @@ export default function OptimalityPage() {
         <div className="w-full mt-16 border-t border-white/5 pt-8 text-[11px] text-zinc-500 font-sans space-y-3">
           <h4 className="font-mono text-[10px] text-zinc-400 uppercase tracking-widest mb-4 font-bold">References</h4>
           <p>
-            [1] Anthropic Claude Code CLI GitHub Issues Tracker. <em>Context Allocation & Token Overhead Traces (Multi-File Tracing Analysis).</em> June 2026.
+            [1] Anthropic. (2024). <em>Prompt Caching and Context Optimization.</em> Anthropic Developer Documentation.
           </p>
           <p>
-            [2] Liu, N. F., Gardner, M., Belinkov, Y., Peters, M. E., &amp; Potts, C. (2023). <em>Lost in the Middle: How Language Models Use Long Contexts.</em> Stanford University, UC Berkeley, &amp; Allen Institute for AI.
+            [2] Liu, N. F., Lin, K., Hewitt, J., Paranjape, A., Bevilacqua, M., Petroni, F., Liang, P., &amp; Manning, C. D. (2024). <em>Lost in the Middle: How Language Models Use Long Contexts.</em> Transactions of the Association for Computational Linguistics, 12, 168-196.
           </p>
           <p>
             [3] Vercel. <em>Next.js 16 Route Segment Configuration &amp; Cache Revalidation.</em> Next.js Documentation, 2026.

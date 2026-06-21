@@ -2,6 +2,24 @@
 
 All notable changes to the **Auxo** project are documented here.
 
+## [1.9.2] - 2026-06-21
+
+### Added
+
+- **Symmetric XOR Mask Visual Block**: Embedded a visual mathematical representation of the client-side Bring Your Own Key (BYOK) XOR mask-array obfuscation logic in the technical optimality specifications page.
+- **Supabase Realtime & Custom Monogram Logo Responsive Scale**: Optimized custom brand logo and viewport-specific metadata to preserve layout constraints and aspect ratios between local development servers and production host platforms.
+
+### Changed
+
+- **Marketing and Spec Page Mobile Responsiveness**: Redesigned `/` (landing), `/pricing`, and `/optimality` routes to scale and fit viewports down to 320px (iPhone SE). Implemented mobile navigation bar layouts, stacked grids below `md` breakpoint boundaries, and responsive padding constraints to prevent horizontal layout breakages.
+- **Spec Summary Table Matrix Scopes**: Wrapped the context optimization metrics matrix inside dynamic horizontal overflow wrappers with a minimum width restriction, ensuring text readability on mobile phone devices.
+- **Optimality Citation Rigour**: Corrected the "Lost in the Middle" empirical context-window paper citations to list Nelson F. Liu et al. (2024) as the true author list, and updated the Anthropic Prompt Caching developer guides reference bibliography tags.
+
+### Fixed
+
+- **Basic Compiler Registry Grounding Flow**: Resolved the NPM dependency lookup logic in the basic compiler engine where local queries bypassed live framework version registry checks. Dynamic version lookups now resolve accurately for all compilation paths.
+- **ESLint JSX Comment Text Node Violations**: Wrapped raw `//` comment indicators inside JSX text elements in `{""}` curly brackets in `src/app/optimality/page.tsx` to fix build and compilation lint rules blocks.
+
 ## [1.9.1] - 2026-06-21
 
 ### Added

@@ -39,7 +39,8 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         );
       }
-      const compiledPack = await compilePromptPack(markdownText, [], true);
+      const techSignatures = await resolveTechStack(markdownText);
+      const compiledPack = await compilePromptPack(markdownText, techSignatures, true);
       return NextResponse.json(compiledPack);
     }
 
