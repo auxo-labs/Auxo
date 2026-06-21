@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { X, Eye, EyeOff, Settings, Sparkles, Key } from 'lucide-react';
+import { X, Eye, EyeOff, Settings, Sparkles, Key, Shield } from 'lucide-react';
 import { UserConfig } from '@/lib/prompt-compiler';
 import { obfuscateKey, deobfuscateKey } from '@/lib/encryption';
 
@@ -195,6 +195,17 @@ export function SettingsModal({ isOpen, onClose, onSave }: SettingsModalProps) {
           {/* BYOK Sub-sections */}
           {provider !== 'premium' && (
             <div className="space-y-4 pt-2 border-t border-white/5 animate-fade-in">
+              {/* Trust Badge Callout */}
+              <div className="p-3 rounded-lg border border-emerald-500/15 bg-emerald-950/10 text-zinc-300 text-[10px] leading-relaxed">
+                <div className="flex items-center gap-1.5 text-emerald-400 font-mono font-bold uppercase tracking-wider mb-1">
+                  <Shield className="w-3.5 h-3.5 text-emerald-400" />
+                  Your Key. Your Privacy.
+                </div>
+                <p className="text-zinc-400 font-sans">
+                  API keys are obfuscated client-side in LocalStorage using XOR + Base64 encryption, and transit securely to the compile API strictly as a transient request header over HTTPS. Your credentials are never logged, cached, or stored on disk.
+                </p>
+              </div>
+
               <div className="space-y-2">
                 <label className="block text-[10px] font-mono text-zinc-400 tracking-wider">
                   API PROVIDER

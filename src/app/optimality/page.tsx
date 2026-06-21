@@ -139,6 +139,19 @@ export default function OptimalityPage() {
           </p>
         </section>
 
+        {/* Section 6 */}
+        <section className="mb-10">
+          <h2 className="text-lg font-mono text-zinc-200 uppercase tracking-widest mb-4 border-b border-white/[0.03] pb-2">
+            6. BYOK Security Profile & Client-Side Encryption
+          </h2>
+          <p className="text-xs leading-relaxed mb-4 text-zinc-400">
+            For teams utilizing the Bring Your Own Key (BYOK) compile tier, Auxo enforces a strict zero-retention security profile. User-supplied API keys (OpenAI, Anthropic, or Gemini) are obfuscated in browser memory using symmetric XOR-based mask arrays combined with Base64 encoding. This protects keys against cross-site scripting (XSS) client-side cache scraping.
+          </p>
+          <p className="text-xs leading-relaxed text-zinc-400">
+            During compilation cycles, keys are transmitted strictly over TLS-encrypted HTTPS connections within transient request headers to the compilation handler. Keys are processed in-memory on the Edge compiler and are never logged, cached, or persisted to disk. Requests bypass Supabase credit gating entirely, maintaining a true zero-audit footprint for business IP.
+          </p>
+        </section>
+
         {/* Spec Overview Summary Table */}
         <div className="w-full mt-12 text-left border border-white/5 bg-white/[0.005] rounded-lg p-8 relative overflow-hidden">
           <div className="absolute top-0 right-0 p-4 text-[9px] font-mono text-zinc-800 uppercase tracking-widest">
@@ -176,6 +189,11 @@ export default function OptimalityPage() {
                 <td className="py-2.5 font-bold text-zinc-300">Ephemeral Storage</td>
                 <td className="py-2.5">Client-side ZIP compilation and sync</td>
                 <td className="py-2.5 text-accent">Zero db leakage risk<sup>[4]</sup></td>
+              </tr>
+              <tr>
+                <td className="py-2.5 font-bold text-zinc-300">BYOK Key Encryption</td>
+                <td className="py-2.5">LocalStorage XOR obfuscation + transient HTTPS headers</td>
+                <td className="py-2.5 text-accent">Zero credentials caching or logging</td>
               </tr>
               <tr>
                 <td className="py-2.5 font-bold text-zinc-300">Constitution Maps</td>

@@ -26,6 +26,7 @@ export async function callOpenAI(
     },
     body: JSON.stringify({
       model: model,
+      max_tokens: 8000,
       messages: [
         {
           role: 'system',
@@ -82,7 +83,7 @@ export async function callAnthropic(
     },
     body: JSON.stringify({
       model: model,
-      max_tokens: 4000,
+      max_tokens: 8000,
       system: generateSystemPrompt(techSignatures),
       messages: [
         {
@@ -151,7 +152,8 @@ export async function callGemini(
         ]
       },
       generationConfig: {
-        responseMimeType: 'text/plain'
+        responseMimeType: 'text/plain',
+        maxOutputTokens: 8000
       }
     })
   });

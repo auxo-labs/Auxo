@@ -195,7 +195,7 @@ export default function Home() {
             </div>
             <h3 className="text-xs font-mono tracking-widest text-zinc-200 uppercase font-bold">Zero-Telemetry BYOK</h3>
             <p className="mt-2 text-xs text-zinc-400 leading-relaxed font-sans">
-              Compile prompts completely for free using private OpenAI, Anthropic, or Gemini keys. Stored strictly in local browser memory with zero server telemetry or DB data leakage.
+              Compile prompts completely for free using private OpenAI, Anthropic, or Gemini keys. Keys are obfuscated in LocalStorage (XOR + Base64) and sent securely via transient HTTPS headers with zero persistent logging.
             </p>
           </div>
 

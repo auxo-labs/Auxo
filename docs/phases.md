@@ -170,11 +170,11 @@
 
 This phase focuses on surfacing the privacy and security guarantees of BYOK mode clearly to users, so they understand exactly what Auxo stores (nothing) vs. what stays on their device (everything).
 
-- [ ] **Step 25.1:** Add a prominent **"Your Key. Your Privacy."** trust callout panel inside the Settings Modal. It must explain that keys are stored client-side in LocalStorage using XOR + Base64 encryption, and transit to the Next.js compile API securely via HTTPS strictly as a transient header (never logged, cached, or stored on disk) due to browser CORS policies.
-- [ ] **Step 25.2:** Add a green-glowing **"PRIVATE BYOK" compiler indicator badge** in the room navbar when BYOK is active, indicating that compilation requests bypass credit checks and database storage.
-- [ ] **Step 25.3:** Document the XOR encryption mechanism and security profile on the technical optimality specs page (`/optimality`).
-- [ ] **Step 25.4:** Update the landing page BYOK bento card copy to highlight the secure HTTPS transient transit and client-side encryption guarantees.
-- [ ] **Step 25.5:** Run build and lint verification checks.
+- [x] **Step 25.1:** Add a prominent **"Your Key. Your Privacy."** trust callout panel inside the Settings Modal. It must explain that keys are stored client-side in LocalStorage using XOR + Base64 encryption, and transit to the Next.js compile API securely via HTTPS strictly as a transient header (never logged, cached, or stored on disk) due to browser CORS policies.
+- [x] **Step 25.2:** Add a green-glowing **"PRIVATE BYOK" compiler indicator badge** in the room navbar when BYOK is active, indicating that compilation requests bypass credit checks and database storage.
+- [x] **Step 25.3:** Document the XOR encryption mechanism and security profile on the technical optimality specs page (`/optimality`).
+- [x] **Step 25.4:** Update the landing page BYOK bento card copy to highlight the secure HTTPS transient transit and client-side encryption guarantees.
+- [x] **Step 25.5:** Run build and lint verification checks.
 
 ## Future Phases & Stretch Goals (DEFERRED - ABSOLUTE FEATURE FREEZE ENFORCED)
 

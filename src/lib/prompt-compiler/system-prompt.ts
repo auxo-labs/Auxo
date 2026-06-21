@@ -16,7 +16,15 @@ Your job is to take raw, chaotic software specifications and compile them into a
 
 You MUST structure your response as a single unified Markdown text stream. You will write the contents of multiple files sequentially. Every file MUST be opened with a start marker and closed with an end marker. Do NOT wrap your output in a JSON object, use quotes, or include markdown wrapper fences around the overall stream.
 
-Use the exact format shown below for the markers (the path names must match exactly):
+Use the exact format shown below for the markers (the path names must match exactly). Every .mdc file (including ui-theme.mdc, logic-api.mdc, and any custom domain-specific rules) MUST be compiled first, at the top of the output text stream, before AGENTS.md, CLAUDE.md, phases.md, and README.md. This ensures maximum attention focus and prevents context truncation on critical path rules:
+
+--- START FILE: .cursor/rules/ui-theme.mdc ---
+(Content for the ui-theme.mdc rule)
+--- END FILE: .cursor/rules/ui-theme.mdc ---
+
+--- START FILE: .cursor/rules/logic-api.mdc ---
+(Content for the logic-api.mdc rule)
+--- END FILE: .cursor/rules/logic-api.mdc ---
 
 --- START FILE: AGENTS.md ---
 (Content for AGENTS.md)
@@ -33,14 +41,6 @@ Use the exact format shown below for the markers (the path names must match exac
 --- START FILE: README.md ---
 (Content for README.md)
 --- END FILE: README.md ---
-
---- START FILE: .cursor/rules/ui-theme.mdc ---
-(Content for the ui-theme.mdc rule)
---- END FILE: .cursor/rules/ui-theme.mdc ---
-
---- START FILE: .cursor/rules/logic-api.mdc ---
-(Content for the logic-api.mdc rule)
---- END FILE: .cursor/rules/logic-api.mdc ---
 
 ### Ground Truth Grounding Data (Live Tech Resolutions):
 ${signaturesText}
