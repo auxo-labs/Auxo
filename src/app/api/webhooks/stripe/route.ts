@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
       if (tier === 'lifetime' || tier === 'pro') {
         const { error: updateError } = await supabaseAdmin
           .from('profiles')
-          .update({ credits: profile.credits + 50 })
+          .update({ credits: profile.credits + 50, is_lifetime: true })
           .eq('id', userId);
 
         if (updateError) {

@@ -5,19 +5,23 @@ All notable changes to the **Auxo** project are documented here.
 ## [1.8.0] - 2026-06-21
 
 ### Added
+
 - **Support Fallback Modal**: Built a glassmorphic support modal on the landing page navbar with room UUID copying and mailto actions.
 - **Automated Testing Suite (Vitest)**: Installed Vitest and configured test suites under `tests/unit.test.ts` (Batch 1 unit tests) and `tests/integration.test.ts` (Batch 2 integration tests).
-- **Security Mapping & Test Plan**: Documented centralized safety controls (`docs/security.md`) and manual test procedures (`docs/TESTING.md`) covering Supabase RLS, input rate control, and LocalStorage corruption handlers.
-- **Scratchpad Input Gating**: Enforced client-side 30,000 character limit constraints in the scratchpad editor to mitigate payload spikes.
+- **Security Mapping & Test Plan**: Documented centralised safety controls (`docs/security.md`) and manual test procedures (`docs/TESTING.md`) covering Supabase RLS, input rate control, and LocalStorage corruption handlers.
+- **Tiered Scratchpad Input Gating**: Enforced client-side character limits of 15,000 characters for standard compiles/free sandboxes and 30,000 characters for BYOK & Developer Pack tiers to mitigate payload spikes.
+- **Pricing Matrix Upgrades**: Documented the tiered character limits on the pricing bento comparison cards and matrix columns.
 - **LocalStorage Recovery Checks**: Implemented schema validation logic on startup configurations to purge corrupt settings keys dynamically.
 
 ### Fixed
+
 - **Stripe Test Mock Constructor**: Refactored the Stripe library mock in integration tests to use a constructible ES6 class, resolving runtime instantiating failures.
 - **Database Mock Method Chains**: Refactored the Supabase query mocks to support chained `.select().eq().single()` operations, allowing webhook tests to pass cleanly.
 
 ## [1.7.0] - 2026-06-21
 
 ### Added
+
 - **Developer Pack (Tier 3)**: Implemented a bounded 50-credit Developer Pack for £9.99 (one-time) to prevent hosted API cost abuse while catering to heavy users.
 - **PAYG Starter Pack (Tier 2)**: Configured a bounded 15-credit pack for £4.99 (one-time).
 - **Interactive Pricing Route**: Created a premium dark-themed `/pricing` page comparing the three active compiler tiers (Free BYOK, £4.99 PAYG Pack, and £9.99 Developer Pack) with a detailed capability matrix.
@@ -26,20 +30,24 @@ All notable changes to the **Auxo** project are documented here.
 - **Claude 4.5 Sonnet Migration**: Migrated default hosted cloud compiler models and BYOK configuration recommendations to `claude-sonnet-4-5`.
 
 ### Changed
+
 - **Settings Dialog Routing Relabel**: Changed compiler options tag label from "PAYG / LIFETIME" to "CLOUD CREDITS".
 
 ## [1.6.0] - 2026-06-21
 
 ### Added
+
 - **Dynamic Routing Badges:** Added compiler route status indicators (`CLOUD` and `BYOK: [PROVIDER]`) inside the workspace room navbar settings button to immediately show active compilation states.
 - **Redesigned Compiler Settings Dialog:** Rewrote the setup modal to present rich comparative column-like cards comparing Auxo Cloud (credits/lifetime pricing) and Bring Your Key (free tier details).
 
 ### Fixed
+
 - **Hydration Mismatch Mitigation:** Deferred reading BYOK credentials from browser LocalStorage to client-side mount lifecycle effects, resolving Next.js hydration mismatches on secondary tabs.
 
 ## [1.5.0] - 2026-06-20
 
 ### Changed
+
 - **Compiler Modularization:** Deconstructed the monolithic `prompt-compiler.ts` into a clean package under `src/lib/prompt-compiler/` comprising independent sub-modules for clients, prompt generation, parsing utilities, and deterministic mock templates.
 - **Room State Custom Hooks:** Decoupled room state synchronization, local caching, and auth updates from the layout presentation into [useRoomSync.ts](file:///Users/danwooster/1.%20DEV/auxo/src/app/room/[id]/hooks/useRoomSync.ts).
 - **Keyboard Shortcuts Hook:** Isolated global window event listeners for keybindings into [useShortcuts.ts](file:///Users/danwooster/1.%20DEV/auxo/src/app/room/[id]/hooks/useShortcuts.ts).
@@ -48,31 +56,37 @@ All notable changes to the **Auxo** project are documented here.
 ## [1.4.1] - 2026-06-20
 
 ### Added
+
 - **Pre-Baked Compliance Invariants:** Automatically injects authoritative compliance guidelines into `AGENTS.md` based on active archetypes (SOC2 guidelines for B2B/SaaS, HIPAA security rule standards for HealthTech, and PCI-DSS payment directives for FinTech).
 - **Crossover Multi-Domain Templates:** Added dedicated local compiler templates for multi-domain crossovers: **ClaimFlow** (HealthTech + FinTech for audited, HIPAA-compliant claims billing) and **BizLedger** (B2B + FinTech for multi-tenant billing ledgers).
 - **Crossover Rule Merging:** Improved keyword checks and file arrays in the local compiler to gracefully combine rule files (e.g. generating `ledger-rules.mdc` + `hipaa-rules.mdc` + `ui-theme.mdc` simultaneously) without collisions.
 - **Generative Compliance Instructions:** Added instructions inside `generateSystemPrompt` for the LLM to auto-inject matching SOC2, HIPAA, and PCI-DSS compliance directives based on domain keywords.
 
 ### Fixed
+
 - **Compiler Syntax Error:** Resolved a duplicate declaration of `cursorRules` in `localMockCompile` that was referencing undefined variables (`uiThemeRules`, `logicFileName`, and `logicRules`).
 
 ## [1.4.0] - 2026-06-20
 
 ### Added
+
 - **Service Flow & System Architecture Documentation:** Created `docs/service_flow.md` mapping out complete sequence diagrams for Auth sessions, Stripe checkout gating, and the server-bypass BYOK pipeline.
 - **Split Compile Button Dropdown:** Merged the basic and premium compile triggers inside the workspace header into a unified split dropdown button, saving horizontal toolbar space.
 
 ### Changed
+
 - **Responsive Workspace Header Spacing:** Relocated the `Builder count` status badge to the left-hand meta grouping. Removed the center shield indicator and the `Optimality` link to provide breathing room.
 - **Import Optimizations:** Cleaned up unused import values (`Compass`, `ShieldAlert`, `Link`) from the Room Component layer.
 - **YAML Frontmatter & Parser Strictness:** Restructured compilation prompts in `prompt-compiler.ts` to demand strict YAML syntax in generated Cursor `.mdc` rules and prevent placeholders in outputs.
 
 ### Fixed
+
 - **Template Literal Compilation Error:** Correctly backslash-escaped inner markdown code fences inside the `generateSystemPrompt` template literal in `prompt-compiler.ts` to prevent ESLint AST syntax parsing issues.
 
 ## [1.3.0] - 2026-06-20
 
 ### Added
+
 - **Supabase Auth & Magic Link Integration:** Integrated passwordless login flow using Supabase email OTPs and custom glassmorphic `AuthModal`.
 - **Account-Gating & Compilation Credits:** Gated premium compiler endpoints using credits (£15 for 3 compiles) and lifetime access pass (£99). Added profile tracking metadata in the room navbar.
 - **Stripe Webhook Endpoint:** Added `/api/webhooks/stripe` POST route to capture completed checkout sessions, credit user balances in GBP, and apply lifetime passes.
@@ -83,26 +97,31 @@ All notable changes to the **Auxo** project are documented here.
 - **Gating Bypass Flow:** Configured client and server routes to automatically bypass Stripe checks, account creation, and profile billing if custom keys are present.
 
 ### Changed
+
 - **Server Action Constraints:** Cleaned up server-side exports in `prompt-compiler.ts` to strictly adhere to async regulations of Next.js Server Actions.
 
 ### Fixed
+
 - **Type Checking Errors:** Resolved parameter count mismatches and build-breaking variable types in `page.tsx` handlers.
 - **Silent Key Fallbacks:** Intercepted invalid/expired API key responses to report explicit auth failures in the UI settings dialog rather than silently falling back to local mocks.
 
 ## [1.2.0] - 2026-06-20
 
 ### Added
+
 - **Optimality specs whitepaper:** Implemented `/optimality` route detailing prompt compilation scope maps, token budgeting, and mathematical limits of context decay.
 - **Architectural documents:** Created `compiler_specs.md` detailing CAP architectures and LLM vs Local tradeoffs, and `finalphases.md` detailing Stripe Webhook and auth roadmap.
 - **Compiler test suite:** Added Scenario A, B, and C standard inputs under `test_cases.md` to evaluate parser mapping correctness.
 
 ### Changed
+
 - **Navigation flow:** Updated landing page and room workspace headers to open `/optimality` in the same tab instead of a new tab for seamless user experiences.
 - **Compiler taste parameters:** Upgraded system prompts and local mock models inside `prompt-compiler.ts` to strictly inject DRY, KISS, SOLID, YAGNI, and no-placeholder rules into compiled packs.
 
 ## [1.1.0] - 2026-06-17
 
 ### Added
+
 - **Stripe Checkout Integration:** New `POST /api/checkout` route creates a Stripe Checkout Session, embedding the active `roomId` as `client_reference_id` for stateless state handshake.
 - **Payment-Gated Compilation:** `POST /api/compile` now verifies a Stripe `session_id` before running the prompt compiler. Unauthenticated compile requests redirect to Stripe Checkout.
 - **Post-Payment Auto-Flow:** After a successful Stripe redirect, the workspace auto-compiles the scratchpad and triggers the ZIP download in a single uninterrupted flow. The `session_id` is then stripped from the URL to prevent re-triggering on refresh.
@@ -110,18 +129,20 @@ All notable changes to the **Auxo** project are documented here.
 - **Marketing Copy Update:** Landing page reframed around "Instant Sandbox" and "Frictionless Design" positioning with "Accounts Coming Soon" callout, moving away from a "Zero-Data" boast.
 
 ### Changed
+
 - **React Compiler Migration:** Removed all manual `useCallback` wrappers from `src/app/room/[id]/page.tsx`. The Next.js 16 React Compiler handles memoisation automatically; `useCallback` was conflicting with `react-hooks/immutability` rules.
 - **Hook Ordering Fix:** All handler functions (`handleCompile`, `handleDownload`, `handleCopyLink`) are now declared before any `useEffect` hooks that reference them, resolving ESLint `react-hooks` ordering violations.
 - **`stripe` Dependency Installed:** Added `stripe` npm package (was listed in `package.json` but not installed, causing build failures).
 
 ### Fixed
+
 - **Build Failure:** Resolved `Module not found: Can't resolve 'stripe'` errors in both API routes by running `npm install stripe`.
 - **Lint Errors:** Eliminated all `react-hooks/exhaustive-deps` and `react-hooks/immutability` violations in the room page component.
 
 ## [1.0.0] - 2026-06-17
 
-
 ### Added
+
 - **Landing Page UI:** Sleek, grid-based dark mode layout featuring high-contrast editorial serif typography (`Playfair_Display`) and aesthetic Bento grids.
 - **Routing & Sessions:** Zero-auth ephemeral workspace generation using browser-level UUIDs (`/room/[uuid]`).
 - **Real-time Synchronization:** Multi-builder text broadcast and user presence trackers powered by Supabase Realtime (transient channels ensuring zero database logs).

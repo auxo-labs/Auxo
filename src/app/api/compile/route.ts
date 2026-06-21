@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
                 const isDeveloperPack = session.metadata?.tier === 'lifetime' || session.metadata?.tier === 'pro';
                 if (isDeveloperPack) {
                   // Grant remaining 49 credits (+50 total minus 1 consumed now)
-                  await supabaseAdmin.from('profiles').update({ credits: (profileData?.credits || 0) + 49 }).eq('id', userId);
+                  await supabaseAdmin.from('profiles').update({ credits: (profileData?.credits || 0) + 49, is_lifetime: true }).eq('id', userId);
                 } else {
                   // Grant remaining 14 credits (+15 total minus 1 consumed now)
                   await supabaseAdmin.from('profiles').update({ credits: (profileData?.credits || 0) + 14 }).eq('id', userId);

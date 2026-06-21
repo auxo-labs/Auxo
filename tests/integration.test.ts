@@ -138,8 +138,8 @@ describe('Batch 2: Webhook and API Integration Tests', () => {
       const response = await webhookPOST(request);
       expect(response.status).toBe(200);
 
-      // Verify DB update was triggered with +50 credits increment (10 initial + 50 = 60)
-      expect(mockUpdate).toHaveBeenCalledWith({ credits: 60 });
+      // Verify DB update was triggered with +50 credits increment (10 initial + 50 = 60) and is_lifetime: true
+      expect(mockUpdate).toHaveBeenCalledWith({ credits: 60, is_lifetime: true });
     });
 
     it('should return 500 error if webhook secret is missing in production environment', async () => {

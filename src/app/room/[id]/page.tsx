@@ -511,6 +511,7 @@ function RoomContent({ roomId }: { roomId: string }) {
             onStatusChange={setConnectionStatus}
             isExpanded={expandedPanel === 'editor'}
             onToggleExpand={() => setExpandedPanel(prev => prev === 'editor' ? 'none' : 'editor')}
+            maxLength={profile?.is_lifetime || (userConfig && userConfig.provider !== 'premium' && userConfig.apiKey && userConfig.apiKey.trim() !== '') ? 30000 : 15000}
           />
         )}
 

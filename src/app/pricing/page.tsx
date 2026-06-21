@@ -201,7 +201,7 @@ export default function PricingPage() {
               </li>
               <li className="flex items-center gap-2">
                 <Check className="w-3 h-3 text-emerald-500 shrink-0" />
-                <span>No hosted credit limits</span>
+                <span>30,000 character limit</span>
               </li>
             </ul>
 
@@ -242,7 +242,7 @@ export default function PricingPage() {
               </li>
               <li className="flex items-center gap-2">
                 <Check className="w-3 h-3 text-cyan-500 shrink-0" />
-                <span>No key configuration required</span>
+                <span>15,000 character limit</span>
               </li>
               <li className="flex items-center gap-2">
                 <Check className="w-3 h-3 text-cyan-500 shrink-0" />
@@ -291,11 +291,11 @@ export default function PricingPage() {
               </li>
               <li className="flex items-center gap-2">
                 <Check className="w-3 h-3 text-emerald-500 shrink-0" />
-                <span>Highest priority generation queue</span>
+                <span>30,000 character limit</span>
               </li>
               <li className="flex items-center gap-2">
                 <Check className="w-3 h-3 text-emerald-500 shrink-0" />
-                <span>Early access to compiler updates</span>
+                <span>Highest priority generation queue</span>
               </li>
             </ul>
 
@@ -339,6 +339,12 @@ export default function PricingPage() {
                   <td className="py-3">Infinite</td>
                   <td className="py-3">15 Credits</td>
                   <td className="py-3">50 Credits</td>
+                </tr>
+                <tr>
+                  <td className="py-3 text-zinc-300">Scratchpad Limit</td>
+                  <td className="py-3">30,000 chars</td>
+                  <td className="py-3">15,000 chars</td>
+                  <td className="py-3">30,000 chars</td>
                 </tr>
                 <tr>
                   <td className="py-3 text-zinc-300">Key Configurations</td>

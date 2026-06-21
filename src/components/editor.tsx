@@ -1,4 +1,4 @@
-'use client';
+  'use client';
 
 import * as React from 'react';
 import { supabase } from '@/lib/supabase';
@@ -12,9 +12,19 @@ interface EditorProps {
   onStatusChange: (status: 'connected' | 'connecting' | 'disconnected') => void;
   isExpanded?: boolean;
   onToggleExpand?: () => void;
+  maxLength?: number;
 }
 
-export function Editor({ roomId, value, onChange, onUsersChange, onStatusChange, isExpanded, onToggleExpand }: EditorProps) {
+export function Editor({
+  roomId,
+  value,
+  onChange,
+  onUsersChange,
+  onStatusChange,
+  isExpanded,
+  onToggleExpand,
+  maxLength = 15000
+}: EditorProps) {
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
   const channelRef = React.useRef<ReturnType<typeof supabase.channel> | null>(null);
 
@@ -106,8 +116,8 @@ export function Editor({ roomId, value, onChange, onUsersChange, onStatusChange,
             </button>
           )}
         </div>
-        <span className={`text-[10px] font-mono ${characterCount >= 30000 ? 'text-rose-500 font-bold animate-pulse' : characterCount > 27000 ? 'text-amber-500' : 'text-zinc-600'}`}>
-          {wordCount} words &bull; {characterCount.toLocaleString()} / 30,000 chars
+        <span className={`text-[10px] font-mono ${characterCount >= maxLength ? 'text-rose-500 font-bold animate-pulse' : characterCount > maxLength * 0.9 ? 'text-amber-500' : 'text-zinc-600'}`}>
+          {wordCount} words &bull; {characterCount.toLocaleString()} / {maxLength.toLocaleString()} chars
         </span>
       </div>
 
@@ -117,7 +127,7 @@ export function Editor({ roomId, value, onChange, onUsersChange, onStatusChange,
           ref={textareaRef}
           value={value}
           onChange={handleTextChange}
-          maxLength={30000}
+          maxLength={maxLength}
           className="w-full h-full p-8 bg-transparent outline-none resize-none text-zinc-300 font-mono text-sm leading-relaxed selection:bg-zinc-800 focus:text-zinc-100"
           placeholder="Paste raw chaotic notes or outline your app here..."
           spellCheck="false"
