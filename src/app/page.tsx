@@ -4,10 +4,12 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useState, useEffect, useRef } from 'react';
 import { ArrowRight, Shield, RefreshCw, Cpu, Layers } from 'lucide-react';
+import { SupportModal } from '@/components/support-modal';
 
 export default function Home() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
 
   const handleCreateRoom = () => {
     if (isLoading) return;
@@ -62,6 +64,12 @@ export default function Home() {
           >
             Optimality Specs
           </Link>
+          <button
+            onClick={() => setIsSupportModalOpen(true)}
+            className="font-mono text-[10px] text-zinc-400 hover:text-zinc-200 tracking-wider transition-colors mr-2 uppercase cursor-pointer"
+          >
+            Support
+          </button>
           <span className="font-mono text-[10px] text-zinc-500 border border-white/5 bg-white/[0.02] px-2 py-0.5 rounded">
             v1.0.0-beta
           </span>
@@ -173,6 +181,13 @@ export default function Home() {
           &copy; 2026 AUXO INTELLECTUAL PROPERTY LABS. ALL RIGHTS RELEASED.
         </span>
       </footer>
+
+      {isSupportModalOpen && (
+        <SupportModal
+          isOpen={isSupportModalOpen}
+          onClose={() => setIsSupportModalOpen(false)}
+        />
+      )}
     </div>
   );
 }

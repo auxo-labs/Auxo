@@ -124,7 +124,7 @@
 - [x] **Step 19.1:** Design and implement a premium dark-themed `/pricing` page (`src/app/pricing/page.tsx`) with dynamic bento-style tier selection grid (Free BYOK, PAYG Compile, Developer Pack).
 - [x] **Step 19.2:** Link Stripe Checkout triggers to the selected Cloud tiers (credits vs developer pack) with proper checkout session payloads.
 - [x] **Step 19.3:** Verify redirects, webhook handlers, and auth indicator updates after purchase completion (using Stripe CLI locally to trigger mock `checkout.session.completed` events and verify user credits incrementing).
-- [ ] **Step 19.4:** Build an ultra-lean "Contact/Support" fallback mailto: link/button on the workspace room toolbar for compile failures or credit bugs.
+- [x] **Step 19.4:** Build an ultra-lean "Contact/Support" fallback mailto: link/button on the workspace room toolbar for compile failures or credit bugs.
 
 ## Phase 20: Pre-Flight Checklist & Security Hardening
 
