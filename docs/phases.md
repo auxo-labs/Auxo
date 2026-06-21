@@ -141,8 +141,17 @@
 - [x] **Step 21.2:** Write Batch 1 unit tests validating local compiler parsers and NPM version resolutions.
 - [x] **Step 21.3:** Write Batch 2 integration tests targeting Stripe webhooks and API routing compilers.
 
+
+## Phase 22: Student & Academic Compilation Support (Active Phase)
+
+- [ ] **Step 22.1:** Add keyword detection and local academic templates in `mock-compiler.ts` (e.g. thesis, essay, computer science homework, lab reports).
+- [ ] **Step 22.2:** Update `system-prompt.ts` with AI compiler guidelines for academic tone, citation compliance (APA/MLA/IEEE), and plagiarism prevention.
+- [ ] **Step 22.3:** Write unit tests in `tests/unit.test.ts` to validate student compilation outcomes.
+- [ ] **Step 22.4:** Verify full test execution and build checks.
+
 ## Future Phases & Stretch Goals (DEFERRED - ABSOLUTE FEATURE FREEZE ENFORCED)
 
 - [ ] **Scratchpad & Real-Time Collaboration Upgrades:**
   - Upgrade the editor UI from a plain `<textarea>` to a more creative visual area - flashcards, notes etc.
   - Add real-time collaboration features.
+
