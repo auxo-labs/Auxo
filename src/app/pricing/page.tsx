@@ -108,7 +108,7 @@ export default function PricingPage() {
       <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-glow-teal rounded-full pointer-events-none blur-3xl opacity-40" />
 
       {/* Navigation Header */}
-      <nav className="relative z-10 flex items-center justify-between px-8 h-16 border-b border-white/[0.03] bg-background/30 backdrop-blur-md">
+      <nav className="relative z-10 flex items-center justify-between px-4 sm:px-8 h-16 border-b border-white/[0.03] bg-background/30 backdrop-blur-md">
         <div className="flex items-center gap-4">
           <Link
             href="/"
@@ -128,7 +128,7 @@ export default function PricingPage() {
           {user ? (
             <div className="flex items-center gap-2 h-8 px-2.5 rounded border border-white/5 bg-white/[0.01] text-[10px] font-mono tracking-wider text-zinc-300">
               <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
-              <span className="text-zinc-400 font-semibold">{user.email?.split('@')[0].toUpperCase()}</span>
+              <span className="text-zinc-400 font-semibold max-w-[60px] sm:max-w-[100px] truncate">{user.email?.split('@')[0].toUpperCase()}</span>
               <span className="h-3 w-px bg-white/10" />
               {profile?.is_lifetime ? (
                 <span className="text-[9px] font-bold text-amber-400 font-mono">LIFETIME PRO</span>
@@ -150,10 +150,10 @@ export default function PricingPage() {
       </nav>
 
       {/* Main Pricing Contents */}
-      <main className="relative z-10 flex flex-col items-center justify-center flex-grow max-w-5xl mx-auto px-6 py-16 text-center w-full">
+      <main className="relative z-10 flex flex-col items-center justify-center flex-grow max-w-5xl mx-auto px-4 sm:px-6 py-10 sm:py-16 text-center w-full">
         
         {/* Title */}
-        <h1 className="text-4xl font-normal tracking-tight sm:text-6xl text-zinc-100 max-w-3xl leading-[1.1] selection:bg-zinc-800 font-serif">
+        <h1 className="text-3xl sm:text-5xl md:text-6xl font-normal tracking-tight text-zinc-100 max-w-3xl leading-[1.1] selection:bg-zinc-800 font-serif">
           Compiler Access Plans
         </h1>
         <p className="max-w-xl mx-auto mt-4 text-xs sm:text-sm text-zinc-400 font-sans leading-relaxed">
@@ -167,10 +167,10 @@ export default function PricingPage() {
         )}
 
         {/* 3-Tier Bento Selection Cards Grid */}
-        <div className="grid gap-6 mt-12 sm:grid-cols-3 w-full">
+        <div className="grid gap-6 mt-12 md:grid-cols-3 w-full">
           
           {/* Tier 1: BYOK (Free) */}
-          <div className="flex flex-col p-6 rounded-lg border border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.02] transition-all relative overflow-hidden group text-left h-full">
+          <div className="flex flex-col p-5 sm:p-6 rounded-lg border border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.02] transition-all relative overflow-hidden group text-left h-full">
             <div className="absolute top-0 right-0 p-4 text-[10px] font-mono text-zinc-700 font-bold group-hover:text-zinc-600 transition-colors">
               TIER 01 // FREE
             </div>
@@ -215,7 +215,7 @@ export default function PricingPage() {
           </div>
 
           {/* Tier 2: PAYG Credits */}
-          <div className="flex flex-col p-6 rounded-lg border border-white/5 bg-white/[0.005] opacity-40 relative overflow-hidden text-left h-full select-none">
+          <div className="flex flex-col p-5 sm:p-6 rounded-lg border border-white/5 bg-white/[0.005] opacity-40 relative overflow-hidden text-left h-full select-none">
             <div className="absolute top-0 right-0 p-4 text-[10px] font-mono text-zinc-500 font-bold">
               TIER 02 // COMING SOON
             </div>
@@ -259,7 +259,7 @@ export default function PricingPage() {
           </div>
 
           {/* Tier 3: Developer Pack */}
-          <div className="flex flex-col p-6 rounded-lg border border-white/5 bg-white/[0.005] opacity-40 relative overflow-hidden text-left h-full select-none">
+          <div className="flex flex-col p-5 sm:p-6 rounded-lg border border-white/5 bg-white/[0.005] opacity-40 relative overflow-hidden text-left h-full select-none">
             <div className="absolute top-0 right-0 p-4 text-[10px] font-mono text-zinc-500 font-bold">
               TIER 03 // COMING SOON
             </div>
@@ -305,10 +305,10 @@ export default function PricingPage() {
         </div>
 
         {/* Feature Comparison Matrix */}
-        <section className="w-full mt-24 text-left border border-white/5 bg-zinc-950/20 rounded-lg p-6 font-mono text-xs select-none">
+        <section className="w-full mt-16 sm:mt-24 text-left border border-white/5 bg-zinc-950/20 rounded-lg p-4 sm:p-6 font-mono text-xs select-none">
           <h4 className="text-[10px] tracking-widest text-zinc-500 uppercase font-bold mb-4">Feature Matrix Comparison</h4>
           <div className="overflow-x-auto">
-            <table className="w-full text-zinc-400">
+            <table className="w-full text-zinc-400 min-w-[600px]">
               <thead>
                 <tr className="border-b border-white/5 text-zinc-500 text-[10px] tracking-wider">
                   <th className="pb-3 text-left font-semibold">CAPABILITY</th>
@@ -356,8 +356,8 @@ export default function PricingPage() {
       </main>
 
       {/* Footer */}
-      <footer className="relative z-10 py-8 text-center border-t border-white/[0.03] mt-auto flex flex-col gap-2.5">
-        <span className="font-mono text-[9px] text-zinc-600 tracking-widest uppercase">
+      <footer className="relative z-10 py-8 text-center border-t border-white/[0.03] mt-auto flex flex-col gap-2.5 px-4">
+        <span className="font-mono text-[8px] sm:text-[9px] text-zinc-600 tracking-wider sm:tracking-widest uppercase">
           &copy; 2026 AUXO INTELLECTUAL PROPERTY LABS. ALL RIGHTS RELEASED.
         </span>
       </footer>

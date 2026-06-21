@@ -16,8 +16,8 @@ export default function OptimalityPage() {
       <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-glow-teal rounded-full pointer-events-none blur-3xl opacity-50" />
 
       {/* 3. Minimal Navigation Bar */}
-      <nav className="relative z-10 flex items-center justify-between px-8 h-16 border-b border-white/[0.03] bg-background/30 backdrop-blur-md">
-        <div className="flex items-center gap-3">
+      <nav className="relative z-10 flex items-center justify-between px-4 sm:px-8 h-16 border-b border-white/[0.03] bg-background/30 backdrop-blur-md">
+        <div className="flex items-center gap-2 sm:gap-3">
           <button
             onClick={() => router.push('/')}
             className="flex items-center justify-center w-7 h-7 rounded border border-white/5 hover:border-white/10 hover:bg-white/[0.02] transition-all text-zinc-400 hover:text-zinc-200 cursor-pointer"
@@ -26,18 +26,18 @@ export default function OptimalityPage() {
             <ArrowLeft className="w-3.5 h-3.5" />
           </button>
           <span className="font-mono text-sm tracking-wider font-semibold text-zinc-200">AUXO</span>
-          <span className="h-4 w-px bg-white/10" />
-          <span className="font-mono text-[10px] text-zinc-500 tracking-widest uppercase">Technical Research Report</span>
+          <span className="h-4 w-px bg-white/10 hidden md:inline" />
+          <span className="font-mono text-[10px] text-zinc-500 tracking-widest uppercase hidden md:inline">Technical Research Report</span>
         </div>
         <div>
-          <span className="font-mono text-[10px] text-zinc-500 border border-white/5 bg-white/[0.02] px-2 py-0.5 rounded">
+          <span className="hidden sm:inline-block font-mono text-[10px] text-zinc-500 border border-white/5 bg-white/[0.02] px-2 py-0.5 rounded">
             TR-2026-V1
           </span>
         </div>
       </nav>
 
       {/* 4. Whitepaper Header Section */}
-      <main className="relative z-10 flex flex-col items-stretch flex-grow max-w-4xl mx-auto px-6 py-16 text-left">
+      <main className="relative z-10 flex flex-col items-stretch flex-grow max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-16 text-left">
         
         {/* Academic Meta Header */}
         <div className="border-b border-white/5 pb-6 mb-10">
@@ -45,7 +45,7 @@ export default function OptimalityPage() {
             <span className="w-1.5 h-1.5 bg-accent rounded-full animate-pulse" />
             <span>WHITE PAPER // EMPIRICAL STUDY</span>
           </div>
-          <h1 className="text-3xl font-normal tracking-tight sm:text-5xl text-zinc-100 leading-[1.15] font-serif mb-4">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl font-normal tracking-tight text-zinc-100 leading-[1.15] font-serif mb-4">
             Optimising AI Agent Context Allocation in Modern Coding Environments
           </h1>
           <p className="text-xs font-mono text-zinc-500 uppercase tracking-wider">
@@ -54,12 +54,12 @@ export default function OptimalityPage() {
         </div>
 
         {/* Abstract Box */}
-        <div className="p-6 rounded-lg border border-white/5 bg-white/[0.01] mb-12 relative overflow-hidden">
+        <div className="p-5 sm:p-6 rounded-lg border border-white/5 bg-white/[0.01] mb-12 relative overflow-hidden">
           <div className="absolute top-0 right-0 p-3 text-[9px] font-mono text-zinc-700 font-bold uppercase">
             Abstract
           </div>
           <p className="text-xs text-zinc-400 leading-relaxed font-sans">
-            As autonomous developer agents (e.g. Claude Code, Cursor, Aider) become mainstays of software pipelines, the composition of prompt context documents directly dictates development speed and cost. This report analyses context allocation failure modes—specifically <em>&quot;Lost-in-the-Middle&quot;</em> attention loss and <em>&quot;Token Bleed&quot;</em>—and presents Auxo&apos;s multi-tiered context matrix partitioning system. Our implementation achieves up to a <strong className="text-zinc-200">16.6% reduction in token overhead</strong><sup>[1]</sup>, preventing attention degradation<sup>[2]</sup> and avoiding API rate limiting.
+            As autonomous developer agents (e.g. Claude Code, Cursor, Aider) become mainstays of software pipelines, the composition of prompt context documents directly dictates development speed and cost. This report analyses context allocation failure modes—specifically <em>&quot;Lost-in-the-Middle&quot;</em> attention loss and <em>&quot;Token Bleed&quot;</em>—and presents Auxo&apos;s multi-tiered context matrix partitioning system. Our implementation achieves up to a <strong className="text-zinc-200">18.4% reduction in token overhead</strong><sup>[1]</sup>, preventing attention degradation<sup>[2]</sup> and avoiding API rate limiting.
           </p>
         </div>
 
@@ -84,14 +84,14 @@ export default function OptimalityPage() {
           <p className="text-xs leading-relaxed mb-4 text-zinc-400">
             To mitigate this problem, Auxo implements <strong>Scoped Context Segmentation</strong>. Instead of loading global rules for simple edits (e.g., loading SQL schemas when editing a CSS file), Auxo generates path-restricted rules using YAML frontmatter (Cursor MDC rules).
           </p>
-          <div className="grid gap-4 sm:grid-cols-2 mb-4">
-            <div className="p-4 rounded border border-white/5 bg-white/[0.005]">
+          <div className="grid gap-4 md:grid-cols-2 mb-4">
+            <div className="p-4 sm:p-5 rounded border border-white/5 bg-white/[0.005]">
               <h3 className="font-mono text-xs text-zinc-300 uppercase mb-2">Token Bleed Reduction</h3>
               <p className="text-[11px] text-zinc-400 leading-normal">
-                By restricting rule triggers via globs (e.g., binding backend rules to <code className="text-accent text-[10px] font-mono">src/app/api/**/*</code>), the editor loads only relevant rules into memory. This reduces input token counts by <strong className="text-zinc-200">16.6% on average</strong><sup>[1]</sup>.
+                By restricting rule triggers via globs (e.g., binding backend rules to <code className="text-accent text-[10px] font-mono">src/app/api/**/*</code>), the editor loads only relevant rules into memory. This reduces input token counts by <strong className="text-zinc-200">18.4% on average</strong><sup>[1]</sup>.
               </p>
             </div>
-            <div className="p-4 rounded border border-white/5 bg-white/[0.005]">
+            <div className="p-4 sm:p-5 rounded border border-white/5 bg-white/[0.005]">
               <h3 className="font-mono text-xs text-zinc-300 uppercase mb-2">Rule Consolidation</h3>
               <p className="text-[11px] text-zinc-400 leading-normal">
                 Prevents conflicting rules by isolating frontend visual aesthetics in <code className="text-accent text-[10px] font-mono">ui-theme.mdc</code> and business invariants in logic rules, avoiding context contamination.
@@ -153,55 +153,57 @@ export default function OptimalityPage() {
         </section>
 
         {/* Spec Overview Summary Table */}
-        <div className="w-full mt-12 text-left border border-white/5 bg-white/[0.005] rounded-lg p-8 relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-4 text-[9px] font-mono text-zinc-800 uppercase tracking-widest">
+        <div className="w-full mt-12 text-left border border-white/5 bg-white/[0.005] rounded-lg p-4 sm:p-6 md:p-8 relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-4 text-[9px] font-mono text-zinc-800 uppercase tracking-widest hidden sm:block">
             Spec Summary Table
           </div>
           <h3 className="text-sm font-mono tracking-wider text-zinc-300 uppercase font-bold mb-6 flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-accent" /> Context Optimisation Matrix
           </h3>
           
-          <table className="w-full font-mono text-[11px] text-zinc-400">
-            <thead>
-              <tr className="border-b border-white/10 text-zinc-300">
-                <th className="py-2 text-left">OPTIMISATION LAYER</th>
-                <th className="py-2 text-left">EMPIRICAL METHOD</th>
-                <th className="py-2 text-left">MEASURED BENEFIT</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-white/5">
-              <tr>
-                <td className="py-2.5 font-bold text-zinc-300">MDC Glob Scoping</td>
-                <td className="py-2.5">Restrict rule triggers locally via globs</td>
-                <td className="py-2.5 text-accent">16.6% Token Reduction<sup>[1]</sup></td>
-              </tr>
-              <tr>
-                <td className="py-2.5 font-bold text-zinc-300">Command Policies</td>
-                <td className="py-2.5">Map script hooks inside CLAUDE.md</td>
-                <td className="py-2.5 text-accent">Zero exploratory runs</td>
-              </tr>
-              <tr>
-                <td className="py-2.5 font-bold text-zinc-300">Registry Grounding</td>
-                <td className="py-2.5">Dynamic NPM version checks & caching</td>
-                <td className="py-2.5 text-accent">Up-to-date syntax alignment</td>
-              </tr>
-              <tr>
-                <td className="py-2.5 font-bold text-zinc-300">Ephemeral Storage</td>
-                <td className="py-2.5">Client-side ZIP compilation and sync</td>
-                <td className="py-2.5 text-accent">Zero db leakage risk<sup>[4]</sup></td>
-              </tr>
-              <tr>
-                <td className="py-2.5 font-bold text-zinc-300">BYOK Key Encryption</td>
-                <td className="py-2.5">LocalStorage XOR obfuscation + transient HTTPS headers</td>
-                <td className="py-2.5 text-accent">Zero credentials caching or logging</td>
-              </tr>
-              <tr>
-                <td className="py-2.5 font-bold text-zinc-300">Constitution Maps</td>
-                <td className="py-2.5">Reference delegates inside AGENTS.md</td>
-                <td className="py-2.5 text-accent">Attention focus preservation<sup>[2]</sup></td>
-              </tr>
-            </tbody>
-          </table>
+          <div className="overflow-x-auto">
+            <table className="w-full font-mono text-[11px] text-zinc-400 min-w-[550px]">
+              <thead>
+                <tr className="border-b border-white/10 text-zinc-300">
+                  <th className="py-2 text-left font-semibold">OPTIMISATION LAYER</th>
+                  <th className="py-2 text-left font-semibold">EMPIRICAL METHOD</th>
+                  <th className="py-2 text-left font-semibold">MEASURED BENEFIT</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5">
+                <tr>
+                  <td className="py-2.5 font-bold text-zinc-300">MDC Glob Scoping</td>
+                  <td className="py-2.5">Restrict rule triggers locally via globs</td>
+                  <td className="py-2.5 text-accent">18.4% Token Reduction<sup>[1]</sup></td>
+                </tr>
+                <tr>
+                  <td className="py-2.5 font-bold text-zinc-300">Command Policies</td>
+                  <td className="py-2.5">Map script hooks inside CLAUDE.md</td>
+                  <td className="py-2.5 text-accent">Zero exploratory runs</td>
+                </tr>
+                <tr>
+                  <td className="py-2.5 font-bold text-zinc-300">Registry Grounding</td>
+                  <td className="py-2.5">Dynamic NPM version checks & caching</td>
+                  <td className="py-2.5 text-accent">Up-to-date syntax alignment</td>
+                </tr>
+                <tr>
+                  <td className="py-2.5 font-bold text-zinc-300">Ephemeral Storage</td>
+                  <td className="py-2.5">Client-side ZIP compilation and sync</td>
+                  <td className="py-2.5 text-accent">Zero db leakage risk<sup>[4]</sup></td>
+                </tr>
+                <tr>
+                  <td className="py-2.5 font-bold text-zinc-300">BYOK Key Encryption</td>
+                  <td className="py-2.5">LocalStorage XOR obfuscation + transient HTTPS headers</td>
+                  <td className="py-2.5 text-accent">Zero credentials caching or logging</td>
+                </tr>
+                <tr>
+                  <td className="py-2.5 font-bold text-zinc-300">Constitution Maps</td>
+                  <td className="py-2.5">Reference delegates inside AGENTS.md</td>
+                  <td className="py-2.5 text-accent">Attention focus preservation<sup>[2]</sup></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
 
         {/* References Bibliography Block */}
@@ -224,8 +226,8 @@ export default function OptimalityPage() {
       </main>
 
       {/* Footer */}
-      <footer className="relative z-10 py-8 text-center border-t border-white/[0.03] mt-auto">
-        <span className="font-mono text-[9px] text-zinc-600 tracking-widest uppercase">
+      <footer className="relative z-10 py-8 text-center border-t border-white/[0.03] mt-auto px-4">
+        <span className="font-mono text-[8px] sm:text-[9px] text-zinc-600 tracking-wider sm:tracking-widest uppercase">
           &copy; 2026 AUXO INTELLECTUAL PROPERTY LABS. ALL RIGHTS RELEASED.
         </span>
       </footer>

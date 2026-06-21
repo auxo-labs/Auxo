@@ -209,6 +209,14 @@ This phase focuses on configuring environment variables, authentication redirect
 - [x] **Step 28.9 (Realtime Connection Persistence):** Moved the Supabase Realtime synchronization, broadcast, and presence subscription hooks from the `<Editor>` component into the persistent `useRoomSync` hook. This keeps the network channel connection alive and connection status correctly synchronized as `SYNCED` even when the Editor panel is unmounted (e.g., when the Preview agent pack panel is expanded to fullscreen).
 - [x] **Step 28.10 (Disable Paid Tiers for Free Deployments):** Greyed out Tier 2 (PAYG Credits) and Tier 3 (Developer Pack) cards on the pricing page and disabled their checkout buttons with a "COMING SOON" label to lock cloud payments for the free/unlimited BYOK hosting model.
 
+## Phase 29: Mobile Responsiveness (Marketing & Docs Routes) (Completed)
+
+Optimize layouts for mobile devices on all marketing, informational, and documentation views (specifically excluding the desktop-first Sandbox workspace room).
+
+- [x] **Step 29.1 (Landing Page Mobile):** Audit and optimize the landing page (`src/app/page.tsx`) layout. Ensure the Hero typography, Bento Grid blocks, and Compatible IDE logo grids wrap, stack, and scale down smoothly on mobile screen viewports.
+- [x] **Step 29.2 (Pricing Page Mobile):** Audit and optimize the pricing page (`src/app/pricing/page.tsx`) layout. Ensure the pricing cards stack vertically, text sizing wraps gracefully, and the capability comparison matrix supports clean horizontal overflow scrolling on narrow viewports.
+- [x] **Step 29.3 (Optimality Page Mobile):** Audit and optimize the technical optimality paper page (`src/app/optimality/page.tsx`) layout. Ensure the mathematical equations, typography, code block highlights, and layout grids scale elegantly without horizontal layout breakage.
+
 ## Future Phases & Stretch Goals (DEFERRED - ABSOLUTE FEATURE FREEZE ENFORCED)
 
 

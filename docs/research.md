@@ -100,7 +100,7 @@ graph TD
 Cursor rules are the most powerful context files because they utilize **YAML frontmatter** to bind rules dynamically to filepaths (`globs`).
 
 ### Key Content Rules for .mdc files:
-*   **Globs Scoping:** Force Cursor to only load the rule when working inside matching paths (e.g., `src/app/api/**/*`). This saves up to 16.6% in token overhead.
+*   **Globs Scoping:** Force Cursor to only load the rule when working inside matching paths (e.g., `src/app/api/**/*`). This saves up to 18.4% in token overhead.
 *   **YAML Metadata block:** Populated with `description`, `globs`, and `alwaysApply: false`.
 *   **Code Templates:** Provide concrete snippets of the code structure expected in that directory.
 
