@@ -19,9 +19,10 @@ interface ProjectSidebarProps {
   user: User | null;
   isOpen: boolean;
   onToggle: () => void;
+  onSignInClick?: () => void;
 }
 
-export function ProjectSidebar({ activeRoomId, user, isOpen, onToggle }: ProjectSidebarProps) {
+export function ProjectSidebar({ activeRoomId, user, isOpen, onToggle, onSignInClick }: ProjectSidebarProps) {
   const router = useRouter();
   const [projects, setProjects] = React.useState<Project[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
@@ -132,7 +133,7 @@ export function ProjectSidebar({ activeRoomId, user, isOpen, onToggle }: Project
     }
   };
 
-  if (!user) return null;
+
 
   return (
     <aside 
@@ -160,7 +161,21 @@ export function ProjectSidebar({ activeRoomId, user, isOpen, onToggle }: Project
 
       {/* Main scrolling project explorer history */}
       <div className="flex-1 overflow-y-auto p-3 space-y-1.5 scrollbar-thin scrollbar-thumb-zinc-800 scrollbar-track-transparent">
-        {isLoading ? (
+        {!user ? (
+          <div className="flex flex-col items-center justify-center p-4 py-16 text-center border border-dashed border-white/5 rounded-lg bg-white/[0.002]">
+            <Folder className="w-6 h-6 text-zinc-700 mb-3" />
+            <h4 className="font-mono text-[9px] text-zinc-400 font-bold uppercase tracking-wider">PERSISTED HISTORY</h4>
+            <p className="text-[9px] font-sans text-zinc-500 mt-2 mb-4 max-w-[180px] leading-relaxed">
+              Sign in to automatically save your compiled sandboxes and access your history across devices.
+            </p>
+            <button
+              onClick={onSignInClick}
+              className="w-full flex items-center justify-center h-8 rounded border border-accent/20 bg-accent/[0.02] hover:border-accent/40 hover:bg-accent/[0.05] text-[9px] font-mono font-bold tracking-widest text-accent transition-colors cursor-pointer"
+            >
+              SIGN IN / SIGN UP
+            </button>
+          </div>
+        ) : isLoading ? (
           <div className="flex items-center justify-center py-10 font-mono text-[9px] text-zinc-600 animate-pulse">
             LOADING BLUEPRINTS...
           </div>

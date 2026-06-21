@@ -37,7 +37,7 @@ export default function OptimalityPage() {
       </nav>
 
       {/* 4. Whitepaper Header Section */}
-      <main className="relative z-10 flex flex-col items-stretch flex-grow max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-16 text-left">
+      <main className="relative z-10 flex flex-col items-stretch flex-grow w-full max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-16 text-left">
         
         {/* Academic Meta Header */}
         <div className="border-b border-white/5 pb-6 mb-10">
@@ -147,7 +147,7 @@ export default function OptimalityPage() {
           <p className="text-xs leading-relaxed mb-4 text-zinc-400">
             For teams utilizing the Bring Your Own Key (BYOK) compile tier, Auxo enforces a strict zero-retention security profile. User-supplied API keys (OpenAI, Anthropic, or Gemini) are obfuscated in browser memory using symmetric XOR-based mask arrays combined with Base64 encoding. This protects keys against cross-site scripting (XSS) client-side cache scraping.
           </p>
-          <div className="p-4 rounded border border-white/5 bg-zinc-950/40 font-mono text-[10px] text-zinc-400 mb-4 select-all">
+          <div className="p-4 rounded border border-white/5 bg-zinc-950/40 font-mono text-[10px] text-zinc-400 mb-4 select-all break-words">
             <span className="text-zinc-500">{"// Symmetric XOR-based encryption mask mapping:"}</span>
             <br />
             C[i] = K[i] ^ S[i % len(S)]

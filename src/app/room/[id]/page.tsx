@@ -51,13 +51,15 @@ function RoomContent({ roomId }: { roomId: string }) {
   const [lastCompileType, setLastCompileType] = React.useState<'basic' | 'premium'>('basic');
   const [compileMode, setCompileMode] = React.useState<'basic' | 'premium'>('basic');
   const [showCompileDropdown, setShowCompileDropdown] = React.useState(false);
-  const [sidebarOpen, setSidebarOpen] = React.useState(() => {
-    if (typeof window !== 'undefined') {
-      return window.innerWidth >= 1024;
-    }
-    return false;
-  });
+  const [sidebarOpen, setSidebarOpen] = React.useState(false);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
+
+  // Set initial sidebar open state on client mount to prevent SSR hydration mismatch
+  React.useEffect(() => {
+    if (window.innerWidth >= 1024) {
+      setSidebarOpen(true);
+    }
+  }, []);
 
   // Close dropdown on click outside
   React.useEffect(() => {
@@ -352,7 +354,7 @@ function RoomContent({ roomId }: { roomId: string }) {
             <ArrowLeft className="w-3.5 h-3.5" />
           </button>
 
-          {user && !sidebarOpen && (
+          {!sidebarOpen && (
             <button
               onClick={() => setSidebarOpen(true)}
               className="flex items-center justify-center w-7 h-7 rounded border border-white/5 hover:border-white/10 hover:bg-white/[0.02] transition-all text-zinc-400 hover:text-zinc-200 cursor-pointer animate-fade-in animate-duration-300"
@@ -598,14 +600,13 @@ function RoomContent({ roomId }: { roomId: string }) {
       {/* Main split-panel layout with real-time projects sidebar wrapper */}
       <div className="flex flex-row w-full h-[calc(100vh-3.5rem)] overflow-hidden">
         
-        {user && (
-          <ProjectSidebar
-            activeRoomId={roomId}
-            user={user}
-            isOpen={sidebarOpen}
-            onToggle={() => setSidebarOpen(false)}
-          />
-        )}
+        <ProjectSidebar
+          activeRoomId={roomId}
+          user={user}
+          isOpen={sidebarOpen}
+          onToggle={() => setSidebarOpen(false)}
+          onSignInClick={() => setIsAuthModalOpen(true)}
+        />
 
         <div className={`grid flex-1 overflow-hidden h-full ${
           expandedPanel === 'none' ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1'

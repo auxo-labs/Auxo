@@ -100,7 +100,7 @@ export default function Home() {
       </nav>
 
       {/* 4. Hero & Main Area */}
-      <main className="relative z-10 flex flex-col items-center justify-center flex-grow max-w-5xl mx-auto px-4 sm:px-6 py-12 sm:py-20 text-center">
+      <main className="relative z-10 flex flex-col items-center justify-center flex-grow w-full max-w-5xl mx-auto px-4 sm:px-6 py-12 sm:py-20 text-center">
         
         {/* Headline with high-contrast serif font (Refero style) */}
         <h1 className="text-3xl sm:text-5xl md:text-7xl font-normal tracking-tight text-zinc-100 max-w-4xl leading-[1.08] selection:bg-zinc-800 font-serif">
