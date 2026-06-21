@@ -78,8 +78,8 @@ export function ProjectSidebar({ activeRoomId, user, isOpen, onToggle }: Project
 
     queueMicrotask(() => {
       setIsLoading(true);
+      fetchProjects();
     });
-    fetchProjects();
 
     // Setup postgres real-time change subscription
     const channel = supabase
