@@ -207,6 +207,7 @@ This phase focuses on configuring environment variables, authentication redirect
 - [x] **Step 28.7 (Settings Modal):** Fixed outdated "Claude 3.5 Sonnet" model reference → "Claude Sonnet 4.5"; corrected reversed Anthropic model display name (`claude-4.5-sonnet` → `claude-sonnet-4-5`); simplified tier label to "CHOOSE COMPILATION ROUTE".
 - [x] **Step 28.8 (Optimality Page):** Removed fabricated `Auxo Architecture Group • Published June 2026 • Status: Verified` meta line. Replaced with plain `Published June 2026`.
 - [x] **Step 28.9 (Realtime Connection Persistence):** Moved the Supabase Realtime synchronization, broadcast, and presence subscription hooks from the `<Editor>` component into the persistent `useRoomSync` hook. This keeps the network channel connection alive and connection status correctly synchronized as `SYNCED` even when the Editor panel is unmounted (e.g., when the Preview agent pack panel is expanded to fullscreen).
+- [x] **Step 28.10 (Disable Paid Tiers for Free Deployments):** Greyed out Tier 2 (PAYG Credits) and Tier 3 (Developer Pack) cards on the pricing page and disabled their checkout buttons with a "COMING SOON" label to lock cloud payments for the free/unlimited BYOK hosting model.
 
 ## Future Phases & Stretch Goals (DEFERRED - ABSOLUTE FEATURE FREEZE ENFORCED)
 

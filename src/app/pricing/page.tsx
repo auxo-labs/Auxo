@@ -215,100 +215,90 @@ export default function PricingPage() {
           </div>
 
           {/* Tier 2: PAYG Credits */}
-          <div className="flex flex-col p-6 rounded-lg border border-cyan-500/20 bg-cyan-950/[0.01] hover:border-cyan-500/30 transition-all relative overflow-hidden group text-left h-full shadow-[0_0_20px_rgba(6,182,212,0.02)]">
-            <div className="absolute top-0 right-0 p-4 text-[10px] font-mono text-cyan-500/40 font-bold">
-              TIER 02 // PAYG
+          <div className="flex flex-col p-6 rounded-lg border border-white/5 bg-white/[0.005] opacity-40 relative overflow-hidden text-left h-full select-none">
+            <div className="absolute top-0 right-0 p-4 text-[10px] font-mono text-zinc-500 font-bold">
+              TIER 02 // COMING SOON
             </div>
             
-            <div className="flex items-center justify-center w-8 h-8 rounded border border-cyan-500/20 bg-cyan-950/20 text-cyan-400 mb-6">
+            <div className="flex items-center justify-center w-8 h-8 rounded border border-white/10 bg-white/[0.02] text-zinc-500 mb-6">
               <Sparkles className="w-4 h-4" />
             </div>
 
-            <h3 className="text-xs font-mono tracking-widest text-zinc-200 uppercase font-bold">20x Cloud Compiles</h3>
+            <h3 className="text-xs font-mono tracking-widest text-zinc-400 uppercase font-bold">20x Cloud Compiles</h3>
             
             <div className="my-4">
-              <span className="font-serif text-3xl text-zinc-100 font-normal">£9.99</span>
-              <span className="text-[10px] font-mono text-zinc-500 tracking-wider"> / ONE-TIME</span>
+              <span className="font-serif text-3xl text-zinc-500 font-normal">£9.99</span>
+              <span className="text-[10px] font-mono text-zinc-600 tracking-wider"> / ONE-TIME</span>
             </div>
 
-            <p className="text-[11px] text-zinc-400 leading-relaxed font-sans flex-grow">
+            <p className="text-[11px] text-zinc-500 leading-relaxed font-sans flex-grow">
               Secure hosted compilations running on our premium cloud cluster keys. Ideal for quick setups without handling private keys or API billing structures.
             </p>
 
-            <ul className="mt-6 space-y-2.5 text-[10px] font-mono text-zinc-500 border-t border-cyan-500/10 pt-4 flex-shrink-0">
+            <ul className="mt-6 space-y-2.5 text-[10px] font-mono text-zinc-600 border-t border-white/5 pt-4 flex-shrink-0">
               <li className="flex items-center gap-2">
-                <Check className="w-3 h-3 text-cyan-500 shrink-0" />
+                <Check className="w-3 h-3 text-zinc-600 shrink-0" />
                 <span>20 deep AI compile credits</span>
               </li>
               <li className="flex items-center gap-2">
-                <Check className="w-3 h-3 text-cyan-500 shrink-0" />
+                <Check className="w-3 h-3 text-zinc-600 shrink-0" />
                 <span>15,000 character limit</span>
               </li>
               <li className="flex items-center gap-2">
-                <Check className="w-3 h-3 text-cyan-500 shrink-0" />
+                <Check className="w-3 h-3 text-zinc-600 shrink-0" />
                 <span>Claude 4.5 Sonnet processing</span>
               </li>
             </ul>
 
             <button
-              onClick={() => handlePurchase('credits')}
-              disabled={purchasingTier !== null}
-              className="mt-6 w-full h-9 rounded bg-zinc-100 hover:bg-zinc-200 text-zinc-950 text-[10px] font-mono font-semibold tracking-wider transition-all cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50"
+              disabled
+              className="mt-6 w-full h-9 rounded bg-white/5 border border-white/5 text-[10px] font-mono font-semibold tracking-wider text-zinc-500 cursor-not-allowed flex items-center justify-center gap-2"
             >
-              {purchasingTier === 'credits' ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              ) : (
-                'BUY BUILDER PACK'
-              )}
+              COMING SOON
             </button>
           </div>
 
           {/* Tier 3: Developer Pack */}
-          <div className="flex flex-col p-6 rounded-lg border border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.02] transition-all relative overflow-hidden group text-left h-full">
-            <div className="absolute top-0 right-0 p-4 text-[10px] font-mono text-zinc-700 font-bold group-hover:text-zinc-600 transition-colors">
-              TIER 03 // PRO
+          <div className="flex flex-col p-6 rounded-lg border border-white/5 bg-white/[0.005] opacity-40 relative overflow-hidden text-left h-full select-none">
+            <div className="absolute top-0 right-0 p-4 text-[10px] font-mono text-zinc-500 font-bold">
+              TIER 03 // COMING SOON
             </div>
             
-            <div className="flex items-center justify-center w-8 h-8 rounded border border-white/10 bg-white/[0.02] text-zinc-400 mb-6">
-              <Sparkles className="w-4 h-4 text-zinc-300" />
+            <div className="flex items-center justify-center w-8 h-8 rounded border border-white/10 bg-white/[0.02] text-zinc-500 mb-6">
+              <Sparkles className="w-4 h-4 text-zinc-500" />
             </div>
 
-            <h3 className="text-xs font-mono tracking-widest text-zinc-200 uppercase font-bold">Founder / Developer Pack</h3>
+            <h3 className="text-xs font-mono tracking-widest text-zinc-400 uppercase font-bold">Founder / Developer Pack</h3>
             
             <div className="my-4">
-              <span className="font-serif text-3xl text-zinc-100 font-normal">£24.99</span>
-              <span className="text-[10px] font-mono text-zinc-500 tracking-wider"> / ONE-TIME</span>
+              <span className="font-serif text-3xl text-zinc-500 font-normal">£24.99</span>
+              <span className="text-[10px] font-mono text-zinc-600 tracking-wider"> / ONE-TIME</span>
             </div>
 
-            <p className="text-[11px] text-zinc-400 leading-relaxed font-sans flex-grow">
+            <p className="text-[11px] text-zinc-500 leading-relaxed font-sans flex-grow">
               75 premium cloud compilations. Complete high-priority access to our hosted high-speed LLM keys for all your workspace rooms, with no setup required.
             </p>
 
-            <ul className="mt-6 space-y-2.5 text-[10px] font-mono text-zinc-500 border-t border-white/5 pt-4 flex-shrink-0">
+            <ul className="mt-6 space-y-2.5 text-[10px] font-mono text-zinc-600 border-t border-white/5 pt-4 flex-shrink-0">
               <li className="flex items-center gap-2">
-                <Check className="w-3 h-3 text-emerald-500 shrink-0" />
+                <Check className="w-3 h-3 text-zinc-600 shrink-0" />
                 <span>75 deep AI compile credits</span>
               </li>
               <li className="flex items-center gap-2">
-                <Check className="w-3 h-3 text-emerald-500 shrink-0" />
+                <Check className="w-3 h-3 text-zinc-600 shrink-0" />
                 <span>30,000 character limit</span>
               </li>
               <li className="flex items-center gap-2">
-                <Check className="w-3 h-3 text-emerald-500 shrink-0" />
+                <Check className="w-3 h-3 text-zinc-600 shrink-0" />
                 <span>Highest priority generation queue</span>
               </li>
             </ul>
 
             <button
-              onClick={() => handlePurchase('lifetime')}
-              disabled={purchasingTier !== null}
-              className="mt-6 w-full h-9 rounded bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 text-[10px] font-mono font-semibold tracking-wider text-zinc-300 transition-all cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50"
+              disabled
+              className="mt-6 w-full h-9 rounded bg-white/5 border border-white/5 text-[10px] font-mono font-semibold tracking-wider text-zinc-500 cursor-not-allowed flex items-center justify-center gap-2"
             >
-              {purchasingTier === 'lifetime' ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              ) : (
-                'BUY DEVELOPER PACK'
-              )}
+              COMING SOON
             </button>
           </div>
 
