@@ -64,9 +64,9 @@ $$\text{Fee} = 1.5\% + £0.20$$
 ---
 
 ## 5. Worst-Case Cost Protections
-Even if a power user compiles a massive scratchpad that reaches peak token capacity (e.g. 8,000 input tokens and 4,000 output tokens):
+Even if a power user compiles a massive scratchpad that reaches peak token capacity (e.g. 8,000 input tokens and 8,000 output tokens):
 *   Input Cost: 8,000 × $0.000003 = $0.024
-*   Output Cost: 4,000 × $0.000015 = $0.060
-*   **Max API Cost per compile**: $0.084 (approx. **£0.06 GBP**)
+*   Output Cost: 8,000 × $0.000015 = $0.120
+*   **Max API Cost per compile**: $0.144 (approx. **£0.11 GBP**)
 
-Because compiles are hard-gated by purchased database credits (20 and 75 respectively), the project is completely protected against infinite iteration runaway costs, guaranteeing an **85%+ net profit margin** under all circumstances.
+Because compiles are hard-gated by purchased database credits (20 and 75 respectively), the project is completely protected against infinite iteration runaway costs, guaranteeing an **80%+ net profit margin** under all circumstances.

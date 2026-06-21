@@ -7,13 +7,24 @@ Before publishing the Auxo platform to a live production environment, the follow
 ## 1. Supabase Production Deployment Checklist
 
 ### A. Database Schema & Policies
-- [ ] **Database Migration:** Run migrations on the production Postgres database to create the `profiles` table matching the sandbox schema:
+- [ ] **Database Migration:** Run migrations on the production Postgres database to create the `profiles` and `projects` tables matching the sandbox schema:
   ```sql
   create table public.profiles (
     id uuid references auth.users on delete cascade primary key,
     credits integer default 0 not null,
     is_lifetime boolean default false not null,
     created_at timestamp with time zone default timezone('utc'::text, now()) not null
+  );
+
+  create table public.projects (
+    id uuid default gen_random_uuid() primary key,
+    user_id uuid references auth.users on delete cascade not null,
+    room_id uuid not null,
+    title text not null,
+    preview_text text not null,
+    created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+    updated_at timestamp with time zone default timezone('utc'::text, now()) not null,
+    unique(user_id, room_id)
   );
   ```
 - [ ] **Profile Auto-Creation Trigger:** Install the trigger to auto-provision a profile row when a student/developer registers via Magic Link:
@@ -31,7 +42,9 @@ Before publishing the Auxo platform to a live production environment, the follow
     after insert on auth.users
     for each row execute procedure public.handle_new_user();
   ```
-- [ ] **Row-Level Security (RLS):** Ensure RLS is enabled on `public.profiles` and configure the policy allowing read-only access where `auth.uid() = id` (no client-side direct writes).
+- [ ] **Row-Level Security (RLS):** Ensure RLS is enabled on public tables:
+  * Enable RLS on `public.profiles` and configure the policy allowing read-only access where `auth.uid() = id` (no client-side direct writes).
+  * Enable RLS on `public.projects` and configure policies allowing SELECT, INSERT, UPDATE, and DELETE operations only where `auth.uid() = user_id`.
 
 ### B. Authentication Console Configuration
 - [ ] **Allowed Redirect URLs:** In **Supabase Console -> Authentication -> URL Configuration**, add your production URL (e.g. `https://auxo.dev/room/*`) to the Redirect URLs list so Magic Links forward users back to their rooms.
@@ -42,8 +55,8 @@ Before publishing the Auxo platform to a live production environment, the follow
 ## 2. Stripe Production Deployment Checklist
 
 ### A. Product Catalog Setup
-- [ ] **Product 1 (PAYG Credit Pack):** Create a product in Stripe Dashboard named `Auxo 15x AI Compile Credit Pack` priced at `£4.99` (One-time, GBP).
-- [ ] **Product 2 (Developer Pack):** Create a product named `Auxo Developer Pack` priced at `£9.99` (One-time, GBP).
+- [ ] **Product 1 (PAYG Credit Pack):** Create a product in Stripe Dashboard named `Auxo 20x AI Compile Credit Pack` priced at `£9.99` (One-time, GBP).
+- [ ] **Product 2 (Developer Pack):** Create a product named `Auxo Developer Pack` priced at `£24.99` (One-time, GBP).
 - [ ] Verify that metadata keys `tier: "credits"` and `tier: "lifetime"` are correctly configured under each Stripe product if using Stripe dashboard-created price IDs (though `/api/checkout` dynamically generates product line items, matching Stripe products helps bookkeeping).
 
 ### B. Webhook Endpoint Registration

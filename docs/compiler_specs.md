@@ -21,7 +21,7 @@ graph TD
 ```
 
 ### Stage 1: Dependency Version Resolution
-When a compile command is triggered, the raw markdown string is passed to [tech-resolver.ts](file:///Users/danwooster/1.%20DEV/auxo/src/lib/tech-resolver.ts):
+When a compile command is triggered, the raw markdown string is passed to [tech-resolver.ts](../src/lib/tech-resolver.ts):
 1. **Detection:** Regex flags identify packages (`next`, `tailwindcss`, `prisma`, `@supabase/supabase-js`).
 2. **NPM Registry Queries:** The server performs standard `fetch` operations to retrieve current version tags from `registry.npmjs.org`.
 3. **Caching:** Query requests are cached for 1 hour using Next.js segment caching, protecting the NPM registry from rate-limiting.
@@ -30,20 +30,21 @@ When a compile command is triggered, the raw markdown string is passed to [tech-
 ### Stage 2: Prompt Pack Generation
 The resolved tech signatures feed into the compile logic:
 * **The LLM Compilation Pathway:**
-  If `OPENAI_API_KEY` or `ANTHROPIC_API_KEY` is present:
+  If `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, or `GEMINI_API_KEY` is present (either via hosted secrets or client-provided BYOK keys):
   - Generates a system prompt grounding the model in the NPM versions and invariants.
-  - Passes the raw notes to `gpt-4o-mini` (or `claude-3-5-sonnet`) demanding a JSON payload conforming to the custom structure.
-  - The model parses the chaotic specs into a structured global constitution (`AGENTS.md`), CLI commands (`CLAUDE.md`), roadmaps (`phases.md`), glob-scoped rules (`.cursor/rules/*.mdc`), and global Windsurf rules (`.windsurfrules`).
+  - Passes the raw notes to the LLM (`gpt-4o-mini`, `claude-3-5-sonnet`, `gemini-2.5-flash`, etc.) requesting a markdown stream conforming to the Karpathy-style Software 3.0 layout.
+  - **Flipped Compilation Sequence:** Instructs the LLM to generate `.cursor/rules/*.mdc` rules files first in the queue before long-form markdown guides (`phases.md`, `README.md`, `AGENTS.md`) to prioritize instruction focus and attention on key rules.
+  - **Raised Token Constraints:** Calls are executed with an increased output ceiling limit of `max_tokens: 8000` (up from `4000`) across all model providers to prevent truncation of complex packs.
 * **The Local/Bypass Compilation Pathway:**
-  If keys are absent, [prompt-compiler.ts](file:///Users/danwooster/1.%20DEV/auxo/src/lib/prompt-compiler.ts) evaluates `localMockCompile`:
+  If keys are absent, the mock compiler in [prompt-compiler/mock-compiler.ts](../src/lib/prompt-compiler/mock-compiler.ts) evaluates `localMockCompile`:
   - It runs a title matching regex (`projectName = titleMatch ? titleMatch[1].trim() : 'Project Auxo'`).
   - It scans for category-specific keywords (e.g. `crypto`, `ledger`, `medical`, `farm`, `pipeline`) to serve pre-configured mock templates (like *SignalSignal*, *LedgerCore*, or *FieldSync*).
   - If no categories match, it falls back to the *AppCore* general default template.
  
 ### Stage 3: Client Render & Bundling
 - The JSON response maps files to contents.
-- The client-side preview component ([preview.tsx](file:///Users/danwooster/1.%20DEV/auxo/src/components/preview.tsx)) displays the files in an interactive folder tree with code gutters and click-to-copy helpers.
-- The **Download Pack** action uses `JSZip` to compile the generated matrix into a ZIP package (`auxo-blueprint-[roomId].zip` containing root `AGENTS.md`, `CLAUDE.md`, `.windsurfrules`, `phases.md`, `README.md`, and `.cursor/rules/` rules) locally on the client.
+- The client-side preview component ([preview.tsx](../src/components/preview.tsx)) displays the files in an interactive folder tree with code gutters and click-to-copy helpers.
+- The **Download Pack** action uses `JSZip` to compile the generated matrix into a ZIP package (`auxo-blueprint-[roomId].zip` containing root `AGENTS.md`, `CLAUDE.md`, `.windsurfrules`, `phases.md`, `README.md`, and folder `.cursor/rules/` rules) locally on the client.
 
 ---
 

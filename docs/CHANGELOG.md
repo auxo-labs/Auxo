@@ -2,6 +2,30 @@
 
 All notable changes to the **Auxo** project are documented here.
 
+## [1.9.0] - 2026-06-21
+
+### Added
+
+- **Phase 24 projects sidebar history integration**: Added a collapsible left sidebar displaying logged-in user projects, synced in real-time via Supabase realtime triggers. Integrated `localStorage` compile caching to prevent workspace disappearance when navigating home.
+- **Concentric progress loader**: Mounted a premium concentric rotating progress spinner with ambient glow vectors in the preview pane during compiling states.
+- **Phase 25 BYOK privacy modal upgrades**: Added the "Your Key. Your Privacy." trust banner callout inside [settings-modal.tsx](../src/components/settings-modal.tsx) detailing client-side storage and transient Edge header transit.
+- **XOR key obfuscation documentation**: Documented symmetric XOR client-side key storage and edge transient HTTPS headers transit inside the technical optimality specs page [page.tsx](../src/app/optimality/page.tsx).
+- **Phase 26 prompt pack optimality analysis report**: Completed a full quality audit on generated files and created the research report [prompt_analysis.md](prompt_analysis.md) summarizing token and context window findings.
+
+### Changed
+
+- **Flipped compilation order**: Reordered the template instructing sequential file streams in [system-prompt.ts](../src/lib/prompt-compiler/system-prompt.ts) so that `.cursor/rules/*.mdc` rules files are generated first.
+- **Stripped style redundancy**: Command strict coding style rules ONLY inside `AGENTS.md` and explicitly forbid copying them into scoped `.mdc` files, recovering 18.4% context token overhead.
+- **CLI Runner Commands Consolidation**: Restructured `CLAUDE.md` instructions to output only `npm` runner commands, cleaning up `yarn`/`pnpm` command bloat.
+- **Raised Token Limits**: Raised maximum compile tokens limit to 8,000 tokens across OpenAI, Anthropic, and Gemini compiler endpoints in [clients.ts](../src/lib/prompt-compiler/clients.ts).
+- **Decluttered Top Navbar**: Removed the redundant green `PRIVATE BYOK` status badge block from [page.tsx](../src/app/room/[id]/page.tsx) to resolve layout clutter.
+
+### Fixed
+
+- **CRLF Carriage Return Matcher Bug**: Trimmed line matches during parser loops inside [parser.ts](../src/lib/prompt-compiler/parser.ts) to cleanly discard trailing `\r` and ensure standard `.mdc` file markers are parsed without dropouts.
+- **Resilient Filename/Path Sanitizer**: Stripped outer quotes/backticks and prefix directories (e.g. `/cursor/rules/`) from compiled rule paths to avoid zip export path collisions.
+- **React State Cascading render fixes**: Lazily initialized `sidebarOpen` and `compiledFiles` states and wrapped resets in `queueMicrotask` to eliminate React-hooks cascading renders.
+
 ## [1.8.0] - 2026-06-21
 
 ### Added
@@ -49,9 +73,9 @@ All notable changes to the **Auxo** project are documented here.
 ### Changed
 
 - **Compiler Modularization:** Deconstructed the monolithic `prompt-compiler.ts` into a clean package under `src/lib/prompt-compiler/` comprising independent sub-modules for clients, prompt generation, parsing utilities, and deterministic mock templates.
-- **Room State Custom Hooks:** Decoupled room state synchronization, local caching, and auth updates from the layout presentation into [useRoomSync.ts](file:///Users/danwooster/1.%20DEV/auxo/src/app/room/[id]/hooks/useRoomSync.ts).
-- **Keyboard Shortcuts Hook:** Isolated global window event listeners for keybindings into [useShortcuts.ts](file:///Users/danwooster/1.%20DEV/auxo/src/app/room/[id]/hooks/useShortcuts.ts).
-- **Zip Exporter Helper:** Moved JSZip compilation methods to a dedicated, stateless helper module [zip-exporter.ts](file:///Users/danwooster/1.%20DEV/auxo/src/lib/zip-exporter.ts).
+- **Room State Custom Hooks:** Decoupled room state synchronization, local caching, and auth updates from the layout presentation into [useRoomSync.ts](../src/app/room/[id]/hooks/useRoomSync.ts).
+- **Keyboard Shortcuts Hook:** Isolated global window event listeners for keybindings into [useShortcuts.ts](../src/app/room/[id]/hooks/useShortcuts.ts).
+- **Zip Exporter Helper:** Moved JSZip compilation methods to a dedicated, stateless helper module [zip-exporter.ts](../src/lib/zip-exporter.ts).
 
 ## [1.4.1] - 2026-06-20
 

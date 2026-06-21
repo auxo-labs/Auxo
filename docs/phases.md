@@ -103,8 +103,8 @@
 
 ## Phase 16: Code Architecture Refactoring (God Modules Cleanup)
 
-- [x] **Step 16.1:** Refactor [prompt-compiler.ts](file:///Users/danwooster/1.%20DEV/auxo/src/lib/prompt-compiler.ts) by modularizing LLM clients, system prompts, mock templates, and parser sanitizers under `src/lib/prompt-compiler/`.
-- [x] **Step 16.2:** Refactor the Room Page [page.tsx](file:///Users/danwooster/1.%20DEV/auxo/src/app/room/[id]/page.tsx) by isolating state listeners into custom hooks (`useRoomSync`, `useShortcuts`) and splitting header/editor rendering.
+- [x] **Step 16.1:** Refactor [prompt-compiler.ts](../src/lib/prompt-compiler.ts) by modularizing LLM clients, system prompts, mock templates, and parser sanitizers under `src/lib/prompt-compiler/`.
+- [x] **Step 16.2:** Refactor the Room Page [page.tsx](../src/app/room/[id]/page.tsx) by isolating state listeners into custom hooks (`useRoomSync`, `useShortcuts`) and splitting header/editor rendering.
 - [x] **Step 16.3:** Move client-side JSZip exporter operations from the Room Page component layer into a dedicated utility helper file `src/lib/zip-exporter.ts`.
 - [x] **Step 16.4:** Validate that all refactored modular files build successfully and pass linter guidelines using `npm run lint` and `npm run build`.
 
@@ -171,10 +171,20 @@
 This phase focuses on surfacing the privacy and security guarantees of BYOK mode clearly to users, so they understand exactly what Auxo stores (nothing) vs. what stays on their device (everything).
 
 - [x] **Step 25.1:** Add a prominent **"Your Key. Your Privacy."** trust callout panel inside the Settings Modal. It must explain that keys are stored client-side in LocalStorage using XOR + Base64 encryption, and transit to the Next.js compile API securely via HTTPS strictly as a transient header (never logged, cached, or stored on disk) due to browser CORS policies.
-- [x] **Step 25.2:** Add a green-glowing **"PRIVATE BYOK" compiler indicator badge** in the room navbar when BYOK is active, indicating that compilation requests bypass credit checks and database storage.
+- [x] **Step 25.2:** Add (and subsequently remove to resolve top navbar clutter) a green-glowing **"PRIVATE BYOK" compiler indicator badge** in the room navbar when BYOK is active, indicating that compilation requests bypass credit checks and database storage.
 - [x] **Step 25.3:** Document the XOR encryption mechanism and security profile on the technical optimality specs page (`/optimality`).
 - [x] **Step 25.4:** Update the landing page BYOK bento card copy to highlight the secure HTTPS transient transit and client-side encryption guarantees.
 - [x] **Step 25.5:** Run build and lint verification checks.
+
+## Phase 26: Prompt Context Pack Quality & Optimality Analysis
+
+This phase focuses on performing a comprehensive technical audit on the generated Compiled Agent Pack to identify areas to improve token efficiency, context window optimality, and code compilation functionality.
+
+- [x] **Step 26.1:** Analyze `AGENTS.md` and `.windsurfrules` syntax for instructions efficiency and token density.
+- [x] **Step 26.2:** Analyze `CLAUDE.md` safe commands triggers and runtime constraints.
+- [x] **Step 26.3:** Audit generated `.cursor/rules/*.mdc` files (`ui-theme.mdc`, `esrs-compliance.mdc`) to ensure the frontmatter structures, path globs, and internal logic guidelines are fully optimized for attention retention and prevent lost-in-the-middle issues.
+- [x] **Step 26.4:** Benchmark compiled templates size against token thresholds and refine default compiler configurations in `system-prompt.ts`.
+- [x] **Step 26.5:** Generate a comparison research report summarizing the prompt analysis and compile optimization outcomes in `docs/prompt_analysis.md`.
 
 ## Future Phases & Stretch Goals (DEFERRED - ABSOLUTE FEATURE FREEZE ENFORCED)
 

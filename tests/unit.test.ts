@@ -73,6 +73,26 @@ Welcome to Auxo.`;
       const pack = parseMarkdownStream(input);
       expect(pack.readmeMd).toBe('Welcome to Auxo.');
     });
+
+    it('should match rule markers with trailing carriage returns, leading/trailing whitespace, and quotes', () => {
+      const input = `--- START FILE: ".cursor/rules/ui-theme.mdc" ---\r
+description: Test Theme\r
+globs: ["*"]\r
+alwaysApply: false\r
+---\r
+# UI Theme Guidelines\r
+--- END FILE: ".cursor/rules/ui-theme.mdc" ---\r
+--- START FILE: \`cursor/rules/logic-api.mdc\` ---\r
+# Logic Guidelines\r
+--- END FILE: \`cursor/rules/logic-api.mdc\` ---`;
+      
+      const pack = parseMarkdownStream(input);
+      expect(pack.cursorRules['ui-theme.mdc']).toBeDefined();
+      expect(pack.cursorRules['ui-theme.mdc']).toContain('description: Test Theme');
+      expect(pack.cursorRules['ui-theme.mdc']).toContain('# UI Theme Guidelines');
+      expect(pack.cursorRules['logic-api.mdc']).toBeDefined();
+      expect(pack.cursorRules['logic-api.mdc']).toContain('# Logic Guidelines');
+    });
   });
 
   describe('resolveTechStack()', () => {

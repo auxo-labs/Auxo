@@ -105,9 +105,9 @@ sequenceDiagram
 ## 4. Key Directory & Code Mappings
 
 To trace execution paths, reference the following codebase locations:
-- **Client Workspace Page:** [room/page.tsx](file:///Users/danwooster/1.%20DEV/auxo/src/app/room/[id]/page.tsx)
-- **Settings configuration:** [settings-modal.tsx](file:///Users/danwooster/1.%20DEV/auxo/src/components/settings-modal.tsx)
-- **Supabase initialization:** [supabase.ts](file:///Users/danwooster/1.%20DEV/auxo/src/lib/supabase.ts)
-- **Tech Stack Registry Resolver:** [tech-resolver.ts](file:///Users/danwooster/1.%20DEV/auxo/src/lib/tech-resolver.ts)
-- **LLM Compiler logic:** [prompt-compiler.ts](file:///Users/danwooster/1.%20DEV/auxo/src/lib/prompt-compiler.ts)
-- **Stripe Webhook handler:** [route.ts (Stripe webhooks)](file:///Users/danwooster/1.%20DEV/auxo/src/app/api/webhooks/stripe/route.ts)
+- **Client Workspace Page:** [room/page.tsx](../src/app/room/[id]/page.tsx)
+- **Settings configuration:** [settings-modal.tsx](../src/components/settings-modal.tsx)
+- **Supabase initialization:** [supabase.ts](../src/lib/supabase.ts)
+- **Tech Stack Registry Resolver:** [tech-resolver.ts](../src/lib/tech-resolver.ts)
+- **LLM Compiler logic:** [prompt-compiler/](../src/lib/prompt-compiler/) (modular folder)
+- **Stripe Webhook handler:** [route.ts](../src/app/api/webhooks/stripe/route.ts) (Stripe webhooks)

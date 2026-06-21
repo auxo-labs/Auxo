@@ -1,0 +1,33 @@
+---
+description: Enforces the UI theme, aesthetics, and layout parameters for a professional, audit-ready compliance application.
+globs: ["src/components/**/*.tsx", "src/app/**/*.tsx"]
+alwaysApply: false
+---
+
+# React UI Theming & Component Rules
+
+## Design Philosophy
+The user interface must convey trustworthiness, professionalism, and clarity, consistent with an audit-ready financial and sustainability compliance tool. Focus on clean, sterile layouts, high legibility, and an efficient user experience for processing critical data.
+
+## Aesthetic Constraints
+1.  **Color Palette:** Utilize a muted, professional color scheme. Prefer blues, greys, and whites. Accents should be used sparingly for critical feedback (e.g., success greens, error reds).
+2.  **Typography:** Employ clear, sans-serif fonts (e.g., Inter, Roboto, or Open Sans) for maximum readability of numerical and textual data.
+3.  **Layout:** Prioritize information density without sacrificing clarity. Use ample whitespace to delineate sections. All form elements and data displays should be organized logically for swift review.
+4.  **Component Structure:** Design stateless UI components where possible. Ensure reusability across different sections of the application.
+5.  **Branding:** Incorporate the "Scope3-Pulse" branding subtly and professionally.
+
+## Functional UI Constraints
+1.  **Data Presentation:** Display parsed and calculated data in clear, tabular formats or structured cards, making it easy for users to review and verify.
+2.  **Feedback:** Provide immediate and clear feedback on file uploads, processing status, and export completion.
+3.  **Responsiveness:** Components must be responsive and adapt gracefully to various screen sizes, though the primary target is desktop/laptop for document review.
+
+## Strict Architectural Separation
+*   **Never write calculation or complex business logic directly within UI components.** All such logic must be delegated to dedicated service layers, utility functions, or API endpoints. UI components are responsible solely for rendering, event handling, and state management specific to the presentation layer.
+
+## General Coding Style Rules
+*   **DRY (Don't Repeat Yourself) & KISS (Keep It Simple, Stupid):** Prefer vanilla implementations over overly clever or complex solutions. Forbid premature optimization, deeply nested conditional structures, duplicate helper logic, and unnecessary abstractions. Strive for extreme readability.
+*   **SOLID Design Principles:** Adhere to functional, single-responsibility modules, open-closed behavior where applicable, interface separation, and dependency inversion.
+*   **YAGNI (You Aren't Gonna Need It):** Prohibit writing speculative boilerplate code or future-proofing implementations not explicitly requested by current specifications.
+*   **JSDoc Parameter Documentation:** Maintain detailed JSDoc comments including `@param`, `@returns`, and `@description` for all helper functions and exported utility modules, especially for props in reusable components.
+*   **Context Budgets:** If a task requires modifying more than 3 modules or 60 seconds of manual context navigation to understand, halt and demand user clarification. Break down large tasks.
+*   **No Placeholders:** Strictly prohibit leaving commented placeholders, stub functions, incomplete implementations, or TODO lines in any generated code. All outputs must represent complete, implementable codebase scaffolding files.

@@ -1,0 +1,34 @@
+---
+description: Defines the core logic invariants and regulatory compliance requirements for EFRAG VSME+ sustainability reporting calculations.
+globs: ["src/services/**/*", "src/utils/**/*", "src/api/**/*", "src/lib/**/*"]
+alwaysApply: false
+---
+
+# EFRAG Compliance & Core Business Logic Rules
+
+## Regulatory Framework Invariants
+1.  **Exclusive Framework Adherence:** All sustainability reporting logic and data conversions MUST strictly adhere to the March 2026 EFRAG VSME Guidelines and the Omnibus I Omnibus Directive. No other legacy or custom carbon accounting frameworks are permitted.
+2.  **Double Materiality & Value-Chain Cap:** The system's underlying logic for proxy data application and reporting scope must implicitly align with the "Double Materiality" and "Value-Chain Cap" rules as outlined in the Omnibus Directive.
+3.  **Simplified ESRS:** Calculations and data processing must leverage the simplified European Sustainability Reporting Standards (ESRS) framework, specifically designed to reduce data-point collections by up to 61%.
+4.  **Estimate Liability Loophole:** The application must explicitly support and correctly implement the use of proxy data and secondary estimates as per the 2026 updates.
+    *   **Mandatory Disclaimer:** All generated "VSME+ Data Pack" outputs (PDF/JSON) MUST include a prominent, unalterable legal disclaimer badge stating: "Calculated via standard EFRAG secondary value-chain proxies." This disclaimer is critical for user audit liability insulation.
+
+## Core Logic & Data Processing Rules
+1.  **Stateless Engine Design:** The document parser and conversion engine must be designed to operate statelessly. No persistent storage of raw uploaded files or intermediate calculation results is permitted beyond the immediate session required to generate a single report.
+2.  **Document Parser Endpoint:** The secure document parser endpoint (`/api/parse-document`) must be robust, capable of handling CSV files (utility/shipping billing logs) and unorganized text inventory records.
+    *   **Data Extraction:** Accurately extract fuel/electricity usages, shipping weights, and other relevant volumetric data.
+    *   **Error Handling:** Implement comprehensive error handling for malformed inputs, providing clear feedback to the user without exposing sensitive system details.
+3.  **EFRAG Conversion Tables:**
+    *   **Data Source:** Integrate and utilize the official EFRAG risk-based conversion tables for transforming raw usage data into emission values. These tables should be treated as immutable lookup data.
+    *   **Precision:** All calculations involving emission factors and conversions must maintain the precision required by EFRAG standards. Rounding should only occur at the final output stage for presentation, not during intermediate calculations.
+4.  **External Service Boundaries:** Clearly define and encapsulate interactions with external data sources or APIs (e.g., if EFRAG tables are fetched remotely). Use robust caching and error recovery strategies if applicable.
+5.  **Mock Data Swappability:** Implement a mechanism to easily swap between live data (e.g., actual EFRAG tables) and mock data for development and testing purposes. This should be controlled by an environment variable like `NEXT_PUBLIC_USE_MOCK_DATA`.
+6.  **Database Protocols (for lookups only):** If a local database or key-value store is used for EFRAG conversion tables, ensure read-only access for the calculation engine and robust data integrity checks. No write operations are permitted for core compliance data.
+
+## General Coding Style Rules
+*   **DRY (Don't Repeat Yourself) & KISS (Keep It Simple, Stupid):** Prefer vanilla implementations over overly clever or complex solutions. Forbid premature optimization, deeply nested conditional structures, duplicate helper logic, and unnecessary abstractions. Strive for extreme readability.
+*   **SOLID Design Principles:** Adhere to functional, single-responsibility modules, open-closed behavior where applicable, interface separation, and dependency inversion.
+*   **YAGNI (You Aren't Gonna Need It):** Prohibit writing speculative boilerplate code or future-proofing implementations not explicitly requested by current specifications.
+*   **JSDoc Parameter Documentation:** Maintain detailed JSDoc comments including `@param`, `@returns`, and `@description` for all helper functions and exported utility modules. This is critical for understanding complex calculation logic.
+*   **Context Budgets:** If a task requires modifying more than 3 modules or 60 seconds of manual context navigation to understand, halt and demand user clarification. Break down large tasks.
+*   **No Placeholders:** Strictly prohibit leaving commented placeholders, stub functions, incomplete implementations, or TODO lines in any generated code. All outputs must represent complete, implementable codebase scaffolding files.

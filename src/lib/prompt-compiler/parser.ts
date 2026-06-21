@@ -59,19 +59,26 @@ export function cleanMdcRuleContent(content: string): string {
  * @param content - Extracted textual content.
  */
 export function saveFileContent(pack: CompiledPack, filename: string, content: string): void {
-  if (filename === 'AGENTS.md') {
+  // Clean filename: trim, remove leading slashes/spaces, and strip wrapping quotes or backticks
+  const cleanName = filename.trim()
+    .replace(/^[\/\\\s]+/, '')
+    .replace(/^["'`]|["'`]$/g, '')
+    .trim();
+
+  if (cleanName === 'AGENTS.md') {
     pack.agentsMd = content;
-  } else if (filename === 'CLAUDE.md') {
+  } else if (cleanName === 'CLAUDE.md') {
     pack.claudeMd = content;
-  } else if (filename === 'phases.md') {
+  } else if (cleanName === 'phases.md') {
     pack.phasesMd = content;
-  } else if (filename === 'README.md') {
+  } else if (cleanName === 'README.md') {
     pack.readmeMd = content;
-  } else if (filename.startsWith('.cursor/rules/')) {
-    const ruleName = filename.replace('.cursor/rules/', '');
-    pack.cursorRules[ruleName] = cleanMdcRuleContent(content);
+  } else if (cleanName.includes('rules/')) {
+    // Resilient extract of ruleName to support .cursor/rules/, cursor/rules/, or rules/
+    const ruleName = cleanName.split('rules/').pop() || cleanName;
+    pack.cursorRules[ruleName.trim()] = cleanMdcRuleContent(content);
   } else {
-    pack.cursorRules[filename] = cleanMdcRuleContent(content);
+    pack.cursorRules[cleanName] = cleanMdcRuleContent(content);
   }
 }
 
@@ -97,8 +104,9 @@ export function parseMarkdownStream(stream: string): CompiledPack {
   let fileLines: string[] = [];
 
   for (const line of lines) {
-    const startMatch = line.match(/^---\s*START\s*FILE:\s*(.+?)\s*---$/i);
-    const endMatch = line.match(/^---\s*END\s*FILE:\s*(.+?)\s*---$/i);
+    const trimmedLine = line.trim();
+    const startMatch = trimmedLine.match(/^---\s*START\s*FILE:\s*(.+?)\s*---$/i);
+    const endMatch = trimmedLine.match(/^---\s*END\s*FILE:\s*(.+?)\s*---$/i);
 
     if (startMatch) {
       if (currentFile && fileLines.length > 0) {
@@ -115,7 +123,8 @@ export function parseMarkdownStream(stream: string): CompiledPack {
       fileLines = [];
     } else {
       if (currentFile !== null) {
-        fileLines.push(line);
+        // Strip trailing carriage returns to support standard CRLF lines
+        fileLines.push(line.replace(/\r$/, ''));
       }
     }
   }

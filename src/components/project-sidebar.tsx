@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import { User } from '@supabase/supabase-js';
 import { Plus, Trash2, Folder, ChevronLeft, Calendar } from 'lucide-react';
 
 interface Project {
@@ -15,7 +16,7 @@ interface Project {
 
 interface ProjectSidebarProps {
   activeRoomId: string;
-  user: any;
+  user: User | null;
   isOpen: boolean;
   onToggle: () => void;
 }
@@ -68,12 +69,16 @@ export function ProjectSidebar({ activeRoomId, user, isOpen, onToggle }: Project
   // Initial fetch and real-time subscription
   React.useEffect(() => {
     if (!user) {
-      setProjects([]);
-      setIsLoading(false);
+      queueMicrotask(() => {
+        setProjects([]);
+        setIsLoading(false);
+      });
       return;
     }
 
-    setIsLoading(true);
+    queueMicrotask(() => {
+      setIsLoading(true);
+    });
     fetchProjects();
 
     // Setup postgres real-time change subscription
@@ -103,7 +108,7 @@ export function ProjectSidebar({ activeRoomId, user, isOpen, onToggle }: Project
     router.push(`/room/${newRoomId}`);
   };
 
-  const handleDeleteProject = async (e: React.MouseEvent, projectId: string, roomUuid: string) => {
+  const handleDeleteProject = async (e: React.MouseEvent, projectId: string) => {
     e.stopPropagation(); // Avoid triggering navigation to the room
     if (!user) return;
     
@@ -189,7 +194,7 @@ export function ProjectSidebar({ activeRoomId, user, isOpen, onToggle }: Project
                   
                   {/* Delete button (only visible on hover to keep UI clean) */}
                   <button
-                    onClick={(e) => handleDeleteProject(e, project.id, project.room_id)}
+                    onClick={(e) => handleDeleteProject(e, project.id)}
                     className="opacity-0 group-hover:opacity-100 p-0.5 text-zinc-500 hover:text-rose-400 transition-all rounded hover:bg-white/5 cursor-pointer shrink-0"
                     title="Delete project link"
                   >

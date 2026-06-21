@@ -29,14 +29,22 @@ auxo/
 │   │   ├── page.tsx            <-- Minimalist, premium grid landing page
 │   │   └── room/
 │   │       └── [id]/
+│   │           ├── hooks/
+│   │           │   ├── useRoomSync.ts  <-- Room state sync & storage handler
+│   │           │   └── useShortcuts.ts <-- Keyboard shortcut listener hook
 │   │           └── page.tsx    <-- Collaborative workspace viewport
 │   ├── components/
 │   │   ├── editor.tsx          <-- Collaborative text scratchpad (Realtime Sync)
 │   │   └── preview.tsx         <-- VS Code-style file tree and code viewer
 │   └── lib/
-│       ├── prompt-compiler.ts  <-- Software 3.0 3-pass compiler logic
+│       ├── prompt-compiler/    <-- Modular compiler package
+│       │   ├── clients.ts      <-- OpenAI, Anthropic, Gemini client callers
+│       │   ├── mock-compiler.ts <-- Deterministic offline mock templates
+│       │   ├── parser.ts       <-- Rule block parsers & CRLF sanitizers
+│       │   └── system-prompt.ts <-- System guidelines & compiler instructions
 │       ├── supabase.ts         <-- Safe Supabase client configuration
-│       └── tech-resolver.ts    <-- Live tech stack package resolver
+│       ├── tech-resolver.ts    <-- Live tech stack package resolver
+│       └── zip-exporter.ts     <-- Client-side ZIP compilation helpers
 ```
 
 ## 2. Core Functional Pillars

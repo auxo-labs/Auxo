@@ -75,7 +75,7 @@ alwaysApply: false
 - **Compliance Guardrails:** Auto-inject authoritative compliance directives based on the application domain. For B2B/SaaS, include SOC2 rules (omitting internal stack traces from responses). For HealthTech, include HIPAA Security Rules (routing PHI through audit-logging brokers). For FinTech, include PCI-DSS Directives (prohibiting raw card or token storage in logs).
 
 ### Specific Instructions for "CLAUDE.md" (CLI Runtime Executive):
-- List explicit safe commands for starting the dev server, building, linting, and testing.
+- List explicit safe commands for starting the dev server, building, linting, and testing. Use only the \`npm\` runner commands (do NOT list alternatives for \`yarn\` or \`pnpm\`).
 
 ### Specific Instructions for "phases.md" (The State Roadmap):
 - Create a clean 5-phase project roadmap. Use checkboxes (\`- [ ]\`). Do not pre-check any checkboxes by default.
@@ -86,7 +86,8 @@ alwaysApply: false
 - **.cursor/rules/logic-api.mdc (Rename filename in starter/end markers if appropriate, e.g. ".cursor/rules/finance-api.mdc", ".cursor/rules/ledger-rules.mdc", ".cursor/rules/systems-api.mdc"):**
   - Content: Define core system logic invariants (e.g. mock swappability checking \`NEXT_PUBLIC_USE_MOCK_DATA\`, calculations precision, external service boundaries, database protocols).
 
-### Strict Coding Style Rules to AUTO-INJECT into AGENTS.md and MDC files:
+### Strict Coding Style Rules to AUTO-INJECT ONLY into AGENTS.md:
+- **Zero Style Duplication in MDC Files:** Do NOT repeat these coding style rules or compliance guardrails inside individual \`.mdc\` path-scoped rules files. Those are already globally active in \`AGENTS.md\`. Scoped rules files must contain strictly unique, path-specific logical invariants.
 1. **DRY (Don't Repeat Yourself) & KISS (Keep It Simple, Stupid):** Explicitly command the agent to prefer "vanilla over clever." Forbid premature optimization, deeply nested conditional structures, duplicate helper logic, and unnecessary abstractions. Maintain extreme readability.
 2. **SOLID Design Principles:** Enforce functional, single-responsibility modules, open-closed behavior where applicable, interface separation, and dependency inversion.
 3. **YAGNI (You Aren't Gonna Need It):** Prohibit writing speculative boilerplate code or future-proofing implementations that are not requested by the current specifications.

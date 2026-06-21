@@ -19,7 +19,7 @@ To test the checkout webhooks locally without deploying to a public domain, we l
    ```
    *(Authorized the terminal via the Stripe browser link to map CLI commands to your Stripe Developer account).*
 3. **Started Webhook Listening**:
-   Launched a forwarding tunnel to route Stripe events directly to your local Next.js API endpoint at [src/app/api/webhooks/stripe/route.ts](file:///Users/danwooster/1.%20DEV/auxo/src/app/api/webhooks/stripe/route.ts):
+   Launched a forwarding tunnel to route Stripe events directly to your local Next.js API endpoint at [src/app/api/webhooks/stripe/route.ts](../src/app/api/webhooks/stripe/route.ts):
    ```bash
    stripe listen --forward-to localhost:3000/api/webhooks/stripe
    ```
@@ -36,7 +36,7 @@ To test the checkout webhooks locally without deploying to a public domain, we l
      --override checkout_session:client_reference_id="YOUR_USER_ID_HERE" \
      --override checkout_session:metadata.tier="credits"
    ```
-   *Result:* Next.js logs confirmed that 15 compiles were successfully credited to your profiles row in Supabase.
+   *Result:* Next.js logs confirmed that 20 compiles were successfully credited to your profiles row in Supabase.
 
 ---
 

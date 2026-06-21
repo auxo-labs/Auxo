@@ -56,6 +56,11 @@ export async function callOpenAI(
   if (!content) {
     throw new Error('OpenAI returned an empty response');
   }
+
+  console.log('=== OPENAI RAW OUTPUT ===');
+  console.log(content);
+  console.log('=========================');
+
   return parseMarkdownStream(content);
 }
 
@@ -110,6 +115,11 @@ export async function callAnthropic(
   if (!text) {
     throw new Error('Anthropic returned an empty response');
   }
+
+  console.log('=== ANTHROPIC RAW OUTPUT ===');
+  console.log(text);
+  console.log('============================');
+
   return parseMarkdownStream(text);
 }
 
@@ -174,6 +184,10 @@ export async function callGemini(
   if (!text) {
     throw new Error('Gemini returned an empty response');
   }
+
+  console.log('=== GEMINI RAW OUTPUT ===');
+  console.log(text);
+  console.log('=========================');
 
   return parseMarkdownStream(text);
 }

@@ -39,7 +39,17 @@ function RoomContent({ roomId }: { roomId: string }) {
   } = useRoomSync(roomId);
 
   // ── UI / Controller State ──────────────────────────────────────────────────
-  const [compiledFiles, setCompiledFiles] = React.useState<CompiledPack | null>(null);
+  const [compiledFiles, setCompiledFiles] = React.useState<CompiledPack | null>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem(`auxo-compiled-room-${roomId}`);
+        if (cached) return JSON.parse(cached);
+      } catch (err) {
+        console.error('Failed to restore compiled files cache:', err);
+      }
+    }
+    return null;
+  });
   const [activeFile, setActiveFile] = React.useState<string>('README.md');
   const [copiedLink, setCopiedLink] = React.useState(false);
   const [isCompiling, setIsCompiling] = React.useState(false);
@@ -52,16 +62,13 @@ function RoomContent({ roomId }: { roomId: string }) {
   const [lastCompileType, setLastCompileType] = React.useState<'basic' | 'premium'>('basic');
   const [compileMode, setCompileMode] = React.useState<'basic' | 'premium'>('basic');
   const [showCompileDropdown, setShowCompileDropdown] = React.useState(false);
-  const [sidebarOpen, setSidebarOpen] = React.useState(false);
-  const dropdownRef = React.useRef<HTMLDivElement>(null);
-
-  // Sync default sidebar state on load
-  React.useEffect(() => {
+  const [sidebarOpen, setSidebarOpen] = React.useState(() => {
     if (typeof window !== 'undefined') {
-      const isLarge = window.innerWidth >= 1024;
-      setSidebarOpen(isLarge);
+      return window.innerWidth >= 1024;
     }
-  }, []);
+    return false;
+  });
+  const dropdownRef = React.useRef<HTMLDivElement>(null);
 
   // Close dropdown on click outside
   React.useEffect(() => {
@@ -283,17 +290,6 @@ function RoomContent({ roomId }: { roomId: string }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
-  // Hydrate compiled files from LocalStorage on mount
-  React.useEffect(() => {
-    try {
-      const cached = localStorage.getItem(`auxo-compiled-room-${roomId}`);
-      if (cached) {
-        setCompiledFiles(JSON.parse(cached));
-      }
-    } catch (err) {
-      console.error('Failed to restore compiled files cache:', err);
-    }
-  }, [roomId]);
 
   // Mirror compiled files changes to LocalStorage
   React.useEffect(() => {
