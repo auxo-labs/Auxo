@@ -217,6 +217,23 @@ Optimize layouts for mobile devices on all marketing, informational, and documen
 - [x] **Step 29.2 (Pricing Page Mobile):** Audit and optimize the pricing page (`src/app/pricing/page.tsx`) layout. Ensure the pricing cards stack vertically, text sizing wraps gracefully, and the capability comparison matrix supports clean horizontal overflow scrolling on narrow viewports.
 - [x] **Step 29.3 (Optimality Page Mobile):** Audit and optimize the technical optimality paper page (`src/app/optimality/page.tsx`) layout. Ensure the mathematical equations, typography, code block highlights, and layout grids scale elegantly without horizontal layout breakage.
 
+## Phase 30: Robust Authentication Options (Email/Password & Social OAuth)
+
+Introduce alternative sign-in options to bypass Supabase's default rate limits on magic link email dispatches (which are heavily restricted on free-tier SMTP configurations).
+
+- [ ] **Step 30.1 (Auth Strategy):** Enable standard Email & Password credentials authentication alongside Magic Links in the Supabase Auth project console.
+- [ ] **Step 30.2 (Auth Modal Upgrades):** Update the workspace login dialog (`src/components/auth-modal.tsx`) to provide toggle tabs between "Magic Link" and "Password" auth modes, complete with email/password input validation.
+- [ ] **Step 30.3 (OAuth Integrations):** Setup Google or GitHub OAuth credentials, configure redirect domains in the Supabase dashboard, and mount "Continue with GitHub/Google" buttons in the authentication dialog.
+- [ ] **Step 30.4 (Session Redirection Verification):** Validate post-OAuth callback redirects and verify that user profile credentials and credit records load correctly after social authentication loops.
+
+## Phase 31: Resizable Split-Pane Layouts (VS Code Style)
+
+Implement drag-to-resize divider boundaries between the Sidebar, Editor, and Preview panels to emulate a premium desktop IDE workspace.
+
+- [ ] **Step 31.1 (Resize Hook):** Create a custom `useResizable` hooks system to track mouse drag/touch coordinates and compute dynamic, percentage-based section widths.
+- [ ] **Step 31.2 (Interactive Splitter Handle):** Build a draggable splitter boundary handle component with styling transitions (ambient hover highlights) and maximum/minimum panel constraint boundaries.
+- [ ] **Step 31.3 (Sandbox UI Integration):** Bind the resize handles between the Sidebar, Editor, and Preview panes, supporting layout state preservation in `localStorage` and double-click triggers to reset layouts to defaults.
+
 ## Future Phases & Stretch Goals (DEFERRED - ABSOLUTE FEATURE FREEZE ENFORCED)
 
 
