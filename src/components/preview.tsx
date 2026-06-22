@@ -74,7 +74,7 @@ export function Preview({ compiledFiles, activeFile, onActiveFileChange, isExpan
     if (activeFile === 'CLAUDE.md') return compiledFiles.claudeMd || '';
     if (activeFile === 'phases.md') return compiledFiles.phasesMd || '';
     if (activeFile === 'README.md') return compiledFiles.readmeMd || '';
-    return compiledFiles.cursorRules[activeFile] || '';
+    return (compiledFiles.cursorRules && compiledFiles.cursorRules[activeFile]) || '';
   };
 
   const currentContent = getCurrentContent();
@@ -88,7 +88,7 @@ export function Preview({ compiledFiles, activeFile, onActiveFileChange, isExpan
   const lines = rawLines.slice(0, lastContentLine + 1);
 
   // List of dynamic rules generated under .cursor/rules
-  const ruleFiles = compiledFiles ? Object.keys(compiledFiles.cursorRules) : [];
+  const ruleFiles = compiledFiles && compiledFiles.cursorRules ? Object.keys(compiledFiles.cursorRules) : [];
 
   return (
     <div ref={containerRef} className="flex flex-col h-full overflow-hidden bg-[#0a0a0c]/80 border-t lg:border-t-0 lg:border-l border-white/[0.03]">
@@ -143,15 +143,15 @@ export function Preview({ compiledFiles, activeFile, onActiveFileChange, isExpan
           {/* Files Explorer Tree Column */}
           <div 
             style={{ width: isMobile ? '100%' : `${previewSidebarWidth}px` }}
-            className="w-full md:w-auto md:shrink-0 border-b md:border-b-0 md:border-r border-white/[0.03] bg-zinc-950/20 overflow-y-auto p-5 font-mono text-[11px] text-zinc-400 select-none"
+            className="w-full md:shrink-0 border-b md:border-b-0 md:border-r border-white/[0.03] bg-zinc-950/20 overflow-y-auto p-5 font-mono text-[11px] text-zinc-400 select-none"
           >
             <h4 className="mb-4 text-[9px] tracking-widest text-zinc-600 uppercase font-bold">Workspace Structure</h4>
             
             <div className="space-y-1">
               {/* Repo root folder */}
-              <div onClick={() => toggleFolder('root')} className="flex items-center gap-2 py-1 px-1.5 rounded hover:bg-white/[0.02] cursor-pointer text-zinc-300">
+              <div onClick={() => toggleFolder('root')} className="flex items-center gap-2 py-1 px-1.5 rounded hover:bg-white/[0.02] cursor-pointer text-zinc-300 min-w-0">
                 {expandedFolders.root ? <FolderOpen className="w-3.5 h-3.5 text-zinc-500" /> : <Folder className="w-3.5 h-3.5 text-zinc-500" />}
-                <span className="font-semibold text-zinc-300">repo-root</span>
+                <span className="font-semibold text-zinc-300 truncate">repo-root</span>
               </div>
 
               {expandedFolders.root && (
@@ -160,44 +160,44 @@ export function Preview({ compiledFiles, activeFile, onActiveFileChange, isExpan
                   {/* README.md file */}
                   <div 
                     onClick={() => onActiveFileChange('README.md')}
-                    className={`flex items-center gap-2 py-1 px-1.5 rounded cursor-pointer transition-colors ${activeFile === 'README.md' ? 'bg-white/[0.03] text-zinc-100 border-l border-white' : 'hover:bg-white/[0.02]'}`}
+                    className={`flex items-center gap-2 py-1 px-1.5 rounded cursor-pointer transition-colors min-w-0 ${activeFile === 'README.md' ? 'bg-white/[0.03] text-zinc-100 border-l border-white' : 'hover:bg-white/[0.02]'}`}
                   >
-                    <FileText className="w-3.5 h-3.5 text-zinc-500" />
-                    <span>README.md</span>
+                    <FileText className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
+                    <span className="truncate">README.md</span>
                   </div>
 
                   {/* AGENTS.md file */}
                   <div 
                     onClick={() => onActiveFileChange('AGENTS.md')}
-                    className={`flex items-center gap-2 py-1 px-1.5 rounded cursor-pointer transition-colors ${activeFile === 'AGENTS.md' ? 'bg-white/[0.03] text-zinc-100 border-l border-white' : 'hover:bg-white/[0.02]'}`}
+                    className={`flex items-center gap-2 py-1 px-1.5 rounded cursor-pointer transition-colors min-w-0 ${activeFile === 'AGENTS.md' ? 'bg-white/[0.03] text-zinc-100 border-l border-white' : 'hover:bg-white/[0.02]'}`}
                   >
-                    <FileText className="w-3.5 h-3.5 text-zinc-500" />
-                    <span>AGENTS.md</span>
+                    <FileText className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
+                    <span className="truncate">AGENTS.md</span>
                   </div>
 
                   {/* CLAUDE.md file */}
                   <div 
                     onClick={() => onActiveFileChange('CLAUDE.md')}
-                    className={`flex items-center gap-2 py-1 px-1.5 rounded cursor-pointer transition-colors ${activeFile === 'CLAUDE.md' ? 'bg-white/[0.03] text-zinc-100 border-l border-white' : 'hover:bg-white/[0.02]'}`}
+                    className={`flex items-center gap-2 py-1 px-1.5 rounded cursor-pointer transition-colors min-w-0 ${activeFile === 'CLAUDE.md' ? 'bg-white/[0.03] text-zinc-100 border-l border-white' : 'hover:bg-white/[0.02]'}`}
                   >
-                    <FileText className="w-3.5 h-3.5 text-zinc-500" />
-                    <span>CLAUDE.md</span>
+                    <FileText className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
+                    <span className="truncate">CLAUDE.md</span>
                   </div>
 
                   {/* phases.md file */}
                   <div 
                     onClick={() => onActiveFileChange('phases.md')}
-                    className={`flex items-center gap-2 py-1 px-1.5 rounded cursor-pointer transition-colors ${activeFile === 'phases.md' ? 'bg-white/[0.03] text-zinc-100 border-l border-white' : 'hover:bg-white/[0.02]'}`}
+                    className={`flex items-center gap-2 py-1 px-1.5 rounded cursor-pointer transition-colors min-w-0 ${activeFile === 'phases.md' ? 'bg-white/[0.03] text-zinc-100 border-l border-white' : 'hover:bg-white/[0.02]'}`}
                   >
-                    <FileText className="w-3.5 h-3.5 text-zinc-500" />
-                    <span>phases.md</span>
+                    <FileText className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
+                    <span className="truncate">phases.md</span>
                   </div>
 
                   {/* .cursor folder */}
                   <div>
-                    <div onClick={() => toggleFolder('cursor')} className="flex items-center gap-2 py-1 px-1.5 rounded hover:bg-white/[0.02] cursor-pointer">
-                      {expandedFolders.cursor ? <FolderOpen className="w-3.5 h-3.5 text-zinc-600" /> : <Folder className="w-3.5 h-3.5 text-zinc-600" />}
-                      <span>.cursor</span>
+                    <div onClick={() => toggleFolder('cursor')} className="flex items-center gap-2 py-1 px-1.5 rounded hover:bg-white/[0.02] cursor-pointer min-w-0">
+                      {expandedFolders.cursor ? <FolderOpen className="w-3.5 h-3.5 text-zinc-600 shrink-0" /> : <Folder className="w-3.5 h-3.5 text-zinc-600 shrink-0" />}
+                      <span className="truncate">.cursor</span>
                     </div>
 
                     {expandedFolders.cursor && (
@@ -205,9 +205,9 @@ export function Preview({ compiledFiles, activeFile, onActiveFileChange, isExpan
                         
                         {/* rules folder */}
                         <div>
-                          <div onClick={() => toggleFolder('rules')} className="flex items-center gap-2 py-1 px-1.5 rounded hover:bg-white/[0.02] cursor-pointer">
-                            {expandedFolders.rules ? <FolderOpen className="w-3.5 h-3.5 text-zinc-600" /> : <Folder className="w-3.5 h-3.5 text-zinc-600" />}
-                            <span>rules</span>
+                          <div onClick={() => toggleFolder('rules')} className="flex items-center gap-2 py-1 px-1.5 rounded hover:bg-white/[0.02] cursor-pointer min-w-0">
+                            {expandedFolders.rules ? <FolderOpen className="w-3.5 h-3.5 text-zinc-600 shrink-0" /> : <Folder className="w-3.5 h-3.5 text-zinc-600 shrink-0" />}
+                            <span className="truncate">rules</span>
                           </div>
 
                           {expandedFolders.rules && (
@@ -217,10 +217,10 @@ export function Preview({ compiledFiles, activeFile, onActiveFileChange, isExpan
                                 <div 
                                   key={ruleName}
                                   onClick={() => onActiveFileChange(ruleName)}
-                                  className={`flex items-center gap-2 py-1 px-1.5 rounded cursor-pointer transition-colors ${activeFile === ruleName ? 'bg-white/[0.03] text-zinc-100 border-l border-white' : 'hover:bg-white/[0.02]'}`}
+                                  className={`flex items-center gap-2 py-1 px-1.5 rounded cursor-pointer transition-colors min-w-0 ${activeFile === ruleName ? 'bg-white/[0.03] text-zinc-100 border-l border-white' : 'hover:bg-white/[0.02]'}`}
                                 >
-                                  <Terminal className="w-3.5 h-3.5 text-zinc-600" />
-                                  <span>{ruleName}</span>
+                                  <Terminal className="w-3.5 h-3.5 text-zinc-600 shrink-0" />
+                                  <span className="truncate">{ruleName}</span>
                                 </div>
                               ))}
                             </div>

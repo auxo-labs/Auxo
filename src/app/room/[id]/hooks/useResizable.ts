@@ -48,6 +48,7 @@ export function useResizable({
     // Avoid interfering with default text selections
     if ('button' in e && e.button !== 0) return; // only left click
     
+    e.preventDefault();
     setIsResizing(true);
 
     const handleMove = (moveEvent: MouseEvent | TouchEvent) => {
