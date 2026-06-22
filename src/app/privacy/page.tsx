@@ -8,14 +8,14 @@ export default function PrivacyPage() {
 
   return (
     <div className="relative flex flex-col min-h-screen bg-background overflow-hidden selection:bg-zinc-800 selection:text-zinc-100 font-sans text-zinc-300">
-      {/* 1. Fine-dot backdrop & gradient mask */}
+      {/* Fine-dot backdrop & gradient mask */}
       <div className="absolute inset-0 dot-bg dot-mask pointer-events-none" />
 
-      {/* 2. Soft background glows */}
+      {/* Soft background glows */}
       <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-glow-radial rounded-full pointer-events-none blur-3xl opacity-75" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-glow-teal rounded-full pointer-events-none blur-3xl opacity-50" />
 
-      {/* 3. Minimal Navigation Bar */}
+      {/* Minimal Navigation Bar */}
       <nav className="relative z-10 flex items-center justify-between px-4 sm:px-8 h-16 border-b border-white/[0.03] bg-background/30 backdrop-blur-md">
         <div className="flex items-center gap-2 sm:gap-3">
           <button
@@ -36,7 +36,7 @@ export default function PrivacyPage() {
         </div>
       </nav>
 
-      {/* 4. Privacy Content Section */}
+      {/* Privacy Content Section */}
       <main className="relative z-10 flex flex-col items-stretch flex-grow w-full max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-16 text-left">
         
         {/* Meta Header */}
@@ -53,13 +53,13 @@ export default function PrivacyPage() {
           </p>
         </div>
 
-        {/* Abstract Box */}
+        {/* Core Principles */}
         <div className="p-5 sm:p-6 rounded-lg border border-white/5 bg-white/[0.01] mb-12 relative overflow-hidden">
           <div className="absolute top-0 right-0 p-3 text-[9px] font-mono text-zinc-700 font-bold uppercase">
-            Product Thesis
+            Data Architecture
           </div>
           <p className="text-xs text-zinc-400 leading-relaxed font-sans">
-            Auxo is engineered under a strict <strong>Privacy-by-Design</strong> architecture. When using our sandbox environment, developer intellectual property (specifications, schemas, and source outlines) is treated as ephemeral data. We enforce absolute isolation, zero persistent telemetry, and client-side encryption of user secrets to ensure complete control of your workspace metadata.
+            Auxo operates on a strict <strong>Privacy-by-Design</strong> model. All code plans, stack structures, and outline documents are treated as transient developer metadata. We enforce isolation, zero persistent telemetry, and client-side encryption of keys to secure your intellectual property.
           </p>
         </div>
 
@@ -69,12 +69,12 @@ export default function PrivacyPage() {
             1. Zero-Telemetry Cloud Compilations
           </h2>
           <p className="text-xs leading-relaxed mb-4 text-zinc-400">
-            For users executing <strong>Deep AI Compiles</strong> using Auxo Cloud credits, the system processes workspace outlines in-memory on our serverless API nodes.
+            For users running <strong>Deep AI Compiles</strong> using Auxo Cloud credits:
           </p>
           <ul className="list-disc pl-5 font-mono text-[11px] text-zinc-400 space-y-2">
-            <li><strong>Zero Storage:</strong> No compile payload (your source notes) is ever written to database tables, logs, caches, or persistent disk storage.</li>
-            <li><strong>Edge Discard:</strong> Once compiler requests return from OpenAI, Anthropic, or Google, request payloads are immediately purged from edge server memory.</li>
-            <li><strong>Audit Gating:</strong> Supabase auth records and credit packs are checked securely using PostgreSQL Row-Level Security (RLS) policies.</li>
+            <li><strong>In-Memory Processing:</strong> Workspace outlines are processed transiently in-memory on our edge compiler nodes. No compilation payload is logged or written to disk.</li>
+            <li><strong>Immediate Purging:</strong> Requests are deleted from edge runtime memory immediately after the LLM returns the structured response.</li>
+            <li><strong>Authorised Access:</strong> Auth sessions and credit counts are queried securely from Supabase using PostgreSQL Row-Level Security (RLS) policies.</li>
           </ul>
         </section>
 
@@ -84,38 +84,32 @@ export default function PrivacyPage() {
             2. Bring Your Own Key (BYOK) Security
           </h2>
           <p className="text-xs leading-relaxed mb-4 text-zinc-400">
-            When configuring personal API keys (OpenAI, Anthropic, or Gemini) inside the compiler setup, keys are managed with strict client-centric isolation:
+            When configuring personal API keys (OpenAI, Anthropic, or Gemini):
           </p>
           <ul className="list-disc pl-5 font-mono text-[11px] text-zinc-400 space-y-2">
-            <li><strong>XOR Obfuscation:</strong> Keys are obfuscated in browser memory using a dynamic symmetric XOR-based mask array combined with Base64 encoding before writing to `localStorage` (SEC-08). This deters browser-extension memory scraping.</li>
-            <li><strong>Transient Request Transit:</strong> Keys are sent directly within transient HTTPS headers from your browser client to the Edge proxy routes. Keys are never cached or logged on intermediate routes.</li>
-            <li><strong>Bypass Flow:</strong> BYOK request compile calls completely bypass Supabase transaction hooks, Stripe credit tracking, and hosted database calls.</li>
+            <li><strong>Client-Side Encryption:</strong> Keys are obfuscated in browser memory using a symmetric XOR-based mask array combined with Base64 encoding before writing to `localStorage` (SEC-08), preventing cleartext cookie-scraping.</li>
+            <li><strong>Transient Payloads:</strong> Decrypted keys are sent strictly over TLS-encrypted HTTPS connections within the body of compile request payloads. Keys are never saved or cached by our backend.</li>
+            <li><strong>Routing Bypass:</strong> BYOK compilation requests completely bypass credits checks, payment verification, and cloud database operations.</li>
           </ul>
         </section>
 
         {/* Section 3 */}
         <section className="mb-10">
           <h2 className="text-lg font-mono text-zinc-200 uppercase tracking-widest mb-4 border-b border-white/[0.03] pb-2">
-            3. Ephemeral Synchronization Channels
+            3. Ephemeral Synchronisation Channels
           </h2>
           <p className="text-xs leading-relaxed mb-4 text-zinc-400">
-            Typing updates and cursor presence (when active) run over transient Supabase Broadcast and Presence channels.
-          </p>
-          <p className="text-xs leading-relaxed text-zinc-400">
-            These channels operate as low-latency WebSocket connections designed to mirror typing changes in-memory between active collaborators. No room content changes, scratchpad keystrokes, or active presence IDs are logged to Postgres tables, protecting your source notes from passive database logging.
+            Real-time typing updates and editor synchronisation run over transient Supabase Broadcast and Presence WebSocket channels. Keystrokes are mirrored in-memory between active collaborators and are never persisted to a database.
           </p>
         </section>
 
         {/* Section 4 */}
         <section className="mb-10">
           <h2 className="text-lg font-mono text-zinc-200 uppercase tracking-widest mb-4 border-b border-white/[0.03] pb-2">
-            4. LocalStorage &amp; Client-Side Exporter
+            4. LocalStorage &amp; Local Exporter
           </h2>
           <p className="text-xs leading-relaxed mb-4 text-zinc-400">
-            To prevent data loss from browser crashes, the active scratchpad state is mirrored in `localStorage` keyed strictly by Room UUID.
-          </p>
-          <p className="text-xs leading-relaxed text-zinc-400">
-            When click triggers initiate a &quot;Download Pack&quot; download, zipping is handled directly in-memory inside the browser sandbox using JSZip. Compiled agent packs are structured and compressed locally without routing code packages to third-party file compressors.
+            Scratchpad data is mirrored in your browser&apos;s `localStorage` (keyed by Room UUID) to prevent accidental loss from browser crashes. Zipping is handled entirely in-memory on the client browser using JSZip.
           </p>
         </section>
 
@@ -139,7 +133,7 @@ export default function PrivacyPage() {
               </thead>
               <tbody className="divide-y divide-white/5">
                 <tr>
-                  <td className="py-2.5 font-bold text-zinc-300">Scratchpad Specifications</td>
+                  <td className="py-2.5 font-bold text-zinc-300">Scratchpad Content</td>
                   <td className="py-2.5">Client LocalStorage / In-memory Edge</td>
                   <td className="py-2.5 text-accent">Discarded immediately on Edge response</td>
                 </tr>
@@ -149,19 +143,19 @@ export default function PrivacyPage() {
                   <td className="py-2.5 text-accent">Retained locally until cleared by user</td>
                 </tr>
                 <tr>
-                  <td className="py-2.5 font-bold text-zinc-300">Collaborative Sync Keystrokes</td>
+                  <td className="py-2.5 font-bold text-zinc-300">Sync Keystrokes</td>
                   <td className="py-2.5">Transient WebSockets (Supabase Broadcast)</td>
-                  <td className="py-2.5 text-accent">Zero retention (No db logs)</td>
+                  <td className="py-2.5 text-accent">Zero retention (No database logs)</td>
                 </tr>
                 <tr>
                   <td className="py-2.5 font-bold text-zinc-300">Stripe Billing Session</td>
-                  <td className="py-2.5">Stripe Console / Postgres Accounts</td>
-                  <td className="py-2.5 text-accent">Permanent (For billing & audit)</td>
+                  <td className="py-2.5">Stripe Dashboard / Postgres Accounts</td>
+                  <td className="py-2.5 text-accent">Permanent (For auditing and credits)</td>
                 </tr>
                 <tr>
-                  <td className="py-2.5 font-bold text-zinc-300">User History Projects</td>
+                  <td className="py-2.5 font-bold text-zinc-300">Saved Projects</td>
                   <td className="py-2.5">Postgres DB (RLS Protected)</td>
-                  <td className="py-2.5 text-accent">Persistent (User can delete anytime)</td>
+                  <td className="py-2.5 text-accent">Persistent (Deletable by user)</td>
                 </tr>
               </tbody>
             </table>
