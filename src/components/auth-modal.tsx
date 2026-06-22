@@ -9,7 +9,6 @@ interface AuthModalProps {
   onClose: () => void;
 }
 
-type AuthMode = 'magic-link' | 'password';
 type PasswordSubMode = 'login' | 'signup';
 
 const GithubIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -18,8 +17,28 @@ const GithubIcon = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
+const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" {...props}>
+    <path
+      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+      fill="#4285F4"
+    />
+    <path
+      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+      fill="#34A853"
+    />
+    <path
+      d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+      fill="#FBBC05"
+    />
+    <path
+      d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+      fill="#EA4335"
+    />
+  </svg>
+);
+
 export function AuthModal({ isOpen, onClose }: AuthModalProps) {
-  const [authMode, setAuthMode] = React.useState<AuthMode>('password');
   const [passwordMode, setPasswordMode] = React.useState<PasswordSubMode>('login');
   
   const [email, setEmail] = React.useState('');
@@ -27,38 +46,12 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
   
   const [isLoading, setIsLoading] = React.useState(false);
   const [isOAuthLoading, setIsOAuthLoading] = React.useState(false);
+  const [activeOAuthProvider, setActiveOAuthProvider] = React.useState<'github' | 'google' | null>(null);
   const [errorMsg, setErrorMsg] = React.useState<string | null>(null);
   const [success, setSuccess] = React.useState(false);
   const [successMsg, setSuccessMsg] = React.useState('');
 
   if (!isOpen) return null;
-
-  const handleMagicLinkSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email || isLoading) return;
-
-    try {
-      setIsLoading(true);
-      setErrorMsg(null);
-
-      const { error } = await supabase.auth.signInWithOtp({
-        email,
-        options: {
-          emailRedirectTo: window.location.href, // redirects directly back to this workspace room
-        },
-      });
-
-      if (error) throw error;
-      setSuccessMsg(`We've sent a magic login link to ${email}. Check your inbox to complete signing in.`);
-      setSuccess(true);
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      console.error('Magic link request failed:', err);
-      setErrorMsg(message || 'Failed to send Magic Link. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,10 +99,11 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
     }
   };
 
-  const handleOAuthSignIn = async (provider: 'github') => {
+  const handleOAuthSignIn = async (provider: 'github' | 'google') => {
     if (isOAuthLoading) return;
     try {
       setIsOAuthLoading(true);
+      setActiveOAuthProvider(provider);
       setErrorMsg(null);
       
       const { error } = await supabase.auth.signInWithOAuth({
@@ -125,6 +119,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
       console.error('OAuth sign in failed:', err);
       setErrorMsg(message || 'Failed to initialize social sign in.');
       setIsOAuthLoading(false);
+      setActiveOAuthProvider(null);
     }
   };
 
@@ -147,148 +142,91 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                 UNLOCK PREMIUM AGENT PACKS
               </h3>
               <p className="text-[10px] font-mono text-zinc-400 leading-relaxed">
-                Choose your preferred authentication route. Authenticating saves your sandboxes and enables deep AI compilations.
+                Log in or sign up to save sandboxes and enable deep AI compilations.
               </p>
             </div>
 
-            {/* Auth Mode Switcher */}
+            {/* Auth Mode Toggle Tabs (Log In vs Sign Up) */}
             <div className="flex border-b border-white/5">
               <button
                 type="button"
                 onClick={() => {
-                  setAuthMode('password');
+                  setPasswordMode('login');
                   setErrorMsg(null);
                 }}
                 className={`flex-1 pb-2 text-center font-mono text-[10px] font-bold tracking-wider cursor-pointer transition-colors ${
-                  authMode === 'password'
+                  passwordMode === 'login'
                     ? 'border-b border-zinc-200 text-zinc-200'
                     : 'text-zinc-500 hover:text-zinc-400'
                 }`}
               >
-                PASSWORD
+                LOG IN
               </button>
               <button
                 type="button"
                 onClick={() => {
-                  setAuthMode('magic-link');
+                  setPasswordMode('signup');
                   setErrorMsg(null);
                 }}
                 className={`flex-1 pb-2 text-center font-mono text-[10px] font-bold tracking-wider cursor-pointer transition-colors ${
-                  authMode === 'magic-link'
+                  passwordMode === 'signup'
                     ? 'border-b border-zinc-200 text-zinc-200'
                     : 'text-zinc-500 hover:text-zinc-400'
                 }`}
               >
-                MAGIC LINK
+                SIGN UP
               </button>
             </div>
 
             {/* Password Auth Form */}
-            {authMode === 'password' && (
-              <form onSubmit={handlePasswordSubmit} className="space-y-3">
-                {/* Submode Switcher */}
-                <div className="flex justify-end gap-3 text-[10px] font-mono">
-                  <button
-                    type="button"
-                    onClick={() => setPasswordMode('login')}
-                    className={`cursor-pointer ${passwordMode === 'login' ? 'text-zinc-200 font-bold' : 'text-zinc-500'}`}
-                  >
-                    LOG IN
-                  </button>
-                  <span className="text-zinc-700">|</span>
-                  <button
-                    type="button"
-                    onClick={() => setPasswordMode('signup')}
-                    className={`cursor-pointer ${passwordMode === 'signup' ? 'text-zinc-200 font-bold' : 'text-zinc-500'}`}
-                  >
-                    SIGN UP
-                  </button>
-                </div>
-
-                <div className="relative">
-                  <Mail className="absolute left-3 top-2.5 w-4 h-4 text-zinc-500" />
-                  <input
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="developer@domain.com"
-                    className="w-full h-9 pl-9 pr-4 rounded bg-white/[0.02] border border-white/5 text-zinc-200 text-xs font-mono placeholder-zinc-600 focus:outline-none focus:border-white/10 transition-colors"
-                    disabled={isLoading}
-                  />
-                </div>
-
-                <div className="relative">
-                  <Lock className="absolute left-3 top-2.5 w-4 h-4 text-zinc-500" />
-                  <input
-                    type="password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="w-full h-9 pl-9 pr-4 rounded bg-white/[0.02] border border-white/5 text-zinc-200 text-xs font-mono placeholder-zinc-600 focus:outline-none focus:border-white/10 transition-colors"
-                    disabled={isLoading}
-                  />
-                </div>
-
-                {errorMsg && (
-                  <p className="text-[10px] font-mono text-rose-500 leading-relaxed">
-                    {errorMsg}
-                  </p>
-                )}
-
-                <button
-                  type="submit"
+            <form onSubmit={handlePasswordSubmit} className="space-y-3">
+              <div className="relative">
+                <Mail className="absolute left-3 top-2.5 w-4 h-4 text-zinc-500" />
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="developer@domain.com"
+                  className="w-full h-9 pl-9 pr-4 rounded bg-white/[0.02] border border-white/5 text-zinc-200 text-xs font-mono placeholder-zinc-600 focus:outline-none focus:border-white/10 transition-colors"
                   disabled={isLoading}
-                  className="flex items-center justify-center w-full h-9 rounded bg-zinc-100 hover:bg-zinc-200 text-zinc-950 font-mono text-xs font-semibold tracking-wider transition-colors disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
-                >
-                  {isLoading ? (
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  ) : (
-                    passwordMode === 'login' ? 'LOG IN' : 'CREATE ACCOUNT'
-                  )}
-                </button>
-              </form>
-            )}
+                />
+              </div>
 
-            {/* Magic Link Form */}
-            {authMode === 'magic-link' && (
-              <form onSubmit={handleMagicLinkSubmit} className="space-y-3">
-                <div className="relative">
-                  <Mail className="absolute left-3 top-2.5 w-4 h-4 text-zinc-500" />
-                  <input
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="developer@domain.com"
-                    className="w-full h-9 pl-9 pr-4 rounded bg-white/[0.02] border border-white/5 text-zinc-200 text-xs font-mono placeholder-zinc-600 focus:outline-none focus:border-white/10 transition-colors"
-                    disabled={isLoading}
-                  />
-                </div>
-
-                {errorMsg && (
-                  <p className="text-[10px] font-mono text-rose-500 leading-relaxed">
-                    {errorMsg}
-                  </p>
-                )}
-
-                <button
-                  type="submit"
+              <div className="relative">
+                <Lock className="absolute left-3 top-2.5 w-4 h-4 text-zinc-500" />
+                <input
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full h-9 pl-9 pr-4 rounded bg-white/[0.02] border border-white/5 text-zinc-200 text-xs font-mono placeholder-zinc-600 focus:outline-none focus:border-white/10 transition-colors"
                   disabled={isLoading}
-                  className="flex items-center justify-center w-full h-9 rounded bg-zinc-100 hover:bg-zinc-200 text-zinc-950 font-mono text-xs font-semibold tracking-wider transition-colors disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
-                >
-                  {isLoading ? (
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  ) : (
-                    'SEND MAGIC LINK'
-                  )}
-                </button>
-              </form>
-            )}
+                />
+              </div>
+
+              {errorMsg && (
+                <p className="text-[10px] font-mono text-rose-500 leading-relaxed">
+                  {errorMsg}
+                </p>
+              )}
+
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="flex items-center justify-center w-full h-9 rounded bg-zinc-100 hover:bg-zinc-200 text-zinc-950 font-mono text-xs font-semibold tracking-wider transition-colors disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
+              >
+                {isLoading ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  passwordMode === 'login' ? 'LOG IN' : 'CREATE ACCOUNT'
+                )}
+              </button>
+            </form>
 
             {/* OAuth Separator */}
-            <div className="relative flex py-2 items-center">
+            <div className="relative flex py-1.5 items-center">
               <div className="flex-grow border-t border-white/5"></div>
               <span className="flex-shrink mx-4 text-[9px] font-mono text-zinc-600 tracking-widest">
                 OR
@@ -297,19 +235,34 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
             </div>
 
             {/* OAuth Login Buttons */}
-            <div className="space-y-2">
+            <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
                 onClick={() => handleOAuthSignIn('github')}
                 disabled={isOAuthLoading}
-                className="flex items-center justify-center gap-2 w-full h-9 rounded bg-white/[0.02] hover:bg-white/[0.05] border border-white/5 text-zinc-200 font-mono text-xs font-semibold tracking-wider transition-colors disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
+                className="flex items-center justify-center gap-1.5 h-9 rounded bg-white/[0.02] hover:bg-white/[0.05] border border-white/5 text-zinc-200 font-mono text-[10px] font-semibold tracking-wider transition-colors disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
               >
-                {isOAuthLoading ? (
+                {isOAuthLoading && activeOAuthProvider === 'github' ? (
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
                 ) : (
                   <>
-                    <GithubIcon className="w-4 h-4 text-zinc-200" />
-                    CONTINUE WITH GITHUB
+                    <GithubIcon className="w-3.5 h-3.5 text-zinc-200" />
+                    GITHUB
+                  </>
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={() => handleOAuthSignIn('google')}
+                disabled={isOAuthLoading}
+                className="flex items-center justify-center gap-1.5 h-9 rounded bg-white/[0.02] hover:bg-white/[0.05] border border-white/5 text-zinc-200 font-mono text-[10px] font-semibold tracking-wider transition-colors disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
+              >
+                {isOAuthLoading && activeOAuthProvider === 'google' ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <>
+                    <GoogleIcon className="w-3.5 h-3.5 text-zinc-200" />
+                    GOOGLE
                   </>
                 )}
               </button>
