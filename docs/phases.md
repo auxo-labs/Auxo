@@ -241,6 +241,13 @@ Implement request rate limiting and protection against automated bot traffic for
 
 - [x] **Step 32.4 (Privacy Page):** Set up privacy page, relatively simple but include all the correct legal copy about data handling, user rights, AI usage, etc.
 
+## Phase 33: Search & Generative Engine Optimization (SEO/GEO) (Completed)
+
+- [x] **Step 33.1:** Create dynamic sitemap generator at `src/app/sitemap.ts` covering static landing, pricing, optimality, and privacy pages.
+- [x] **Step 33.2:** Create custom `robots.ts` permitting search engine crawlers and AI bots (GPTBot, Google-Extended, PerplexityBot) while excluding backend API endpoints.
+- [x] **Step 33.3:** Inject rich Open Graph (OG) and Twitter Card tags in `src/app/layout.tsx` metadata for link previews on social platforms.
+- [x] **Step 33.4:** Perform a production build and verify sitemap/robots paths compile successfully.
+
 # potential future phases
 
 ## Phase F1: Student & Academic Compilation Support

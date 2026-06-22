@@ -2,6 +2,17 @@
 
 All notable changes to the **Auxo** project are documented here.
 
+## [1.9.4] - 2026-06-22
+
+### Added
+
+- **Next.js 16 Dynamic Sitemap and Robots**: Added custom dynamic `sitemap.ts` and `robots.ts` configurations to improve indexing for search engines and AI web crawlers (GPTBot, Gemini, Perplexity).
+- **Social Preview & Metadata Optimization**: Injected rich Open Graph and Twitter Card tags to the main application layout (`layout.tsx`) for professional preview cards on platforms like X.com.
+
+### Changed
+
+- **Next.js 16 Proxy Migration**: Replaced the deprecated `middleware.ts` naming and function convention with the recommended `proxy.ts` convention to address build deprecation warnings.
+
 ## [1.9.3] - 2026-06-22
 
 ### Added

@@ -19,12 +19,34 @@ const playfairDisplay = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Auxo | Collaborative AI Playground",
-  description: "Zero-auth collaborative playground to convert messy software ideas into AGENTS.md, CLAUDE.md, and .cursor/rules/ files for 2026 AI IDEs.",
+  title: "Auxo | Precision Prompt Compiler & Cursor Rules Generator",
+  description: "Zero-auth, privacy-first playground to compile messy developer notes into prompt-optimized file matrices (.cursor/rules, AGENTS.md, CLAUDE.md) for 2026 AI IDEs.",
   icons: {
     icon: "/logo-nobg.png",
     shortcut: "/logo-nobg.png",
     apple: "/logo-nobg.png",
+  },
+  openGraph: {
+    title: "Auxo | Precision Prompt Compiler & Cursor Rules Generator",
+    description: "Compile raw specs and notes into optimized prompt configurations for Cursor, Windsurf, and Claude Code.",
+    url: "https://auxo.wo0.dev",
+    siteName: "Auxo",
+    images: [
+      {
+        url: "https://auxo.wo0.dev/logo.png",
+        width: 800,
+        height: 600,
+        alt: "Auxo Brand Logo",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Auxo | Precision Prompt Compiler & Cursor Rules Generator",
+    description: "Compile raw specs into optimized prompt files for cognitive AI IDEs.",
+    images: ["https://auxo.wo0.dev/logo.png"],
   },
 };
 
