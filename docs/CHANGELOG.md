@@ -10,6 +10,7 @@ All notable changes to the **Auxo** project are documented here.
 - **Social Preview & Metadata Optimization**: Injected rich Open Graph and Twitter Card tags to the main application layout (`layout.tsx`) for professional preview cards on platforms like X.com.
 - **Resizable Compiled Pack Preview Sidebar**: Integrated dynamic resizable split-pane layout to the compiled agent pack preview component, letting users drag-to-resize the file explorer sidebar on desktop viewports.
 - **Structured Data (Site Names)**: Embedded Schema.org WebSite JSON-LD metadata on the landing page to specify the preferred search engine site display name as "Auxo".
+- **Vercel Analytics Integration**: Integrated `@vercel/analytics` inside the root layout component to track and monitor user views and site performance metrics.
 
 ### Changed
 
