@@ -364,6 +364,8 @@ export default function PricingPage() {
           <span className="w-1 h-1 bg-zinc-800 rounded-full" />
           <Link href="/optimality" className="hover:text-zinc-300 transition-colors">Optimality Specs</Link>
           <span className="w-1 h-1 bg-zinc-800 rounded-full" />
+          <Link href="/faq" className="hover:text-zinc-300 transition-colors">FAQ</Link>
+          <span className="w-1 h-1 bg-zinc-800 rounded-full" />
           <Link href="/privacy" className="hover:text-zinc-300 transition-colors">Privacy Specs</Link>
         </div>
         <span className="font-mono text-[8px] sm:text-[9px] text-zinc-600 tracking-wider sm:tracking-widest uppercase">

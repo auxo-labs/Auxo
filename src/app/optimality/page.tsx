@@ -146,7 +146,7 @@ export default function OptimalityPage() {
             6. BYOK Security Profile & Client-Side Encryption
           </h2>
           <p className="text-xs leading-relaxed mb-4 text-zinc-400">
-            For teams utilizing the Bring Your Own Key (BYOK) compile tier, Auxo enforces a strict zero-retention security profile. User-supplied API keys (OpenAI, Anthropic, or Gemini) are obfuscated in browser memory using symmetric XOR-based mask arrays combined with Base64 encoding. This protects keys against cross-site scripting (XSS) client-side cache scraping.
+            For teams utilising the Bring Your Own Key (BYOK) compile tier, Auxo enforces a strict zero-retention security profile. User-supplied API keys (OpenAI, Anthropic, or Gemini) are obfuscated in browser memory using symmetric XOR-based mask arrays combined with Base64 encoding. This protects keys against cross-site scripting (XSS) client-side cache scraping.
           </p>
           <div className="p-4 rounded border border-white/5 bg-zinc-950/40 font-mono text-[10px] text-zinc-400 mb-4 select-all break-words">
             <span className="text-zinc-500">{"// Symmetric XOR-based encryption mask mapping:"}</span>
@@ -239,6 +239,10 @@ export default function OptimalityPage() {
           <Link href="/" className="hover:text-zinc-300 transition-colors">Home</Link>
           <span className="w-1 h-1 bg-zinc-800 rounded-full" />
           <Link href="/pricing" className="hover:text-zinc-300 transition-colors">Pricing</Link>
+          <span className="w-1 h-1 bg-zinc-800 rounded-full" />
+          <Link href="/optimality" className="hover:text-zinc-300 transition-colors text-zinc-300">Optimality Specs</Link>
+          <span className="w-1 h-1 bg-zinc-800 rounded-full" />
+          <Link href="/faq" className="hover:text-zinc-300 transition-colors">FAQ</Link>
           <span className="w-1 h-1 bg-zinc-800 rounded-full" />
           <Link href="/privacy" className="hover:text-zinc-300 transition-colors">Privacy Specs</Link>
         </div>

@@ -87,6 +87,12 @@ export default function Home() {
           >
             Optimality
           </Link>
+          <Link
+            href="/faq"
+            className="font-mono text-[9px] sm:text-[10px] text-zinc-400 hover:text-zinc-200 tracking-wider transition-colors uppercase"
+          >
+            FAQ
+          </Link>
           <button
             onClick={() => setIsSupportModalOpen(true)}
             className="font-mono text-[9px] sm:text-[10px] text-zinc-400 hover:text-zinc-200 tracking-wider transition-colors uppercase cursor-pointer"
@@ -233,6 +239,8 @@ export default function Home() {
           <Link href="/pricing" className="hover:text-zinc-300 transition-colors">Pricing</Link>
           <span className="w-1 h-1 bg-zinc-800 rounded-full" />
           <Link href="/optimality" className="hover:text-zinc-300 transition-colors">Optimality Specs</Link>
+          <span className="w-1 h-1 bg-zinc-800 rounded-full" />
+          <Link href="/faq" className="hover:text-zinc-300 transition-colors">FAQ</Link>
           <span className="w-1 h-1 bg-zinc-800 rounded-full" />
           <Link href="/privacy" className="hover:text-zinc-300 transition-colors">Privacy Specs</Link>
         </div>

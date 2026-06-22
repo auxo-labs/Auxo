@@ -21,6 +21,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
+      url: 'https://auxo.wo0.dev/faq',
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
       url: 'https://auxo.wo0.dev/privacy',
       lastModified: new Date(),
       changeFrequency: 'yearly',
