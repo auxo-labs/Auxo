@@ -14,10 +14,6 @@ All notable changes to the **Auxo** project are documented here.
 
 - **Next.js 16 Proxy Migration**: Replaced the deprecated `middleware.ts` naming and function convention with the recommended `proxy.ts` convention to address build deprecation warnings.
 
-### Fixed
-
-- **Production Resizing in Compiled Agent Pack**: Resolved a bug in the production build where the compiled agent pack preview sidebar resize handle was non-functional due to Tailwind CSS v4's arbitrary `md:w-[var(--preview-sidebar-width)]` class getting stripped/mangled during production minification (CSSNano/LightningCSS). Replaced with a standard, robust static utility class `.preview-sidebar-width` defined in `globals.css`.
-
 ## [1.9.3] - 2026-06-22
 
 ### Added

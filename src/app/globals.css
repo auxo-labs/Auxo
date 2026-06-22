@@ -132,13 +132,3 @@ body {
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05) 20%, rgba(255,255,255,0.05) 80%, transparent);
 }
 
-/* Custom utility to bypass Tailwind v4 arbitrary selector minification bugs in production */
-.preview-sidebar-width {
-  width: 100%;
-}
-@media (min-width: 768px) {
-  .preview-sidebar-width {
-    width: var(--preview-sidebar-width, 240px) !important;
-  }
-}
-
