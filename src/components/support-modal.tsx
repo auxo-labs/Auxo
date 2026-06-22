@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { X, Mail, Copy, Check } from 'lucide-react';
+import { X, Copy, Check, MessageSquare } from 'lucide-react';
 
 interface SupportModalProps {
   isOpen: boolean;
@@ -48,15 +48,15 @@ export function SupportModal({ isOpen, onClose, roomId }: SupportModalProps) {
           </div>
 
           <div className="space-y-3.5">
-            {/* Contact Method: Email */}
+            {/* Contact Method: X.com DMs */}
             <div className="p-3 rounded border border-white/5 bg-white/[0.01] flex items-center gap-3">
               <div className="flex items-center justify-center w-8 h-8 rounded bg-zinc-900 border border-white/5 text-zinc-400">
-                <Mail className="w-4 h-4" />
+                <MessageSquare className="w-4 h-4" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-[8px] font-mono text-zinc-500 uppercase tracking-wider">Email Address</p>
-                <a href="mailto:support@auxo.to" className="text-xs font-mono text-zinc-300 hover:text-zinc-100 transition-colors break-all">
-                  support@auxo.to
+                <p className="text-[8px] font-mono text-zinc-500 uppercase tracking-wider">Direct Message on X</p>
+                <a href="https://x.com/dksosnhejejd" target="_blank" rel="noopener noreferrer" className="text-xs font-mono text-zinc-300 hover:text-zinc-100 transition-colors break-all">
+                  @dksosnhejejd
                 </a>
               </div>
             </div>
@@ -81,10 +81,12 @@ export function SupportModal({ isOpen, onClose, roomId }: SupportModalProps) {
 
           <div className="flex gap-2.5 pt-1">
             <a
-              href={roomId ? `mailto:support@auxo.to?subject=Auxo%20Support%20Request%20-%20Room%20${roomId}` : `mailto:support@auxo.to?subject=Auxo%20Support%20Request`}
+              href="https://x.com/dksosnhejejd"
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex-1 flex items-center justify-center h-8 rounded bg-white/5 hover:bg-white/10 border border-white/5 text-zinc-200 font-mono text-[10px] font-medium transition-colors"
             >
-              LAUNCH MAIL CLIENT
+              SEND DIRECT MESSAGE
             </a>
             <button
               onClick={onClose}
