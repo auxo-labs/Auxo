@@ -247,6 +247,7 @@ Implement request rate limiting and protection against automated bot traffic for
 - [x] **Step 33.2:** Create custom `robots.ts` permitting search engine crawlers and AI bots (GPTBot, Google-Extended, PerplexityBot) while excluding backend API endpoints.
 - [x] **Step 33.3:** Inject rich Open Graph (OG) and Twitter Card tags in `src/app/layout.tsx` metadata for link previews on social platforms.
 - [x] **Step 33.4:** Perform a production build and verify sitemap/robots paths compile successfully.
+- [x] **Step 33.5:** Implement resizable split-pane layout inside the `<Preview>` compiled agent pack component to support drag-to-resize Workspace File Explorer trees on desktop viewports.
 
 # potential future phases
 

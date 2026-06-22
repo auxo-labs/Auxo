@@ -8,6 +8,7 @@ All notable changes to the **Auxo** project are documented here.
 
 - **Next.js 16 Dynamic Sitemap and Robots**: Added custom dynamic `sitemap.ts` and `robots.ts` configurations to improve indexing for search engines and AI web crawlers (GPTBot, Gemini, Perplexity).
 - **Social Preview & Metadata Optimization**: Injected rich Open Graph and Twitter Card tags to the main application layout (`layout.tsx`) for professional preview cards on platforms like X.com.
+- **Resizable Compiled Pack Preview Sidebar**: Integrated dynamic resizable split-pane layout to the compiled agent pack preview component, letting users drag-to-resize the file explorer sidebar on desktop viewports.
 
 ### Changed
 

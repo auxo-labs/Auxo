@@ -3,6 +3,8 @@
 import * as React from 'react';
 import { FileText, Folder, FolderOpen, Terminal, Sparkles, AlertCircle, Copy, Check, Maximize2, Minimize2 } from 'lucide-react';
 import { CompiledPack } from '@/lib/prompt-compiler';
+import { useResizable } from '@/app/room/[id]/hooks/useResizable';
+import { SplitterHandle } from '@/components/splitter-handle';
 
 interface PreviewProps {
   compiledFiles: CompiledPack | null;
@@ -20,6 +22,31 @@ export function Preview({ compiledFiles, activeFile, onActiveFileChange, isExpan
     rules: true,
   });
   const [copiedText, setCopiedText] = React.useState(false);
+
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = React.useState(true);
+
+  // Monitor window width to bypass resizing on narrow viewports
+  React.useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const {
+    size: previewSidebarWidth,
+    isResizing: isPreviewSidebarResizing,
+    startResizing: startPreviewSidebarResize,
+    reset: resetPreviewSidebar
+  } = useResizable({
+    initialSize: 240,
+    minSize: 180,
+    maxSize: 400,
+    localStorageKey: 'auxo-resizable-preview-sidebar-width'
+  });
 
   const toggleFolder = (folderKey: string) => {
     setExpandedFolders(prev => ({
@@ -64,7 +91,7 @@ export function Preview({ compiledFiles, activeFile, onActiveFileChange, isExpan
   const ruleFiles = compiledFiles ? Object.keys(compiledFiles.cursorRules) : [];
 
   return (
-    <div className="flex flex-col h-full overflow-hidden bg-[#0a0a0c]/80 border-t lg:border-t-0 lg:border-l border-white/[0.03]">
+    <div ref={containerRef} className="flex flex-col h-full overflow-hidden bg-[#0a0a0c]/80 border-t lg:border-t-0 lg:border-l border-white/[0.03]">
       {/* Header bar */}
       <div className="flex items-center justify-between px-6 h-10 border-b border-white/[0.03] bg-zinc-950/40">
         <div className="flex items-center gap-3">
@@ -112,9 +139,12 @@ export function Preview({ compiledFiles, activeFile, onActiveFileChange, isExpan
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 flex-1 overflow-hidden h-full">
+        <div className="flex flex-col md:flex-row flex-1 overflow-hidden h-full">
           {/* Files Explorer Tree Column */}
-          <div className="md:col-span-1 border-r border-white/[0.03] bg-zinc-950/20 overflow-y-auto p-5 font-mono text-[11px] text-zinc-400 select-none">
+          <div 
+            style={{ width: isMobile ? '100%' : `${previewSidebarWidth}px` }}
+            className="w-full md:w-auto md:shrink-0 border-b md:border-b-0 md:border-r border-white/[0.03] bg-zinc-950/20 overflow-y-auto p-5 font-mono text-[11px] text-zinc-400 select-none"
+          >
             <h4 className="mb-4 text-[9px] tracking-widest text-zinc-600 uppercase font-bold">Workspace Structure</h4>
             
             <div className="space-y-1">
@@ -205,8 +235,27 @@ export function Preview({ compiledFiles, activeFile, onActiveFileChange, isExpan
             </div>
           </div>
 
+          {!isMobile && (
+            <SplitterHandle
+              onMouseDown={(e) => startPreviewSidebarResize(e, (clientX) => {
+                const container = containerRef.current;
+                if (!container) return 240;
+                const rect = container.getBoundingClientRect();
+                return clientX - rect.left;
+              })}
+              onTouchStart={(e) => startPreviewSidebarResize(e, (clientX) => {
+                const container = containerRef.current;
+                if (!container) return 240;
+                const rect = container.getBoundingClientRect();
+                return clientX - rect.left;
+              })}
+              onDoubleClick={resetPreviewSidebar}
+              isResizing={isPreviewSidebarResizing}
+            />
+          )}
+
           {/* Code View Pane */}
-          <div className="md:col-span-2 flex flex-col overflow-hidden bg-zinc-950/40 h-full relative group">
+          <div className="flex-1 flex flex-col overflow-hidden bg-zinc-950/40 h-full relative group">
             
             {/* Minimal Code toolbar */}
             <div className="flex items-center justify-between px-4 h-8 bg-zinc-950/80 border-b border-white/[0.03] text-[9px] text-zinc-500 font-mono">
