@@ -2,6 +2,22 @@
 
 All notable changes to the **Auxo** project are documented here.
 
+## [1.9.3] - 2026-06-22
+
+### Added
+
+- **GitHub and Google OAuth Integrations**: Embedded side-by-side social OAuth buttons in the workspace login modal. Built a multi-colored Google brand icon using SVG paths.
+- **Phase 32 security-hardening plan**: Added a new security-hardening phase to `phases.md` outlining IP-based compile rate-limiting and anonymous sandbox creation limits.
+
+### Changed
+
+- **Streamlined Workspace Authentication Modal**: Simplified the dialog UI by removing the redundant Magic Link tabs and making standard Email/Password (Login/Signup toggles) and OAuth the core access flows.
+
+### Fixed
+
+- **React Cascading Render Hook Error**: Fixed a `react-hooks/set-state-in-effect` linting error on the Room Page component by wrapping `setSidebarOpen(true)` in `queueMicrotask`.
+- **Pricing Page Unused Variable Warnings**: Resolved compilation lint warning flags on `/pricing` by cleaning up `Loader2` import and annotating disabled checkout handlers with eslint ignores.
+
 ## [1.9.2] - 2026-06-21
 
 ### Added

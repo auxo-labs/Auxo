@@ -19,4 +19,9 @@ The following test cases describe the verification procedures for the core funct
 | **TC-13** | Editor | Character Limit warning | Paste text exceeding active limit (15k standard, 30k Developer/BYOK) into scratchpad | Text is truncated at limit, and character count label turns flashing red | PASS |
 | **TC-14** | Settings | LocalStorage corruption | Write an invalid string to `auxo-settings-provider` in LocalStorage and refresh | LocalStorage value is reset to `premium` and workspace loads without crashing | PASS |
 | **TC-15** | Support | Landing Support Modal | Click "Support" on homepage navbar, check copy room ID block | Modal opens showing contact channels, but room ID block is hidden (no crash) | PASS |
+| **TC-16** | Auth | Email/Password Sign Up | Click "SIGN IN", choose "SIGN UP" tab, input new email & password, click "CREATE ACCOUNT" | User is registered, active session established, logs in instantly (with Confirm Email off) | PASS |
+| **TC-17** | Auth | Email/Password Log In | Click "SIGN IN", choose "LOG IN" tab, input registered email & password, click "LOG IN" | Active session established, user profile credits loaded in workspace header | PASS |
+| **TC-18** | Auth | GitHub OAuth Login | Click "Continue with GitHub" | Redirects to GitHub OAuth consent, redirects back to room ID, session loads credits | PASS |
+| **TC-19** | Auth | Google OAuth Login | Click "Continue with Google" | Redirects to Google OAuth consent, redirects back to room ID, session loads credits | PASS |
+
 
