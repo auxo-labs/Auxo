@@ -1,93 +1,78 @@
 # Auxo: Pre-Flight Production Checklist & Release Roadmap
 
-Before publishing the Auxo platform to a live production environment, the following infrastructure setups, console configurations, and environment variables must be established to transition from the local sandbox mode.
+This document outlines the final steps to transition Auxo from a free, unlimited client-side BYOK sandbox into a paid platform (billing credits and account-gated compiles) when you are ready.
 
 ---
 
-## 1. Supabase Production Deployment Checklist
+## 1. Supabase Production Deployment (Completed)
 
-### A. Database Schema & Policies
-- [ ] **Database Migration:** Run migrations on the production Postgres database to create the `profiles` and `projects` tables matching the sandbox schema:
-  ```sql
-  create table public.profiles (
-    id uuid references auth.users on delete cascade primary key,
-    credits integer default 0 not null,
-    is_lifetime boolean default false not null,
-    created_at timestamp with time zone default timezone('utc'::text, now()) not null
-  );
-
-  create table public.projects (
-    id uuid default gen_random_uuid() primary key,
-    user_id uuid references auth.users on delete cascade not null,
-    room_id uuid not null,
-    title text not null,
-    preview_text text not null,
-    created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-    updated_at timestamp with time zone default timezone('utc'::text, now()) not null,
-    unique(user_id, room_id)
-  );
-  ```
-- [ ] **Profile Auto-Creation Trigger:** Install the trigger to auto-provision a profile row when a student/developer registers via Magic Link:
-  ```sql
-  create or replace function public.handle_new_user()
-  returns trigger as $$
-  begin
-    insert into public.profiles (id, credits, is_lifetime)
-    values (new.id, 0, false);
-    return new;
-  end;
-  $$ language plpgsql security definer;
-
-  create trigger on_auth_user_created
-    after insert on auth.users
-    for each row execute procedure public.handle_new_user();
-  ```
-- [ ] **Row-Level Security (RLS):** Ensure RLS is enabled on public tables:
-  * Enable RLS on `public.profiles` and configure the policy allowing read-only access where `auth.uid() = id` (no client-side direct writes).
-  * Enable RLS on `public.projects` and configure policies allowing SELECT, INSERT, UPDATE, and DELETE operations only where `auth.uid() = user_id`.
-
-### B. Authentication Console Configuration
-- [ ] **Allowed Redirect URLs:** In **Supabase Console -> Authentication -> URL Configuration**, add your production URL (e.g. `https://auxo.dev/room/*`) to the Redirect URLs list so Magic Links forward users back to their rooms.
-- [ ] **SMTP / Mail Provider Configuration:** (Optional but Recommended) Replace the default Supabase daily email rate limits with a custom SMTP provider (e.g. Resend) to guarantee reliable login link delivery.
+The core database schemas, triggers, RLS policies, and redirect wildcards have been successfully established in the Supabase console:
+- [x] **Database Schema:** `profiles` and `projects` tables are provisioned.
+- [x] **Profile Auto-Creation Trigger:** `on_auth_user_created` trigger is deployed to auto-provision profile rows on sign-up.
+- [x] **Row-Level Security (RLS):** Strict read-only policies for `profiles` and owner-scoped write permissions for `projects` are enabled.
+- [x] **Allowed Redirect URLs:** Redirect wildcards (e.g. `https://<domain>/room/*`) are configured in Supabase.
 
 ---
 
-## 2. Stripe Production Deployment Checklist
+## 2. Stripe Production Setup
 
-### A. Product Catalog Setup
-- [ ] **Product 1 (PAYG Credit Pack):** Create a product in Stripe Dashboard named `Auxo 20x AI Compile Credit Pack` priced at `£9.99` (One-time, GBP).
-- [ ] **Product 2 (Developer Pack):** Create a product named `Auxo Developer Pack` priced at `£24.99` (One-time, GBP).
-- [ ] Verify that metadata keys `tier: "credits"` and `tier: "lifetime"` are correctly configured under each Stripe product if using Stripe dashboard-created price IDs (though `/api/checkout` dynamically generates product line items, matching Stripe products helps bookkeeping).
-
-### B. Webhook Endpoint Registration
-- [ ] Go to **Stripe Dashboard -> Developers -> Webhooks** and click **Add Endpoint**.
-- [ ] Register the live webhook URL:
-  ```text
-  https://yourdomain.com/api/webhooks/stripe
-  ```
-- [ ] Select events to listen to: `checkout.session.completed`.
-- [ ] Reveal and copy the webhook signing secret (`whsec_...`).
+Refer to [`docs/stripe.md`](file:///Users/danwooster/1. DEV/auxo/docs/stripe.md) for the complete, step-by-step setup guides for:
+- [ ] Product & Price registration in the Stripe Dashboard.
+- [ ] Webhook Endpoint configuration.
+- [ ] Local simulation via Stripe CLI.
 
 ---
 
-## 3. Production Environment Variables (Deployment UI)
+## 3. Production Environment Variables (Vercel)
 
-Configure these keys inside your hosting provider (e.g. Vercel dashboard environment variables):
+Configure the following variables in your hosting provider (e.g. Vercel dashboard):
 
-| Environment Variable | Description / Source |
-| :--- | :--- |
-| `NEXT_PUBLIC_SUPABASE_URL` | Live Supabase project URL API endpoint. |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Public anonymous key for database client operations under RLS. |
-| `SUPABASE_SERVICE_ROLE_KEY` | Backend service role key (bypasses RLS in Stripe webhook handler). |
-| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Production Stripe publishable key (`pk_live_...`). |
-| `STRIPE_SECRET_KEY` | Production Stripe secret API key (`sk_live_...`). |
-| `STRIPE_WEBHOOK_SECRET` | Production Webhook signing secret (`whsec_...`) used to verify signatures. |
-| `OPENAI_API_KEY` | (Optional) Production fallback API key for cloud compilations. |
-| `ANTHROPIC_API_KEY` | (Optional) Production fallback API key for cloud compilations. |
+| Environment Variable | Scope | Description |
+| :--- | :--- | :--- |
+| `NEXT_PUBLIC_SUPABASE_URL` | Public / Shared | Supabase project API URL. |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Public / Shared | Anon client key (runs under RLS rules). |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Public / Shared | Stripe publishable key (`pk_live_...`). |
+| `STRIPE_SECRET_KEY` | Server-only | Stripe secret API key (`sk_live_...`). |
+| `STRIPE_WEBHOOK_SECRET` | Server-only | Webhook signing secret (`whsec_...`). |
+
+> [!WARNING]
+> **Security Guard (SUPABASE_SERVICE_ROLE_KEY):**
+> Do **NOT** add the `SUPABASE_SERVICE_ROLE_KEY` to Vercel environment variables. This key bypasses all Row-Level Security (RLS) rules and poses a major security hazard if leaked or accessed through serverless exploits.
+> 
+> **Secure Alternative:**
+> When integrating Stripe webhooks, do not route the database updates through `/api/webhooks/stripe` on Vercel. Instead, deploy the webhook handler as a **Supabase Edge Function** directly inside your Supabase project dashboard. Supabase Edge Functions can safely update the `profiles` table locally without exposing the admin key to your Vercel hosting environment.
 
 ---
 
-## 4. Pre-Flight Verification Scenarios
-- [ ] Test Magic Link login using a real email; assert redirect succeeds.
-- [ ] Initiate Checkout for both products; assert redirection is clean and secure.
-- [ ] Simulate Stripe webhook callbacks; verify profile credits increment correctly.
+## 4. Codebase Activation Checklist
+
+To un-grey the pricing options and connect them to checkout redirections:
+
+### A. Pricing Page UI Upgrades
+In [`src/app/pricing/page.tsx`](file:///Users/danwooster/1. DEV/auxo/src/app/pricing/page.tsx):
+- [ ] **Un-grey Containers:** Remove the classes `opacity-40` and `select-none` from the Tier 2 and Tier 3 cards (around lines 220 and 264).
+- [ ] **Update Top-Right Badges:**
+  - Change Tier 2 badge from `TIER 02 // COMING SOON` to `TIER 02 // PAYG` (styled with `text-cyan-500`).
+  - Change Tier 3 badge from `TIER 03 // COMING SOON` to `TIER 03 // PRO` (styled with `text-zinc-400`).
+- [ ] **Re-enable Action Buttons:**
+  - Replace the Tier 2 "COMING SOON" button with:
+    ```tsx
+    <button
+      onClick={() => handlePurchase('credits')}
+      disabled={purchasingTier !== null}
+      className="mt-6 w-full h-9 rounded bg-zinc-100 hover:bg-zinc-200 text-zinc-950 text-[10px] font-mono font-semibold tracking-wider transition-all cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50"
+    >
+      {purchasingTier === 'credits' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'BUY BUILDER PACK'}
+    </button>
+    ```
+  - Replace the Tier 3 "COMING SOON" button with:
+    ```tsx
+    <button
+      onClick={() => handlePurchase('lifetime')}
+      disabled={purchasingTier !== null}
+      className="mt-6 w-full h-9 rounded bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 text-[10px] font-mono font-semibold tracking-wider text-zinc-300 transition-all cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50"
+    >
+      {purchasingTier === 'lifetime' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'BUY DEVELOPER PACK'}
+    </button>
+    ```
+- [ ] **Restore Imports:** Import `Loader2` from `'lucide-react'` at the top of the file, and remove any `eslint-disable` comments above the state hooks.
