@@ -9,10 +9,15 @@ All notable changes to the **Auxo** project are documented here.
 - **Next.js 16 Dynamic Sitemap and Robots**: Added custom dynamic `sitemap.ts` and `robots.ts` configurations to improve indexing for search engines and AI web crawlers (GPTBot, Gemini, Perplexity).
 - **Social Preview & Metadata Optimization**: Injected rich Open Graph and Twitter Card tags to the main application layout (`layout.tsx`) for professional preview cards on platforms like X.com.
 - **Resizable Compiled Pack Preview Sidebar**: Integrated dynamic resizable split-pane layout to the compiled agent pack preview component, letting users drag-to-resize the file explorer sidebar on desktop viewports.
+- **Structured Data (Site Names)**: Embedded Schema.org WebSite JSON-LD metadata on the landing page to specify the preferred search engine site display name as "Auxo".
 
 ### Changed
 
 - **Next.js 16 Proxy Migration**: Replaced the deprecated `middleware.ts` naming and function convention with the recommended `proxy.ts` convention to address build deprecation warnings.
+
+### Fixed
+
+- **Favicon Resolution**: Restored standard browser `/favicon.ico` resolution to support search engine crawlers (Google-Favicon) and bookmark managers.
 
 ## [1.9.3] - 2026-06-22
 

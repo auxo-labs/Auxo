@@ -58,6 +58,18 @@ export default function Home() {
 
   return (
     <div className="relative flex flex-col min-h-screen bg-background overflow-hidden selection:bg-zinc-800 selection:text-zinc-100">
+      {/* Google Site Name Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "Auxo",
+            "url": "https://auxo.wo0.dev"
+          })
+        }}
+      />
       {/* 1. Fine-dot backdrop & gradient mask (Framer style) */}
       <div className="absolute inset-0 dot-bg dot-mask pointer-events-none" />
 
