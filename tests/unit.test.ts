@@ -3,6 +3,7 @@ import { cleanMdcRuleContent, parseMarkdownStream } from '../src/lib/prompt-comp
 import { resolveTechStack } from '../src/lib/tech-resolver';
 import { obfuscateKey, deobfuscateKey } from '../src/lib/encryption';
 import { getProjectTitleAndPreview } from '../src/app/room/[id]/page';
+import { generateChallenge, solveChallenge, verifyChallenge } from '../src/lib/pow';
 
 // Mock the global fetch object for registry.npmjs.org lookups in resolveTechStack tests
 global.fetch = vi.fn().mockImplementation(() =>
@@ -160,6 +161,62 @@ alwaysApply: false\r
       expect(title.endsWith('...')).toBe(true);
       expect(preview).toHaveLength(80);
       expect(preview.endsWith('...')).toBe(true);
+    });
+  });
+
+  describe('Cryptographic Proof-of-Work (PoW)', () => {
+    it('should generate a challenge with correct salt and difficulty', async () => {
+      const difficulty = 3;
+      const challenge = await generateChallenge(difficulty);
+      expect(challenge.salt).toBeDefined();
+      expect(challenge.difficulty).toBe(difficulty);
+      expect(challenge.signature).toBeDefined();
+      expect(challenge.timestamp).toBeLessThanOrEqual(Date.now());
+    });
+
+    it('should solve and verify a challenge successfully', async () => {
+      const difficulty = 3;
+      const challenge = await generateChallenge(difficulty);
+      const nonce = await solveChallenge(challenge.salt, difficulty);
+      expect(nonce).toBeDefined();
+      
+      const isValid = await verifyChallenge(
+        challenge.salt,
+        challenge.timestamp,
+        challenge.signature,
+        nonce,
+        difficulty
+      );
+      expect(isValid).toBe(true);
+    });
+
+    it('should reject invalid nonces', async () => {
+      const difficulty = 3;
+      const challenge = await generateChallenge(difficulty);
+      const isValid = await verifyChallenge(
+        challenge.salt,
+        challenge.timestamp,
+        challenge.signature,
+        'invalid-nonce',
+        difficulty
+      );
+      expect(isValid).toBe(false);
+    });
+
+    it('should reject expired challenge timestamps', async () => {
+      const difficulty = 3;
+      const challenge = await generateChallenge(difficulty);
+      const nonce = await solveChallenge(challenge.salt, difficulty);
+      const tenMinutesAgo = Date.now() - 10 * 60 * 1000;
+      
+      const isValid = await verifyChallenge(
+        challenge.salt,
+        tenMinutesAgo,
+        challenge.signature,
+        nonce,
+        difficulty
+      );
+      expect(isValid).toBe(false);
     });
   });
 

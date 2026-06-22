@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { ArrowLeft, CheckCircle2 } from 'lucide-react';
 
 export default function OptimalityPage() {
@@ -233,7 +234,14 @@ export default function OptimalityPage() {
       </main>
 
       {/* Footer */}
-      <footer className="relative z-10 py-8 text-center border-t border-white/[0.03] mt-auto px-4">
+      <footer className="relative z-10 py-8 text-center border-t border-white/[0.03] mt-auto flex flex-col gap-2.5 px-4">
+        <div className="flex items-center justify-center gap-4 sm:gap-6 font-mono text-[9px] sm:text-[10px] text-zinc-500 uppercase tracking-widest">
+          <Link href="/" className="hover:text-zinc-300 transition-colors">Home</Link>
+          <span className="w-1 h-1 bg-zinc-800 rounded-full" />
+          <Link href="/pricing" className="hover:text-zinc-300 transition-colors">Pricing</Link>
+          <span className="w-1 h-1 bg-zinc-800 rounded-full" />
+          <Link href="/privacy" className="hover:text-zinc-300 transition-colors">Privacy Specs</Link>
+        </div>
         <span className="font-mono text-[8px] sm:text-[9px] text-zinc-600 tracking-wider sm:tracking-widest uppercase">
           &copy; 2026 AUXO INTELLECTUAL PROPERTY LABS. ALL RIGHTS RELEASED.
         </span>

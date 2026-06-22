@@ -334,32 +334,79 @@ describe('Batch 2: Webhook and API Integration Tests', () => {
     });
 
     it('should rate limit requests exceeding 5 compiles per minute per IP (SEC-07)', async () => {
+      const { middleware } = await import('../src/middleware');
       const payload = {
         markdownText: '# Test Spec',
         roomId: 'room-uuid',
         compileType: 'basic'
       };
 
-      // Execute 5 standard compile requests (within limits)
+      // Execute 5 standard compile requests (within limits) through middleware
       for (let i = 0; i < 5; i++) {
         const req = new NextRequest('http://localhost/api/compile', {
           method: 'POST',
           body: JSON.stringify(payload)
         });
-        const res = await compilePOST(req);
-        expect(res.status).toBe(200);
+        const res = await middleware(req);
+        expect(res.status).not.toBe(429);
       }
 
-      // The 6th request from the same IP must be rate limited
+      // The 6th request from the same IP must be rate limited by the middleware
       const limitReq = new NextRequest('http://localhost/api/compile', {
         method: 'POST',
         body: JSON.stringify(payload)
       });
-      const limitRes = await compilePOST(limitReq);
+      const limitRes = await middleware(limitReq);
       const limitData = await limitRes.json();
 
       expect(limitRes.status).toBe(429);
-      expect(limitData.error).toContain('Too many compile requests');
+      expect(limitData.error).toContain('Too many requests');
+    });
+
+    it('should enforce PoW challenge verification when ENFORCE_POW is set to true', async () => {
+      process.env.ENFORCE_POW = 'true';
+      
+      const payloadWithoutPoW = {
+        markdownText: '# Test Spec',
+        roomId: 'room-uuid',
+        compileType: 'basic'
+      };
+
+      const request1 = new NextRequest('http://localhost/api/compile', {
+        method: 'POST',
+        body: JSON.stringify(payloadWithoutPoW)
+      });
+
+      const response1 = await compilePOST(request1);
+      const data1 = await response1.json();
+
+      expect(response1.status).toBe(400);
+      expect(data1.error).toContain('missing challenge solution');
+
+      // Now generate a valid solution for difficulty 4 (matching default compile verification)
+      const { generateChallenge, solveChallenge } = await import('../src/lib/pow');
+      const challenge = await generateChallenge(4);
+      const nonce = await solveChallenge(challenge.salt, 4);
+
+      const payloadWithPoW = {
+        markdownText: '# Test Spec',
+        roomId: 'room-uuid',
+        compileType: 'basic',
+        powChallenge: {
+          salt: challenge.salt,
+          timestamp: challenge.timestamp,
+          signature: challenge.signature,
+          nonce
+        }
+      };
+
+      const request2 = new NextRequest('http://localhost/api/compile', {
+        method: 'POST',
+        body: JSON.stringify(payloadWithPoW)
+      });
+
+      const response2 = await compilePOST(request2);
+      expect(response2.status).toBe(200);
     });
   });
 

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { compilePromptPack } from '@/lib/prompt-compiler';
 import { resolveTechStack } from '@/lib/tech-resolver';
 import { supabase, supabaseAdmin } from '@/lib/supabase';
-import { checkRateLimit } from '@/lib/rate-limiter';
+import { verifyChallenge } from '@/lib/pow';
 import Stripe from 'stripe';
 
 /**
@@ -11,18 +11,32 @@ import Stripe from 'stripe';
  */
 export async function POST(request: NextRequest) {
   try {
-    // SEC-07: IP-Based Rate Limiting
-    const ip = (request as NextRequest & { ip?: string }).ip || request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || '127.0.0.1';
-    const rateLimit = checkRateLimit(ip);
-    if (rateLimit.limited) {
-      return NextResponse.json(
-        { error: `Too many compile requests. Please wait ${rateLimit.resetSeconds} seconds before compiling again.` },
-        { status: 429 }
-      );
-    }
 
     const body = await request.json();
-    const { markdownText, roomId, sessionId, compileType, userConfig } = body;
+    const { markdownText, roomId, sessionId, compileType, userConfig, powChallenge } = body;
+
+    // Cryptographic Proof-of-Work (PoW) bot protection check
+    const enforcePoW = process.env.NODE_ENV === 'production' || process.env.ENFORCE_POW === 'true';
+    if (enforcePoW) {
+      if (!powChallenge || !powChallenge.salt || !powChallenge.timestamp || !powChallenge.signature || !powChallenge.nonce) {
+        return NextResponse.json(
+          { error: 'Bot protection check failed: missing challenge solution.' },
+          { status: 400 }
+        );
+      }
+      const isValid = await verifyChallenge(
+        powChallenge.salt,
+        Number(powChallenge.timestamp),
+        powChallenge.signature,
+        powChallenge.nonce
+      );
+      if (!isValid) {
+        return NextResponse.json(
+          { error: 'Bot protection check failed: invalid or expired challenge solution.' },
+          { status: 400 }
+        );
+      }
+    }
 
     if (!markdownText || typeof markdownText !== 'string') {
       return NextResponse.json(

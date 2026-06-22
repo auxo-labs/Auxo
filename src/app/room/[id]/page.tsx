@@ -138,11 +138,35 @@ function RoomContent({ roomId }: { roomId: string }) {
       const savedText = localStorage.getItem(`auxo-room-${roomId}`);
       const textToCompile = savedText || markdownText;
 
+      // Fetch and solve Proof-of-Work (PoW) challenge for bot protection
+      let powChallengeResult = null;
+      try {
+        const challengeRes = await fetch('/api/challenge');
+        if (challengeRes.ok) {
+          const challenge = await challengeRes.json();
+          const { solveChallenge } = await import('@/lib/pow');
+          const nonce = await solveChallenge(challenge.salt, challenge.difficulty);
+          powChallengeResult = {
+            salt: challenge.salt,
+            timestamp: challenge.timestamp,
+            signature: challenge.signature,
+            nonce
+          };
+        }
+      } catch (err) {
+        console.warn('Bot protection challenge failed. Attempting compile anyway.', err);
+      }
+
       if (type === 'basic') {
         const response = await fetch('/api/compile', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ markdownText: textToCompile, roomId, compileType: 'basic' }),
+          body: JSON.stringify({ 
+            markdownText: textToCompile, 
+            roomId, 
+            compileType: 'basic',
+            powChallenge: powChallengeResult
+          }),
         });
         if (!response.ok) {
           let errorMsg = `Compile route failed: ${response.statusText}`;
@@ -222,7 +246,8 @@ function RoomContent({ roomId }: { roomId: string }) {
           roomId, 
           sessionId: targetSessionId || undefined,
           compileType: 'premium',
-          userConfig
+          userConfig,
+          powChallenge: powChallengeResult
         }),
       });
 

@@ -238,13 +238,13 @@ Implement drag-to-resize divider boundaries between the Sidebar, Editor, and Pre
 
 Implement request rate limiting and protection against automated bot traffic for database queries, room creations, and API compilations.
 
-- [ ] **Step 32.1 (API Rate Limiting Middleware):** Implement strict rate-limiting middleware (e.g. Upstash Redis, or memory-based Token Bucket) on endpoints like `/api/compile` and `/api/checkout`.
-- [ ] **Step 32.2 (Anonymous Room Creation Limit):** Rate-limit anonymous room generation to prevent automated scripts from flooding the Supabase database with empty rooms.
-- [ ] **Step 32.3 (Bot/Spam Detection):** Add lightweight protection (like Cloudflare Turnstile or simple cryptographic proof-of-work challenges) for anonymous sandbox creations.
+- [x] **Step 32.1 (API Rate Limiting Middleware):** Implement strict rate-limiting middleware (e.g. Upstash Redis, or memory-based Token Bucket) on endpoints like `/api/compile` and `/api/checkout`.
+- [x] **Step 32.2 (Anonymous Room Creation Limit):** Rate-limit anonymous room generation to prevent automated scripts from flooding the Supabase database with empty rooms.
+- [x] **Step 32.3 (Bot/Spam Detection):** Add lightweight protection (like Cloudflare Turnstile or simple cryptographic proof-of-work challenges) for anonymous sandbox creations.
 
-- set up privacy page, relatively simple but include all the correct legal copy about data handling, user rights, AI usage, etc.
+- [x] **Step 32.4 (Privacy Page):** Set up privacy page, relatively simple but include all the correct legal copy about data handling, user rights, AI usage, etc.
 
-## Future Phases & Stretch Goals (DEFERRED - ABSOLUTE FEATURE FREEZE ENFORCED)
+## Future Phases & Stretch Goals (DEFERRED)
 
 - [ ] **Scratchpad & Real-Time Collaboration Upgrades:**
   - Upgrade the editor UI from a plain `<textarea>` to a more creative visual area - flashcards, notes etc.
