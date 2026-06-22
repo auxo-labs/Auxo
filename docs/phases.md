@@ -263,3 +263,10 @@ Implement request rate limiting and protection against automated bot traffic for
 - [ ] **Step F2.1:** Implement uncapped hosted compilation endpoints for enterprise accounts.
 - [ ] **Step F2.2:** Build team shared room workspace folders and persistent history explorers.
 - [ ] **Step F2.3:** Integrate team unified billing management console and monthly Stripe subscriptions.
+
+## Phase F3: CI/CD Pipeline & Pull Request Status Checks
+
+- [ ] **Step F3.1:** Create a GitHub Actions workflow configuration (`.github/workflows/ci.yml`) triggering on pull requests targeting the `main` branch.
+- [ ] **Step F3.2:** Enforce dependency installation, lint checks (`npm run lint`), and production build checks (`npm run build`) inside the workflow.
+- [ ] **Step F3.3:** Enable the "Require status checks to pass" branch protection setting on GitHub, mapping it to the newly created CI workflow check.
+
