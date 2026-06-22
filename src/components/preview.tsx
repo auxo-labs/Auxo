@@ -24,17 +24,6 @@ export function Preview({ compiledFiles, activeFile, onActiveFileChange, isExpan
   const [copiedText, setCopiedText] = React.useState(false);
 
   const containerRef = React.useRef<HTMLDivElement>(null);
-  const [isMobile, setIsMobile] = React.useState(true);
-
-  // Monitor window width to bypass resizing on narrow viewports
-  React.useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   const {
     size: previewSidebarWidth,
@@ -139,11 +128,13 @@ export function Preview({ compiledFiles, activeFile, onActiveFileChange, isExpan
           </p>
         </div>
       ) : (
-        <div className="flex flex-col md:flex-row flex-1 overflow-hidden h-full">
+        <div 
+          style={{ '--preview-sidebar-width': `${previewSidebarWidth}px` } as React.CSSProperties}
+          className="flex flex-col md:flex-row flex-1 overflow-hidden h-full"
+        >
           {/* Files Explorer Tree Column */}
           <div 
-            style={{ width: isMobile ? '100%' : `${previewSidebarWidth}px` }}
-            className="w-full md:shrink-0 border-b md:border-b-0 md:border-r border-white/[0.03] bg-zinc-950/20 overflow-y-auto p-5 font-mono text-[11px] text-zinc-400 select-none"
+            className="w-full md:w-[var(--preview-sidebar-width)] md:shrink-0 border-b md:border-b-0 md:border-r border-white/[0.03] bg-zinc-950/20 overflow-y-auto p-5 font-mono text-[11px] text-zinc-400 select-none"
           >
             <h4 className="mb-4 text-[9px] tracking-widest text-zinc-600 uppercase font-bold">Workspace Structure</h4>
             
@@ -235,24 +226,23 @@ export function Preview({ compiledFiles, activeFile, onActiveFileChange, isExpan
             </div>
           </div>
 
-          {!isMobile && (
-            <SplitterHandle
-              onMouseDown={(e) => startPreviewSidebarResize(e, (clientX) => {
-                const container = containerRef.current;
-                if (!container) return 240;
-                const rect = container.getBoundingClientRect();
-                return clientX - rect.left;
-              })}
-              onTouchStart={(e) => startPreviewSidebarResize(e, (clientX) => {
-                const container = containerRef.current;
-                if (!container) return 240;
-                const rect = container.getBoundingClientRect();
-                return clientX - rect.left;
-              })}
-              onDoubleClick={resetPreviewSidebar}
-              isResizing={isPreviewSidebarResizing}
-            />
-          )}
+          <SplitterHandle
+            onMouseDown={(e) => startPreviewSidebarResize(e, (clientX) => {
+              const container = containerRef.current;
+              if (!container) return 240;
+              const rect = container.getBoundingClientRect();
+              return clientX - rect.left;
+            })}
+            onTouchStart={(e) => startPreviewSidebarResize(e, (clientX) => {
+              const container = containerRef.current;
+              if (!container) return 240;
+              const rect = container.getBoundingClientRect();
+              return clientX - rect.left;
+            })}
+            onDoubleClick={resetPreviewSidebar}
+            isResizing={isPreviewSidebarResizing}
+            className="hidden md:block"
+          />
 
           {/* Code View Pane */}
           <div className="flex-1 flex flex-col overflow-hidden bg-zinc-950/40 h-full relative group">
