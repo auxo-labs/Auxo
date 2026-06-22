@@ -249,6 +249,14 @@ Implement request rate limiting and protection against automated bot traffic for
 - [x] **Step 33.4:** Perform a production build and verify sitemap/robots paths compile successfully.
 - [x] **Step 33.5:** Implement resizable split-pane layout inside the `<Preview>` compiled agent pack component to support drag-to-resize Workspace File Explorer trees on desktop viewports.
 
+## Phase 34: Project-Specific AI Persona & Root `.cursorrules` (Active Phase)
+
+- [ ] **Step 34.1:** Add `.cursorrules` support across `types.ts`, `parser.ts`, `zip-exporter.ts`, and the explorer tree `preview.tsx` component.
+- [ ] **Step 34.2:** Update the LLM generator prompt inside `system-prompt.ts` to instruct the AI to dynamically generate a custom, highly specific AI Persona and Operational Instructions prompt tailored to the user's plan inside `AGENTS.md` and `.cursorrules`.
+- [ ] **Step 34.3:** Update categories in `mock-compiler.ts` to inject category-specific, base AI personas for Basic Compiles.
+- [ ] **Step 34.4:** Run a local compilation and verify the output structure.
+- [ ] **Step 34.5:** Verify building and linting passes successfully.
+
 # potential future phases
 
 ## Phase F1: Student & Academic Compilation Support
@@ -269,4 +277,13 @@ Implement request rate limiting and protection against automated bot traffic for
 - [ ] **Step F3.1:** Create a GitHub Actions workflow configuration (`.github/workflows/ci.yml`) triggering on pull requests targeting the `main` branch.
 - [ ] **Step F3.2:** Enforce dependency installation, lint checks (`npm run lint`), and production build checks (`npm run build`) inside the workflow.
 - [ ] **Step F3.3:** Enable the "Require status checks to pass" branch protection setting on GitHub, mapping it to the newly created CI workflow check.
+
+## Phase F4: Multi-Agent Harness Compilation Support
+
+- [ ] **Step F4.1:** Update prompt compiler system instruction prompts (`src/lib/prompt-compiler/system-prompt.ts`) to support a `"harness"` mode that generates orchestration specifications (`HARNESS.md`, `TASK_HANDOFF.md`, and scoped `agents/` constitutions).
+- [ ] **Step F4.2:** Restructure client-side ZIP compilation logic (`src/lib/zip-exporter.ts`) to handle folder nesting structures for sub-agent files and role-restricted rules.
+- [ ] **Step F4.3:** Integrate the Harness compile settings toggle under the Settings Modal (`src/components/settings-modal.tsx`) and add a dropdown option to select between Standard Single-Agent compile and Coordinated Harness compile.
+- [ ] **Step F4.4:** Update Workspace Preview Tree rendering to dynamically show nested directories for `agents/` folder and allow previewing sub-agent constitutions.
+- [ ] **Step F4.5:** Write testing scenarios verifying correct file distribution under harness compile mode and execute test runners.
+
 

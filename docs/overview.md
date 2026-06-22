@@ -10,6 +10,7 @@ auxo/
 │   ├── CHANGELOG.md            <-- Release history & feature tracking
 │   ├── compiler_specs.md       <-- Compiler architecture flows & tradeoffs
 │   ├── finalphases.md          <-- Future scaling roadmap (Stripe webhooks, auth)
+│   ├── harness.md              <-- Harness Engineering & Multi-Agent compiler specifications
 │   ├── overview.md             <-- [CURRENT FILE] System architecture overview
 │   ├── phases.md               <-- Phase progression checklist
 │   ├── prompt.md               <-- Root prompt instructions for AI session context
