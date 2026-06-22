@@ -20,9 +20,11 @@ interface ProjectSidebarProps {
   isOpen: boolean;
   onToggle: () => void;
   onSignInClick?: () => void;
+  width?: number;
+  isResizing?: boolean;
 }
 
-export function ProjectSidebar({ activeRoomId, user, isOpen, onToggle, onSignInClick }: ProjectSidebarProps) {
+export function ProjectSidebar({ activeRoomId, user, isOpen, onToggle, onSignInClick, width = 256, isResizing = false }: ProjectSidebarProps) {
   const router = useRouter();
   const [projects, setProjects] = React.useState<Project[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
@@ -137,9 +139,10 @@ export function ProjectSidebar({ activeRoomId, user, isOpen, onToggle, onSignInC
 
   return (
     <aside 
-      className={`relative flex flex-col h-full bg-zinc-950 border-r border-white/[0.03] transition-all duration-300 ease-in-out select-none shrink-0 overflow-hidden ${
-        isOpen ? 'w-64' : 'w-0 border-r-0'
-      }`}
+      style={{ width: isOpen ? `${width}px` : '0px' }}
+      className={`relative flex flex-col h-full bg-zinc-950 border-white/[0.03] select-none shrink-0 overflow-hidden ${
+        isOpen ? 'border-r' : 'border-r-0'
+      } ${isResizing ? '' : 'transition-[width] duration-300 ease-in-out'}`}
     >
       {/* Header action panel */}
       <div className="p-4 flex items-center justify-between border-b border-white/[0.03] h-14 shrink-0">

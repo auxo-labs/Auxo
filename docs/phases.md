@@ -230,9 +230,9 @@ Introduce alternative sign-in options to bypass Supabase's default rate limits o
 
 Implement drag-to-resize divider boundaries between the Sidebar, Editor, and Preview panels to emulate a premium desktop IDE workspace.
 
-- [ ] **Step 31.1 (Resize Hook):** Create a custom `useResizable` hooks system to track mouse drag/touch coordinates and compute dynamic, percentage-based section widths.
-- [ ] **Step 31.2 (Interactive Splitter Handle):** Build a draggable splitter boundary handle component with styling transitions (ambient hover highlights) and maximum/minimum panel constraint boundaries.
-- [ ] **Step 31.3 (Sandbox UI Integration):** Bind the resize handles between the Sidebar, Editor, and Preview panes, supporting layout state preservation in `localStorage` and double-click triggers to reset layouts to defaults.
+- [x] **Step 31.1 (Resize Hook):** Create a custom `useResizable` hooks system to track mouse drag/touch coordinates and compute dynamic, percentage-based section widths.
+- [x] **Step 31.2 (Interactive Splitter Handle):** Build a draggable splitter boundary handle component with styling transitions (ambient hover highlights) and maximum/minimum panel constraint boundaries.
+- [x] **Step 31.3 (Sandbox UI Integration):** Bind the resize handles between the Sidebar, Editor, and Preview panes, supporting layout state preservation in `localStorage` and double-click triggers to reset layouts to defaults.
 
 ## Phase 32: Rate Limiting & Bot Protection (Security Hardening)
 

@@ -14,6 +14,8 @@ import { supabase } from '@/lib/supabase';
 import { AuthModal } from '@/components/auth-modal';
 import { SettingsModal } from '@/components/settings-modal';
 import { ProjectSidebar } from '@/components/project-sidebar';
+import { useResizable } from './hooks/useResizable';
+import { SplitterHandle } from '@/components/splitter-handle';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -53,6 +55,30 @@ function RoomContent({ roomId }: { roomId: string }) {
   const [showCompileDropdown, setShowCompileDropdown] = React.useState(false);
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
+
+  const {
+    size: sidebarWidth,
+    isResizing: isSidebarResizing,
+    startResizing: startSidebarResize,
+    reset: resetSidebar
+  } = useResizable({
+    initialSize: 256,
+    minSize: 192,
+    maxSize: 384,
+    localStorageKey: 'auxo-resizable-sidebar-width'
+  });
+
+  const {
+    size: editorSplit,
+    isResizing: isSplitResizing,
+    startResizing: startSplitResize,
+    reset: resetSplit
+  } = useResizable({
+    initialSize: 50,
+    minSize: 25,
+    maxSize: 75,
+    localStorageKey: 'auxo-resizable-editor-split'
+  });
 
   // Set initial sidebar open state on client mount to prevent SSR hydration mismatch
   React.useEffect(() => {
@@ -608,34 +634,72 @@ function RoomContent({ roomId }: { roomId: string }) {
           isOpen={sidebarOpen}
           onToggle={() => setSidebarOpen(false)}
           onSignInClick={() => setIsAuthModalOpen(true)}
+          width={sidebarWidth}
+          isResizing={isSidebarResizing}
         />
 
-        <div className={`grid flex-1 overflow-hidden h-full ${
-          expandedPanel === 'none' ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1'
-        }`}>
+        {sidebarOpen && (
+          <SplitterHandle
+            onMouseDown={(e) => startSidebarResize(e, (clientX) => clientX)}
+            onTouchStart={(e) => startSidebarResize(e, (clientX) => clientX)}
+            onDoubleClick={resetSidebar}
+            isResizing={isSidebarResizing}
+          />
+        )}
+
+        <div className="flex-1 flex flex-row overflow-hidden h-full">
 
           {expandedPanel !== 'preview' && (
-            <Editor
-              value={markdownText}
-              onChange={(newVal) => {
-                setMarkdownText(newVal);
-                broadcastTextChange(newVal);
-              }}
-              isExpanded={expandedPanel === 'editor'}
-              onToggleExpand={() => setExpandedPanel(prev => prev === 'editor' ? 'none' : 'editor')}
-              maxLength={profile?.is_lifetime || (userConfig && userConfig.provider !== 'premium' && userConfig.apiKey && userConfig.apiKey.trim() !== '') ? 30000 : 15000}
+            <div 
+              style={{ width: expandedPanel === 'editor' ? '100%' : `${editorSplit}%` }} 
+              className="h-full flex flex-col overflow-hidden shrink-0"
+            >
+              <Editor
+                value={markdownText}
+                onChange={(newVal) => {
+                  setMarkdownText(newVal);
+                  broadcastTextChange(newVal);
+                }}
+                isExpanded={expandedPanel === 'editor'}
+                onToggleExpand={() => setExpandedPanel(prev => prev === 'editor' ? 'none' : 'editor')}
+                maxLength={profile?.is_lifetime || (userConfig && userConfig.provider !== 'premium' && userConfig.apiKey && userConfig.apiKey.trim() !== '') ? 30000 : 15000}
+              />
+            </div>
+          )}
+
+          {expandedPanel === 'none' && (
+            <SplitterHandle
+              onMouseDown={(e) => startSplitResize(e, (clientX) => {
+                const sidebarOffset = sidebarOpen ? sidebarWidth : 0;
+                const mainWidth = window.innerWidth - sidebarOffset;
+                const relativeX = clientX - sidebarOffset;
+                return (relativeX / mainWidth) * 100;
+              })}
+              onTouchStart={(e) => startSplitResize(e, (clientX) => {
+                const sidebarOffset = sidebarOpen ? sidebarWidth : 0;
+                const mainWidth = window.innerWidth - sidebarOffset;
+                const relativeX = clientX - sidebarOffset;
+                return (relativeX / mainWidth) * 100;
+              })}
+              onDoubleClick={resetSplit}
+              isResizing={isSplitResizing}
             />
           )}
 
           {expandedPanel !== 'editor' && (
-            <Preview
-              compiledFiles={compiledFiles}
-              activeFile={activeFile}
-              onActiveFileChange={setActiveFile}
-              isExpanded={expandedPanel === 'preview'}
-              onToggleExpand={() => setExpandedPanel(prev => prev === 'preview' ? 'none' : 'preview')}
-              isCompiling={isCompiling}
-            />
+            <div 
+              style={{ width: expandedPanel === 'preview' ? '100%' : `${100 - editorSplit}%` }} 
+              className="h-full flex flex-col overflow-hidden shrink-0"
+            >
+              <Preview
+                compiledFiles={compiledFiles}
+                activeFile={activeFile}
+                onActiveFileChange={setActiveFile}
+                isExpanded={expandedPanel === 'preview'}
+                onToggleExpand={() => setExpandedPanel(prev => prev === 'preview' ? 'none' : 'preview')}
+                isCompiling={isCompiling}
+              />
+            </div>
           )}
 
         </div>
