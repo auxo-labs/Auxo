@@ -334,29 +334,29 @@ describe('Batch 2: Webhook and API Integration Tests', () => {
     });
 
     it('should rate limit requests exceeding 5 compiles per minute per IP (SEC-07)', async () => {
-      const { middleware } = await import('../src/middleware');
+      const { proxy } = await import('../src/proxy');
       const payload = {
         markdownText: '# Test Spec',
         roomId: 'room-uuid',
         compileType: 'basic'
       };
 
-      // Execute 5 standard compile requests (within limits) through middleware
+      // Execute 5 standard compile requests (within limits) through proxy
       for (let i = 0; i < 5; i++) {
         const req = new NextRequest('http://localhost/api/compile', {
           method: 'POST',
           body: JSON.stringify(payload)
         });
-        const res = await middleware(req);
+        const res = await proxy(req);
         expect(res.status).not.toBe(429);
       }
 
-      // The 6th request from the same IP must be rate limited by the middleware
+      // The 6th request from the same IP must be rate limited by the proxy
       const limitReq = new NextRequest('http://localhost/api/compile', {
         method: 'POST',
         body: JSON.stringify(payload)
       });
-      const limitRes = await middleware(limitReq);
+      const limitRes = await proxy(limitReq);
       const limitData = await limitRes.json();
 
       expect(limitRes.status).toBe(429);
