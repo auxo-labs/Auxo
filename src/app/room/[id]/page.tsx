@@ -57,7 +57,9 @@ function RoomContent({ roomId }: { roomId: string }) {
   // Set initial sidebar open state on client mount to prevent SSR hydration mismatch
   React.useEffect(() => {
     if (window.innerWidth >= 1024) {
-      setSidebarOpen(true);
+      queueMicrotask(() => {
+        setSidebarOpen(true);
+      });
     }
   }, []);
 

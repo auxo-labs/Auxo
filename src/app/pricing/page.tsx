@@ -3,7 +3,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Check, Sparkles, Key, Loader2, ArrowRight } from 'lucide-react';
+import { ArrowLeft, Check, Sparkles, Key, ArrowRight } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { AuthModal } from '@/components/auth-modal';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
@@ -15,6 +15,7 @@ export default function PricingPage() {
   const [user, setUser] = React.useState<SupabaseUser | null>(null);
   const [profile, setProfile] = React.useState<{ credits: number; is_lifetime: boolean } | null>(null);
   const [isAuthOpen, setIsAuthOpen] = React.useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [purchasingTier, setPurchasingTier] = React.useState<'credits' | 'lifetime' | null>(null);
   const [errorMsg, setErrorMsg] = React.useState<string | null>(null);
 
@@ -61,6 +62,7 @@ export default function PricingPage() {
     router.push(`/room/${roomId}`);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handlePurchase = async (tier: 'credits' | 'lifetime') => {
     if (!user) {
       setIsAuthOpen(true);
