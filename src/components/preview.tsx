@@ -134,7 +134,7 @@ export function Preview({ compiledFiles, activeFile, onActiveFileChange, isExpan
         >
           {/* Files Explorer Tree Column */}
           <div 
-            className="w-full md:w-[var(--preview-sidebar-width)] md:shrink-0 border-b md:border-b-0 md:border-r border-white/[0.03] bg-zinc-950/20 overflow-y-auto p-5 font-mono text-[11px] text-zinc-400 select-none"
+            className="preview-sidebar-width md:shrink-0 border-b md:border-b-0 md:border-r border-white/[0.03] bg-zinc-950/20 overflow-y-auto p-5 font-mono text-[11px] text-zinc-400 select-none"
           >
             <h4 className="mb-4 text-[9px] tracking-widest text-zinc-600 uppercase font-bold">Workspace Structure</h4>
             
