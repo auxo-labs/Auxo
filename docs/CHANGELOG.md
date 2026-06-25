@@ -240,6 +240,7 @@ All notable changes to the **Auxo** project are documented here.
 
 ### Added
 
+- **Frequently Asked Questions (FAQ Page):** Built `/faq` page containing key definition matrices and answers explaining prompt sharding, agent rules, and BYOK security profiles.
 - **Landing Page UI:** Sleek, grid-based dark mode layout featuring high-contrast editorial serif typography (`Playfair_Display`) and aesthetic Bento grids.
 - **Routing & Sessions:** Zero-auth ephemeral workspace generation using browser-level UUIDs (`/room/[uuid]`).
 - **Real-time Synchronization:** Multi-builder text broadcast and user presence trackers powered by Supabase Realtime (transient channels ensuring zero database logs).
