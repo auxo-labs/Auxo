@@ -275,6 +275,16 @@ Implement request rate limiting and protection against automated bot traffic for
 - [x] **Step 36.5:** Clean up Vitest integration tests in `tests/integration.test.ts` to remove basic compile cases.
 - [x] **Step 36.6:** Verify the workspace and routes build successfully via linter and test suite executions.
 
+## Phase 37: Introductory Trial Credits & Frictionless Conversion
+
+Implement a low-friction trial tier that allocates 3 free cloud compilation credits to every newly registered user profile, giving them a risk-free trial of the deep AI compiler before requiring payment or key configuration.
+
+- [ ] **Step 37.1 (Database Trigger/Migration):** Update the SQL schema migration/user creation triggers in Supabase to initialize all newly created profiles with `3` compilation credits by default instead of `0`.
+- [ ] **Step 37.2 (Workspace Credit Indicator):** Display the remaining trial credit count dynamically in the Room workspace toolbar and Compile modal to notify users of their balance.
+- [ ] **Step 37.3 (API Compile Handler Gating):** Ensure `/api/compile` permits execution if the authenticated user has credits > 0, decrementing their database credit count by 1 upon successful completion.
+- [ ] **Step 37.4 (Frictionless Signup CTA):** Optimize the authentication dialog and pricing landing page to highlight "Start Free: 3 Complimentary AI Compiles on Us" to capture developer interest.
+- [ ] **Step 37.5 (Verification):** Test the full conversion flow: register a new account, verify 3 initial credits, run compilations, ensure decrement, and confirm Stripe billing triggers once credits hit zero.
+
 # potential future phases
 
 ## Phase F1: Student & Academic Compilation Support
@@ -284,22 +294,9 @@ Implement request rate limiting and protection against automated bot traffic for
 - [ ] **Step F1.3:** Write unit tests in `tests/unit.test.ts` to validate student compilation outcomes.
 - [ ] **Step F1.4:** Verify full test execution and build checks.
 
-## Phase F2: Enterprise / Team Pack
+### Phase big scalability
 
-- [ ] **Step F2.1:** Implement uncapped hosted compilation endpoints for enterprise accounts.
-- [ ] **Step F2.2:** Build team shared room workspace folders and persistent history explorers.
-- [ ] **Step F2.3:** Integrate team unified billing management console and monthly Stripe subscriptions.
-
-## Phase F3: CI/CD Pipeline & Pull Request Status Checks
-
-- [ ] **Step F3.1:** Create a GitHub Actions workflow configuration (`.github/workflows/ci.yml`) triggering on pull requests targeting the `main` branch.
-- [ ] **Step F3.2:** Enforce dependency installation, lint checks (`npm run lint`), and production build checks (`npm run build`) inside the workflow.
-- [ ] **Step F3.3:** Enable the "Require status checks to pass" branch protection setting on GitHub, mapping it to the newly created CI workflow check.
-
-## Phase F4: Multi-Agent Harness Compilation Support
-
-- [ ] **Step F4.1:** Update prompt compiler system instruction prompts (`src/lib/prompt-compiler/system-prompt.ts`) to support a `"harness"` mode that generates orchestration specifications (`HARNESS.md`, `TASK_HANDOFF.md`, and scoped `agents/` constitutions).
-- [ ] **Step F4.2:** Restructure client-side ZIP compilation logic (`src/lib/zip-exporter.ts`) to handle folder nesting structures for sub-agent files and role-restricted rules.
-- [ ] **Step F4.3:** Integrate the Harness compile settings toggle under the Settings Modal (`src/components/settings-modal.tsx`) and add a dropdown option to select between Standard Single-Agent compile and Coordinated Harness compile.
-- [ ] **Step F4.4:** Update Workspace Preview Tree rendering to dynamically show nested directories for `agents/` folder and allow previewing sub-agent constitutions.
-- [ ] **Step F4.5:** Write testing scenarios verifying correct file distribution under harness compile mode and execute test runners.
+- [ ] **Step F5.1:** Construct an orchestration middleware wrapper to seamlessly route compiled developer queries through enterprise token optimization systems or internal network proxies like LiteLLM.
+- [ ] **Step F5.2:** Scale client-side XOR mask obfuscation architectures to encrypt corporate configurations during transit across Edge-hosted HTTPS transient headers.
+- [ ] **Step F5.3:** Build a real-time analytics dashboard under `/optimality` to trace exactly how much team budget is saved by path-restricted context gating.
+- [ ] **Step F5.4:** Map attention decay metrics and context window retention graphs directly within team workspaces to continuously fine-tune prompt compiler thresholds.
