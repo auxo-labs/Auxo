@@ -249,13 +249,22 @@ Implement request rate limiting and protection against automated bot traffic for
 - [x] **Step 33.4:** Perform a production build and verify sitemap/robots paths compile successfully.
 - [x] **Step 33.5:** Implement resizable split-pane layout inside the `<Preview>` compiled agent pack component to support drag-to-resize Workspace File Explorer trees on desktop viewports.
 
-## Phase 34: Project-Specific AI Persona & Root `.cursorrules` (Active Phase)
+## Phase 34: Project-Specific AI Persona & Root `.cursorrules`
 
 - [ ] **Step 34.1:** Add `.cursorrules` support across `types.ts`, `parser.ts`, `zip-exporter.ts`, and the explorer tree `preview.tsx` component.
 - [ ] **Step 34.2:** Update the LLM generator prompt inside `system-prompt.ts` to instruct the AI to dynamically generate a custom, highly specific AI Persona and Operational Instructions prompt tailored to the user's plan inside `AGENTS.md` and `.cursorrules`.
 - [ ] **Step 34.3:** Update categories in `mock-compiler.ts` to inject category-specific, base AI personas for Basic Compiles.
 - [ ] **Step 34.4:** Run a local compilation and verify the output structure.
 - [ ] **Step 34.5:** Verify building and linting passes successfully.
+
+## Phase 35: Next-Level SEO & GEO Structured Data (Active Phase)
+
+- [x] **Step 35.1:** Refactor `/pricing` to isolate client logic into `pricing-client.tsx` and export custom Server Component metadata from `page.tsx`.
+- [x] **Step 35.2:** Refactor `/optimality` to isolate client logic into `optimality-client.tsx` and export custom Server Component metadata from `page.tsx`.
+- [x] **Step 35.3:** Refactor `/faq` to isolate client logic into `faq-client.tsx` and export custom Server Component metadata from `page.tsx`.
+- [x] **Step 35.4:** Inject Schema.org JSON-LD FAQPage structured data into `/faq` to maximize indexing for AI search engines (GEO).
+- [x] **Step 35.5:** Inject SoftwareApplication JSON-LD structured data into the landing page (`src/app/page.tsx`) to declare it as a developer utility tool.
+- [x] **Step 35.6:** Run production build validation to verify route metadata compiles successfully.
 
 # potential future phases
 
