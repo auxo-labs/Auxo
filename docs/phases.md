@@ -265,6 +265,7 @@ Implement request rate limiting and protection against automated bot traffic for
 - [x] **Step 35.4:** Inject Schema.org JSON-LD FAQPage structured data into `/faq` to maximize indexing for AI search engines (GEO).
 - [x] **Step 35.5:** Inject SoftwareApplication JSON-LD structured data into the landing page (`src/app/page.tsx`) to declare it as a developer utility tool.
 - [x] **Step 35.6:** Run production build validation to verify route metadata compiles successfully.
+
 ## Phase 36: Unified AI Compilation & Gating (Active Phase)
 
 - [ ] **Step 36.1:** Remove the `basic` compile type from `src/app/api/compile/route.ts` and refactor the main compiler entry `src/lib/prompt-compiler/index.ts` to deprecate `localMockCompile`.
@@ -302,5 +303,3 @@ Implement request rate limiting and protection against automated bot traffic for
 - [ ] **Step F4.3:** Integrate the Harness compile settings toggle under the Settings Modal (`src/components/settings-modal.tsx`) and add a dropdown option to select between Standard Single-Agent compile and Coordinated Harness compile.
 - [ ] **Step F4.4:** Update Workspace Preview Tree rendering to dynamically show nested directories for `agents/` folder and allow previewing sub-agent constitutions.
 - [ ] **Step F4.5:** Write testing scenarios verifying correct file distribution under harness compile mode and execute test runners.
-
-
