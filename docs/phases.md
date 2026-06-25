@@ -265,6 +265,14 @@ Implement request rate limiting and protection against automated bot traffic for
 - [x] **Step 35.4:** Inject Schema.org JSON-LD FAQPage structured data into `/faq` to maximize indexing for AI search engines (GEO).
 - [x] **Step 35.5:** Inject SoftwareApplication JSON-LD structured data into the landing page (`src/app/page.tsx`) to declare it as a developer utility tool.
 - [x] **Step 35.6:** Run production build validation to verify route metadata compiles successfully.
+## Phase 36: Unified AI Compilation & Gating (Active Phase)
+
+- [ ] **Step 36.1:** Remove the `basic` compile type from `src/app/api/compile/route.ts` and refactor the main compiler entry `src/lib/prompt-compiler/index.ts` to deprecate `localMockCompile`.
+- [ ] **Step 36.2:** Simplify the Room page top toolbar to display a single "COMPILE WITH AI" action button instead of the split compile mode dropdown.
+- [ ] **Step 36.3:** Implement a custom `compile-setup-modal.tsx` component that allows users to configure a free BYOK key or redirect to Stripe credits checkout when they request compilations without configurations.
+- [ ] **Step 36.4:** Update held hosted LLM brand mentions across `settings-modal.tsx`, `pricing-client.tsx`, and `faq-client.tsx` to Claude Sonnet 4.6.
+- [ ] **Step 36.5:** Clean up Vitest integration tests in `tests/integration.test.ts` to remove basic compile cases.
+- [ ] **Step 36.6:** Verify the workspace and routes build successfully via linter and test suite executions.
 
 # potential future phases
 

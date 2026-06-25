@@ -45,18 +45,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 1. Basic Compile Flow (Free, Instant, Local offline fallback)
-    if (compileType === 'basic') {
-      if (markdownText.length > 15000) {
-        return NextResponse.json(
-          { error: 'Scratchpad content exceeds the 15,000 character limit for standard compiles.' },
-          { status: 400 }
-        );
-      }
-      const techSignatures = await resolveTechStack(markdownText);
-      const compiledPack = await compilePromptPack(markdownText, techSignatures, true);
-      return NextResponse.json(compiledPack);
-    }
 
     // 2. Premium Compile Flow (Auth & Payment Gated unless custom API key is present)
     const hasUserKey = userConfig && userConfig.provider !== 'premium' && userConfig.apiKey && userConfig.apiKey.trim() !== '';
