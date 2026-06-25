@@ -34,20 +34,20 @@ Requirements:
 - SOC2 compliant invoicing.
 `;
 
-async function compileAndWriteBasic(scenarioName: string, notes: string, folderName: string) {
-  console.log(`\n--- Compiling basic pack for: ${scenarioName} ---`);
+async function compileAndWrite(scenarioName: string, notes: string, folderName: string, userConfig: Parameters<typeof compilePromptPack>[2]) {
+  console.log(`\n--- Compiling pack for: ${scenarioName} ---`);
   const signatures = await resolveTechStack(notes);
-  const basicPack = await compilePromptPack(notes, signatures, true);
+  const pack = await compilePromptPack(notes, signatures, userConfig);
 
   const outDir = path.join(__dirname, folderName);
   if (!fs.existsSync(outDir)) {
     fs.mkdirSync(outDir, { recursive: true });
   }
 
-  fs.writeFileSync(path.join(outDir, 'README.md'), basicPack.readmeMd);
-  fs.writeFileSync(path.join(outDir, 'AGENTS.md'), basicPack.agentsMd);
-  fs.writeFileSync(path.join(outDir, 'CLAUDE.md'), basicPack.claudeMd);
-  fs.writeFileSync(path.join(outDir, 'phases.md'), basicPack.phasesMd);
+  fs.writeFileSync(path.join(outDir, 'README.md'), pack.readmeMd);
+  fs.writeFileSync(path.join(outDir, 'AGENTS.md'), pack.agentsMd);
+  fs.writeFileSync(path.join(outDir, 'CLAUDE.md'), pack.claudeMd);
+  fs.writeFileSync(path.join(outDir, 'phases.md'), pack.phasesMd);
 
   const rulesDir = path.join(outDir, '.cursor', 'rules');
   if (!fs.existsSync(rulesDir)) {
@@ -55,14 +55,12 @@ async function compileAndWriteBasic(scenarioName: string, notes: string, folderN
   }
 
   // Clear old rules
-  if (fs.existsSync(rulesDir)) {
-    const files = fs.readdirSync(rulesDir);
-    for (const file of files) {
-      fs.unlinkSync(path.join(rulesDir, file));
-    }
+  const existingFiles = fs.readdirSync(rulesDir);
+  for (const file of existingFiles) {
+    fs.unlinkSync(path.join(rulesDir, file));
   }
 
-  for (const [name, content] of Object.entries(basicPack.cursorRules)) {
+  for (const [name, content] of Object.entries(pack.cursorRules)) {
     fs.writeFileSync(path.join(rulesDir, name), content);
     console.log(`  Rule created: ${name} (${content.length} bytes)`);
   }
@@ -71,11 +69,6 @@ async function compileAndWriteBasic(scenarioName: string, notes: string, folderN
 
 async function run() {
   console.log("Running compliance and crossover compilation tests...");
-
-  // Run the three basic crossover compiles
-  await compileAndWriteBasic("B2B + HealthTech (CareWorkspace)", b2bHealthTechNotes, "crossover-b2b-healthtech-pack");
-  await compileAndWriteBasic("HealthTech + FinTech (ClaimFlow)", healthTechFinTechNotes, "crossover-healthtech-fintech-pack");
-  await compileAndWriteBasic("B2B + FinTech (BizLedger)", b2bFinTechNotes, "crossover-b2b-fintech-pack");
 
   // Load env variables if present
   if (!process.env.GEMINI_API_KEY && !process.env.OPENAI_API_KEY && fs.existsSync(path.join(__dirname, '../.env.local'))) {
@@ -91,46 +84,52 @@ async function run() {
   const geminiKey = process.env.GEMINI_API_KEY;
   const openAIKey = process.env.OPENAI_API_KEY;
 
-  if (geminiKey || openAIKey) {
-    const key = geminiKey || openAIKey;
-    const provider = geminiKey ? 'gemini' as const : 'openai' as const;
-    const model = geminiKey ? 'gemini-2.5-flash' : 'gpt-4o-mini';
+  if (!geminiKey && !openAIKey) {
+    console.log("\nNo API keys found. Set GEMINI_API_KEY or OPENAI_API_KEY to run crossover compile tests.");
+    return;
+  }
 
-    console.log(`\n--- Running Live LLM compile (${provider}) on B2B HealthTech ---`);
-    const signatures = await resolveTechStack(b2bHealthTechNotes);
-    const userConfig = { provider, model, apiKey: key };
+  const apiKey = geminiKey || openAIKey;
+  const provider = geminiKey ? 'gemini' as const : 'openai' as const;
+  const model = geminiKey ? 'gemini-2.5-flash' : 'gpt-4o-mini';
+  const userConfig = { provider, model, apiKey };
 
-    try {
-      const llmPack = await compilePromptPack(b2bHealthTechNotes, signatures, false, userConfig);
-      const llmOutDir = path.join(__dirname, 'crossover-llm-pack');
-      if (!fs.existsSync(llmOutDir)) {
-        fs.mkdirSync(llmOutDir, { recursive: true });
-      }
+  // Run three crossover compiles
+  await compileAndWrite("B2B + HealthTech (CareWorkspace)", b2bHealthTechNotes, "crossover-b2b-healthtech-pack", userConfig);
+  await compileAndWrite("HealthTech + FinTech (ClaimFlow)", healthTechFinTechNotes, "crossover-healthtech-fintech-pack", userConfig);
+  await compileAndWrite("B2B + FinTech (BizLedger)", b2bFinTechNotes, "crossover-b2b-fintech-pack", userConfig);
 
-      fs.writeFileSync(path.join(llmOutDir, 'README.md'), llmPack.readmeMd);
-      fs.writeFileSync(path.join(llmOutDir, 'AGENTS.md'), llmPack.agentsMd);
-      fs.writeFileSync(path.join(llmOutDir, 'CLAUDE.md'), llmPack.claudeMd);
-      fs.writeFileSync(path.join(llmOutDir, 'phases.md'), llmPack.phasesMd);
+  console.log(`\n--- Running Live LLM compile (${provider}) on B2B HealthTech ---`);
+  const signatures = await resolveTechStack(b2bHealthTechNotes);
 
-      const llmRulesDir = path.join(llmOutDir, '.cursor', 'rules');
-      if (!fs.existsSync(llmRulesDir)) {
-        fs.mkdirSync(llmRulesDir, { recursive: true });
-      }
-
-      const files = fs.readdirSync(llmRulesDir);
-      for (const file of files) {
-        fs.unlinkSync(path.join(llmRulesDir, file));
-      }
-
-      for (const [name, content] of Object.entries(llmPack.cursorRules)) {
-        fs.writeFileSync(path.join(llmRulesDir, name), content);
-      }
-      console.log("LLM Pack Compiled successfully and written to tests/crossover-llm-pack/");
-    } catch (err) {
-      console.error("LLM compile failed:", err);
+  try {
+    const llmPack = await compilePromptPack(b2bHealthTechNotes, signatures, userConfig);
+    const llmOutDir = path.join(__dirname, 'crossover-llm-pack');
+    if (!fs.existsSync(llmOutDir)) {
+      fs.mkdirSync(llmOutDir, { recursive: true });
     }
-  } else {
-    console.log("\nSkipping Live LLM compile (no keys found).");
+
+    fs.writeFileSync(path.join(llmOutDir, 'README.md'), llmPack.readmeMd);
+    fs.writeFileSync(path.join(llmOutDir, 'AGENTS.md'), llmPack.agentsMd);
+    fs.writeFileSync(path.join(llmOutDir, 'CLAUDE.md'), llmPack.claudeMd);
+    fs.writeFileSync(path.join(llmOutDir, 'phases.md'), llmPack.phasesMd);
+
+    const llmRulesDir = path.join(llmOutDir, '.cursor', 'rules');
+    if (!fs.existsSync(llmRulesDir)) {
+      fs.mkdirSync(llmRulesDir, { recursive: true });
+    }
+
+    const files = fs.readdirSync(llmRulesDir);
+    for (const file of files) {
+      fs.unlinkSync(path.join(llmRulesDir, file));
+    }
+
+    for (const [name, content] of Object.entries(llmPack.cursorRules)) {
+      fs.writeFileSync(path.join(llmRulesDir, name), content);
+    }
+    console.log("LLM Pack Compiled successfully and written to tests/crossover-llm-pack/");
+  } catch (err) {
+    console.error("LLM compile failed:", err);
   }
 
   // Run Sanitizer Test on LLM-pack-1 rules
