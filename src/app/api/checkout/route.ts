@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
 
     // Select pricing structure based on tier selection
     const isDeveloperPack = tier === 'lifetime' || tier === 'pro';
-    const priceAmount = isDeveloperPack ? 2499 : 999; // £24.99 GBP vs £9.99 GBP
+    const priceAmount = isDeveloperPack ? 1299 : 499; // £12.99 GBP vs £4.99 GBP
     const productName = isDeveloperPack ? 'Auxo Developer Pack' : 'Auxo 20x AI Compile Credit Pack';
     const productDesc = isDeveloperPack
       ? '75 premium deep LLM compiles grounded in live package registry metadata.'

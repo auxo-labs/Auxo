@@ -2,7 +2,22 @@
 
 All notable changes to the **Auxo** project are documented here.
 
+## [2.0.1] - 2026-06-25
+
+### Changed
+
+- **Launch Pricing — Tier 2:** Reduced from ~~£9.99~~ → **£4.99** for 20 cloud compile credits. Stripe pence amount updated from `999` → `499` in `api/checkout/route.ts`.
+- **Launch Pricing — Tier 3:** Reduced from ~~£24.99~~ → **£12.99** for 75 cloud compile credits. Stripe pence amount updated from `2499` → `1299` in `api/checkout/route.ts`.
+- **Discount UI on Pricing Page:** Both tier cards on `/pricing` now display the original price with a strikethrough alongside an amber `LAUNCH OFFER` badge above the new price, making the saving immediately visible.
+- **`docs/pricing.md` Margin Analysis:** Recalculated Stripe fees, per-compile profit, and net margin figures for both tiers at new prices (Tier 2: ~82.5% margin, £4.12 net per sale; Tier 3: ~80.0% margin, £10.33 net per sale).
+- **`docs/stripe.md`:** Updated Stripe Dashboard setup instructions with the new product prices.
+
+### Fixed
+
+- **`tests/run-tests.ts` Build Error:** Removed two stale positional boolean arguments (`true` / `false`) being passed to `compilePromptPack` — leftovers from the now-deleted `isBasic` parameter that caused `npm run build` to fail with a TypeScript type error. Renamed `compileAndWriteBasic` → `compileAndWrite` and wired all three crossover scenarios to use a live API key from env vars (with a graceful skip if no keys are present).
+
 ## [2.0.0] - 2026-06-25
+
 
 ### Added
 

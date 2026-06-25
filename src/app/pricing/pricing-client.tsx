@@ -229,7 +229,11 @@ export function PricingClient() {
             <h3 className="text-xs font-mono tracking-widest text-zinc-400 uppercase font-bold">20x Cloud Compiles</h3>
             
             <div className="my-4">
-              <span className="font-serif text-3xl text-zinc-500 font-normal">£9.99</span>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-[10px] font-mono text-zinc-600 line-through">£9.99</span>
+                <span className="px-1.5 py-0.5 rounded text-[8px] font-mono font-bold bg-amber-500/10 text-amber-500 border border-amber-500/15 tracking-wider">LAUNCH OFFER</span>
+              </div>
+              <span className="font-serif text-3xl text-zinc-500 font-normal">£4.99</span>
               <span className="text-[10px] font-mono text-zinc-600 tracking-wider"> / ONE-TIME</span>
             </div>
 
@@ -273,7 +277,11 @@ export function PricingClient() {
             <h3 className="text-xs font-mono tracking-widest text-zinc-400 uppercase font-bold">Founder / Developer Pack</h3>
             
             <div className="my-4">
-              <span className="font-serif text-3xl text-zinc-500 font-normal">£24.99</span>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-[10px] font-mono text-zinc-600 line-through">£24.99</span>
+                <span className="px-1.5 py-0.5 rounded text-[8px] font-mono font-bold bg-amber-500/10 text-amber-500 border border-amber-500/15 tracking-wider">LAUNCH OFFER</span>
+              </div>
+              <span className="font-serif text-3xl text-zinc-500 font-normal">£12.99</span>
               <span className="text-[10px] font-mono text-zinc-600 tracking-wider"> / ONE-TIME</span>
             </div>
 
