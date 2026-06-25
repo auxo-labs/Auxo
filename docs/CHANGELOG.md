@@ -6,7 +6,7 @@ All notable changes to the **Auxo** project are documented here.
 
 ### Added
 
-- **Email Support Option:** Integrated direct support email option (`woo9ine@gmail.com`) using `lucide-react` mail icons and mailto protocols within the workspace [support-modal.tsx].
+- **Email Support Option:** Integrated direct support email option (`woo9ine@gmail.com`) using `lucide-react` mail icons and click-to-copy clipboard handlers within the workspace [support-modal.tsx].
 - **Supabase Email Verification:** Updated the signup flow inside [auth-modal.tsx] to support email confirmation. Added success message guiding users to confirm their account via email.
 
 ## [1.9.4] - 2026-06-22

@@ -11,6 +11,7 @@ interface SupportModalProps {
 
 export function SupportModal({ isOpen, onClose, roomId }: SupportModalProps) {
   const [copiedRoomId, setCopiedRoomId] = React.useState(false);
+  const [copiedEmail, setCopiedEmail] = React.useState(false);
 
   if (!isOpen) return null;
 
@@ -22,6 +23,16 @@ export function SupportModal({ isOpen, onClose, roomId }: SupportModalProps) {
       setTimeout(() => setCopiedRoomId(false), 2000);
     } catch (err) {
       console.error('Failed to copy Room ID', err);
+    }
+  };
+
+  const handleCopyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText('woo9ine@gmail.com');
+      setCopiedEmail(true);
+      setTimeout(() => setCopiedEmail(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy email', err);
     }
   };
 
@@ -62,16 +73,29 @@ export function SupportModal({ isOpen, onClose, roomId }: SupportModalProps) {
             </div>
 
             {/* Contact Method: Email */}
-            <div className="p-3 rounded border border-white/5 bg-white/[0.01] flex items-center gap-3">
-              <div className="flex items-center justify-center w-8 h-8 rounded bg-zinc-900 border border-white/5 text-zinc-400">
-                <Mail className="w-4 h-4" />
+            {/* Contact Method: Email */}
+            <div className="p-3 rounded border border-white/5 bg-white/[0.01] flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3 min-w-0 flex-1">
+                <div className="flex items-center justify-center w-8 h-8 rounded bg-zinc-900 border border-white/5 text-zinc-400 shrink-0">
+                  <Mail className="w-4 h-4" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-[8px] font-mono text-zinc-500 uppercase tracking-wider">Email Support</p>
+                  <button 
+                    onClick={handleCopyEmail}
+                    className="text-xs font-mono text-zinc-300 hover:text-zinc-100 transition-colors break-all text-left block w-full focus:outline-none cursor-pointer"
+                  >
+                    woo9ine@gmail.com
+                  </button>
+                </div>
               </div>
-              <div className="flex-grow flex-1 min-w-0">
-                <p className="text-[8px] font-mono text-zinc-500 uppercase tracking-wider">Email Support</p>
-                <a href="mailto:woo9ine@gmail.com?subject=Auxo%20Support" className="text-xs font-mono text-zinc-300 hover:text-zinc-100 transition-colors break-all">
-                  woo9ine@gmail.com
-                </a>
-              </div>
+              <button
+                onClick={handleCopyEmail}
+                className="flex items-center justify-center w-7 h-7 rounded border border-white/5 hover:border-white/10 hover:bg-white/[0.03] text-zinc-400 hover:text-zinc-200 transition-colors cursor-pointer shrink-0"
+                title="Copy Email"
+              >
+                {copiedEmail ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+              </button>
             </div>
 
             {/* Room ID reference */}
