@@ -248,7 +248,7 @@ export function PricingClient() {
               </li>
               <li className="flex items-center gap-2">
                 <Check className="w-3 h-3 text-zinc-600 shrink-0" />
-                <span>Claude 4.5 Sonnet processing</span>
+                <span>Claude Sonnet 4.6 processing</span>
               </li>
             </ul>
 
@@ -323,8 +323,8 @@ export function PricingClient() {
                 <tr>
                   <td className="py-3 text-zinc-300">Model Engine Choices</td>
                   <td className="py-3">Gemini, Claude, GPT</td>
-                  <td className="py-3">Claude 4.5 Sonnet</td>
-                  <td className="py-3">Claude 4.5 Sonnet</td>
+                  <td className="py-3">Claude Sonnet 4.6</td>
+                  <td className="py-3">Claude Sonnet 4.6</td>
                 </tr>
                 <tr>
                   <td className="py-3 text-zinc-300">Compilation Limits</td>

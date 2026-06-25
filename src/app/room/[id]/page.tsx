@@ -3,16 +3,18 @@
 import * as React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
-import { ArrowLeft, Copy, Check, Play, Users, Download, User, LogOut, Settings, ChevronDown, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Copy, Check, Play, Users, Download, User, LogOut, Settings, ChevronRight } from 'lucide-react';
 import { Editor } from '@/components/editor';
 import { Preview } from '@/components/preview';
 import { CompiledPack } from '@/lib/prompt-compiler';
+import { UserConfig } from '@/lib/prompt-compiler';
 import { exportCompiledPackToZip } from '@/lib/zip-exporter';
 import { useRoomSync } from './hooks/useRoomSync';
 import { useShortcuts } from './hooks/useShortcuts';
 import { supabase } from '@/lib/supabase';
 import { AuthModal } from '@/components/auth-modal';
 import { SettingsModal } from '@/components/settings-modal';
+import { CompileSetupModal } from '@/components/compile-setup-modal';
 import { ProjectSidebar } from '@/components/project-sidebar';
 import { useResizable } from './hooks/useResizable';
 import { SplitterHandle } from '@/components/splitter-handle';
@@ -50,11 +52,8 @@ function RoomContent({ roomId }: { roomId: string }) {
   const [expandedPanel, setExpandedPanel] = React.useState<'none' | 'editor' | 'preview'>('none');
   const [isAuthModalOpen, setIsAuthModalOpen] = React.useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = React.useState(false);
-  const [lastCompileType, setLastCompileType] = React.useState<'basic' | 'premium'>('basic');
-  const [compileMode, setCompileMode] = React.useState<'basic' | 'premium'>('basic');
-  const [showCompileDropdown, setShowCompileDropdown] = React.useState(false);
+  const [isSetupModalOpen, setIsSetupModalOpen] = React.useState(false);
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
-  const dropdownRef = React.useRef<HTMLDivElement>(null);
 
   const {
     size: sidebarWidth,
@@ -89,17 +88,6 @@ function RoomContent({ roomId }: { roomId: string }) {
     }
   }, []);
 
-  // Close dropdown on click outside
-  React.useEffect(() => {
-    const handleOutsideClick = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setShowCompileDropdown(false);
-      }
-    };
-    document.addEventListener('mousedown', handleOutsideClick);
-    return () => document.removeEventListener('mousedown', handleOutsideClick);
-  }, []);
-
   // Detect OS for keyboard label renderings (⌘ vs Ctrl)
   React.useEffect(() => {
     const timer = setTimeout(() => {
@@ -116,7 +104,32 @@ function RoomContent({ roomId }: { roomId: string }) {
     }
   };
 
-  // ── Handlers ───────────────────────────────────────────────────────────────
+  // ── Helpers ────────────────────────────────────────────────────────────────
+
+  /**
+   * Upserts a project history record for the authenticated user.
+   * Silently swallows errors — project history is non-critical.
+   */
+  const upsertProjectRecord = async (text: string) => {
+    if (!user) return;
+    try {
+      const { title, preview } = getProjectTitleAndPreview(text);
+      await supabase
+        .from('projects')
+        .upsert(
+          {
+            user_id: user.id,
+            room_id: roomId,
+            title,
+            preview_text: preview,
+            updated_at: new Date().toISOString()
+          },
+          { onConflict: 'user_id,room_id' }
+        );
+    } catch (err) {
+      console.error('Failed to upsert project record:', err);
+    }
+  };
 
   const handleCopyLink = async () => {
     try {
@@ -128,12 +141,21 @@ function RoomContent({ roomId }: { roomId: string }) {
     }
   };
 
-  const handleCompile = async (type: 'basic' | 'premium', forcedSessionId?: string): Promise<CompiledPack | undefined> => {
+  // ── Handlers ───────────────────────────────────────────────────────────────
+
+  /**
+   * Unified AI compile handler. Always routes through an LLM — either the
+   * user's BYOK key or the hosted cloud credits.
+   *
+   * @param forcedSessionId - Optional Stripe session ID from post-payment redirect.
+   * @param overrideConfig  - Optional UserConfig to use instead of React state, needed
+   *                          when called immediately after saving a key (state not yet settled).
+   */
+  const handleCompile = async (forcedSessionId?: string, overrideConfig?: UserConfig): Promise<CompiledPack | undefined> => {
     if (isCompiling) return;
     try {
       setIsCompiling(true);
       setCompileError(null);
-      setLastCompileType(type);
 
       const savedText = localStorage.getItem(`auxo-room-${roomId}`);
       const textToCompile = savedText || markdownText;
@@ -157,96 +179,49 @@ function RoomContent({ roomId }: { roomId: string }) {
         console.warn('Bot protection challenge failed. Attempting compile anyway.', err);
       }
 
-      if (type === 'basic') {
-        const response = await fetch('/api/compile', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            markdownText: textToCompile, 
-            roomId, 
-            compileType: 'basic',
-            powChallenge: powChallengeResult
-          }),
-        });
-        if (!response.ok) {
-          let errorMsg = `Compile route failed: ${response.statusText}`;
-          try {
-            const errData = await response.json();
-            if (errData?.error) errorMsg = errData.error;
-          } catch {}
-          throw new Error(errorMsg);
-        }
-        const files: CompiledPack = await response.json();
-        setCompiledFiles(files);
-        setActiveFile('README.md');
+      // Use the override config first (e.g. freshly saved from CompileSetupModal),
+      // then fall back to the current React state.
+      const activeConfig = overrideConfig ?? userConfig;
+      const hasUserKey = activeConfig && activeConfig.provider !== 'premium' && activeConfig.apiKey && activeConfig.apiKey.trim() !== '';
 
-        // Upsert to user's history if authenticated
-        if (user) {
-          try {
-            const { title, preview } = getProjectTitleAndPreview(textToCompile);
-            await supabase
-              .from('projects')
-              .upsert(
-                {
-                  user_id: user.id,
-                  room_id: roomId,
-                  title,
-                  preview_text: preview,
-                  updated_at: new Date().toISOString()
-                },
-                { onConflict: 'user_id,room_id' }
-              );
-          } catch (err) {
-            console.error('Failed to upsert project record:', err);
-          }
+      // Gate: if no BYOK key and no authenticated cloud access, prompt for setup.
+      if (!hasUserKey) {
+        if (!user) {
+          setIsSetupModalOpen(true);
+          return;
         }
 
-        return files;
-      }
+        const targetSessionId = forcedSessionId ?? searchParams.get('session_id');
 
-      // Premium compile handling:
-      const hasUserKey = userConfig && userConfig.provider !== 'premium' && userConfig.apiKey && userConfig.apiKey.trim() !== '';
-
-      // 1. Must be authenticated (unless using BYOK custom keys)
-      if (!hasUserKey && !user) {
-        setIsAuthModalOpen(true);
-        return;
+        if (!profile?.is_lifetime && (profile?.credits ?? 0) <= 0 && !targetSessionId) {
+          // Redirect anonymous/zero-credit user to Stripe checkout
+          const checkoutRes = await fetch('/api/checkout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ roomId, userId: user.id }),
+          });
+          if (!checkoutRes.ok) throw new Error('Failed to generate checkout session');
+          const { url } = await checkoutRes.json();
+          window.location.href = url;
+          return;
+        }
       }
 
       const targetSessionId = forcedSessionId ?? searchParams.get('session_id');
-
-      // 2. Must have credits or lifetime pass (unless using BYOK custom keys)
-      if (!hasUserKey && !profile?.is_lifetime && (profile?.credits ?? 0) <= 0 && !targetSessionId) {
-        if (!user) return;
-        // Redirect to stripe checkout
-        const checkoutRes = await fetch('/api/checkout', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ roomId, userId: user.id }),
-        });
-        if (!checkoutRes.ok) throw new Error('Failed to generate checkout session');
-        const { url } = await checkoutRes.json();
-        window.location.href = url;
-        return;
-      }
-
-      // 3. Authenticated and has compilation rights
-      // Get JWT token
-      const session = (await supabase.auth.getSession()).data.session;
+      const session = hasUserKey ? null : (await supabase.auth.getSession()).data.session;
       const token = session?.access_token;
 
       const response = await fetch('/api/compile', {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           ...(token ? { 'Authorization': `Bearer ${token}` } : {})
         },
-        body: JSON.stringify({ 
-          markdownText: textToCompile, 
-          roomId, 
+        body: JSON.stringify({
+          markdownText: textToCompile,
+          roomId,
           sessionId: targetSessionId || undefined,
-          compileType: 'premium',
-          userConfig,
+          userConfig: activeConfig,
           powChallenge: powChallengeResult
         }),
       });
@@ -256,7 +231,7 @@ function RoomContent({ roomId }: { roomId: string }) {
         try {
           const errData = await response.json();
           if (errData?.error) errorMsg = errData.error;
-        } catch {}
+        } catch { /* ignore JSON parse failures on error responses */ }
         throw new Error(errorMsg);
       }
 
@@ -264,29 +239,13 @@ function RoomContent({ roomId }: { roomId: string }) {
       setCompiledFiles(files);
       setActiveFile('README.md');
 
-      // Upsert to user's history if authenticated
-      if (user) {
-        try {
-          const { title, preview } = getProjectTitleAndPreview(textToCompile);
-          await supabase
-            .from('projects')
-            .upsert(
-              {
-                user_id: user.id,
-                room_id: roomId,
-                title,
-                preview_text: preview,
-                updated_at: new Date().toISOString()
-              },
-              { onConflict: 'user_id,room_id' }
-            );
-        } catch (err) {
-          console.error('Failed to upsert project record:', err);
-        }
+      await upsertProjectRecord(textToCompile);
+
+      // Refresh credit balance in background after a hosted compile
+      if (!hasUserKey) {
+        await refreshProfile();
       }
-      
-      // Refresh user profile in background to decrement credit balance
-      await refreshProfile();
+
       return files;
     } catch (error) {
       console.error('Compilation failure:', error);
@@ -321,14 +280,14 @@ function RoomContent({ roomId }: { roomId: string }) {
       // Delay compilation slightly to let LocalStorage mount restoration complete
       setTimeout(async () => {
         await refreshProfile();
-        await handleCompile('premium', querySessionId);
+        await handleCompile(querySessionId);
         // Strip session_id from URL to prevent re-triggering on refresh
         window.history.replaceState({}, document.title, window.location.origin + window.location.pathname);
       }, 100);
     };
 
     autoRun();
-  // We intentionally omit handleCompile/handleDownload from deps here.
+  // We intentionally omit handleCompile/refreshProfile from deps here.
   // They are stable plain functions; adding them would cause an infinite loop
   // because they close over state that changes during the autoRun itself.
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -364,14 +323,12 @@ function RoomContent({ roomId }: { roomId: string }) {
 
   // Global keyboard shortcuts hook
   useShortcuts({
-    onCompile: () => handleCompile(compileMode),
+    onCompile: () => handleCompile(),
     onDownload: () => handleDownload(),
     onCopyLink: handleCopyLink,
     onRouteHome: () => router.push('/'),
     hasCompiledFiles: compiledFiles !== null,
   });
-
-  // ── Helpers ───────────────────────────────────────────────────────────────
 
   const getConnectionIcon = () => {
     switch (connectionStatus) {
@@ -485,7 +442,7 @@ function RoomContent({ roomId }: { roomId: string }) {
             title="Compiler Setup (Cloud vs BYOK)"
           >
             <Settings className="w-3.5 h-3.5 text-zinc-400 font-bold" />
-            <span className="hidden lg:inline">KEYS & ROUTING</span>
+            <span className="hidden lg:inline">KEYS &amp; ROUTING</span>
             {userConfig.provider === 'premium' ? (
               <span className="px-1.5 py-0.5 rounded bg-cyan-950/40 border border-cyan-500/20 text-cyan-400 text-[8px] font-bold tracking-wider">
                 CLOUD
@@ -520,85 +477,26 @@ function RoomContent({ roomId }: { roomId: string }) {
             </button>
           )}
 
-          {/* Split Compile Button */}
-          <div className="relative flex items-center shrink-0" ref={dropdownRef}>
-            <button
-              onClick={() => handleCompile(compileMode)}
-              disabled={isCompiling}
-              className={`flex items-center gap-1.5 h-8 px-3 text-[10px] font-mono font-semibold tracking-wider transition-all disabled:opacity-50 disabled:pointer-events-none active:scale-95 cursor-pointer rounded-l ${
-                compileMode === 'basic'
-                  ? 'border border-white/5 bg-white/[0.01] hover:border-white/10 hover:bg-white/[0.03] text-zinc-300'
-                  : 'bg-zinc-100 hover:bg-zinc-200 text-zinc-950'
-              }`}
-              title={compileMode === 'basic' ? "Compile standard prompt blueprint locally (Free)" : "Compile hyper-tailored 2026 AI Agent Pack (Requires Credits)"}
-            >
-              {isCompiling ? (
-                <div className={`w-3 h-3 border border-t-transparent rounded-full animate-spin ${
-                  compileMode === 'basic' ? 'border-zinc-300' : 'border-zinc-950'
-                }`} />
-              ) : (
-                <>
-                  <Play className={`w-2.5 h-2.5 fill-current ${
-                    compileMode === 'basic' ? 'text-zinc-400' : 'text-zinc-950'
-                  }`} />
-                  <span>{compileMode === 'basic' ? 'COMPILE BASIC' : 'DEEP AI COMPILE'}</span>
-                  {compileMode === 'basic' && (
-                    <span className="hidden md:inline px-1 py-0.5 rounded bg-zinc-800 border border-zinc-700/50 text-[8px] font-mono text-zinc-500 font-medium">
-                      {isMac ? '⌘↵' : 'Ctrl+↵'}
-                    </span>
-                  )}
-                </>
-              )}
-            </button>
-
-            <button
-              onClick={() => setShowCompileDropdown(!showCompileDropdown)}
-              disabled={isCompiling}
-              className={`flex items-center justify-center h-8 w-6 rounded-r transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none cursor-pointer border-l ${
-                compileMode === 'basic'
-                  ? 'border border-white/5 border-l-white/10 bg-white/[0.01] hover:bg-white/[0.03] hover:border-white/10 text-zinc-300'
-                  : 'bg-zinc-100 hover:bg-zinc-200 text-zinc-950 border-l-zinc-300'
-              }`}
-              title="Change Compile Mode"
-            >
-              <ChevronDown className="w-3.5 h-3.5" />
-            </button>
-
-            {/* Dropdown Menu */}
-            {showCompileDropdown && (
-              <div className="absolute top-full right-0 mt-2 w-64 rounded border border-white/5 bg-zinc-950/95 p-1.5 shadow-2xl backdrop-blur-md z-30 animate-fade-in">
-                <button
-                  onClick={() => {
-                    setCompileMode('basic');
-                    setShowCompileDropdown(false);
-                  }}
-                  className={`flex flex-col text-left w-full p-2 rounded transition-colors text-xs font-mono select-none ${
-                    compileMode === 'basic'
-                      ? 'bg-white/[0.03] text-zinc-100'
-                      : 'hover:bg-white/[0.01] text-zinc-400 hover:text-zinc-200'
-                  }`}
-                >
-                  <span className="font-semibold text-[10px] tracking-wide">BASIC AGENT PACK</span>
-                  <span className="text-[9px] text-zinc-500 mt-0.5">Offline fallback parsing. Fast and free.</span>
-                </button>
-                <div className="h-px bg-white/[0.03] my-1" />
-                <button
-                  onClick={() => {
-                    setCompileMode('premium');
-                    setShowCompileDropdown(false);
-                  }}
-                  className={`flex flex-col text-left w-full p-2 rounded transition-colors text-xs font-mono select-none ${
-                    compileMode === 'premium'
-                      ? 'bg-white/[0.03] text-zinc-100'
-                      : 'hover:bg-white/[0.01] text-zinc-400 hover:text-zinc-200'
-                  }`}
-                >
-                  <span className="font-semibold text-[10px] tracking-wide">DEEP AI COMPILE</span>
-                  <span className="text-[9px] text-zinc-500 mt-0.5">Compiles via cloud credits using OpenAI, Anthropic, or Gemini.</span>
-                </button>
-              </div>
+          {/* Single unified Compile with AI button */}
+          <button
+            id="compile-ai-btn"
+            onClick={() => handleCompile()}
+            disabled={isCompiling}
+            className="flex items-center gap-1.5 h-8 px-3 text-[10px] font-mono font-semibold tracking-wider transition-all disabled:opacity-50 disabled:pointer-events-none active:scale-95 cursor-pointer rounded bg-zinc-100 hover:bg-zinc-200 text-zinc-950"
+            title="Compile precision AI agent pack (Cmd+Enter)"
+          >
+            {isCompiling ? (
+              <div className="w-3 h-3 border border-zinc-950 border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <>
+                <Play className="w-2.5 h-2.5 fill-current text-zinc-950" />
+                <span>COMPILE WITH AI</span>
+                <span className="hidden md:inline px-1 py-0.5 rounded bg-zinc-300 border border-zinc-400/50 text-[8px] font-mono text-zinc-600 font-medium">
+                  {isMac ? '⌘↵' : 'Ctrl+↵'}
+                </span>
+              </>
             )}
-          </div>
+          </button>
 
           {/* Download ZIP (visible only after compile) */}
           {compiledFiles && (
@@ -635,7 +533,7 @@ function RoomContent({ roomId }: { roomId: string }) {
           </div>
           <div className="flex items-center gap-2">
             <button
-              onClick={() => handleCompile(lastCompileType)}
+              onClick={() => handleCompile()}
               className="px-2.5 py-1 text-[9px] font-mono font-semibold tracking-wide bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-200 rounded transition-colors active:scale-95 cursor-pointer"
             >
               RETRY
@@ -746,6 +644,19 @@ function RoomContent({ roomId }: { roomId: string }) {
         />
       )}
 
+      {isSetupModalOpen && (
+        <CompileSetupModal
+          isOpen={isSetupModalOpen}
+          onClose={() => setIsSetupModalOpen(false)}
+          onConfigureAndCompile={(config) => {
+            setUserConfig(config);
+            setIsSetupModalOpen(false);
+            // Use overrideConfig so the compile sees the new key immediately,
+            // without waiting for React state to settle.
+            handleCompile(undefined, config);
+          }}
+        />
+      )}
 
     </div>
   );
@@ -764,11 +675,17 @@ export default function RoomPage({ params }: PageProps) {
   );
 }
 
+/**
+ * Derives a project title and short preview snippet from the scratchpad text.
+ * Used when upserting project history records to Supabase.
+ *
+ * @param text - Raw scratchpad markdown content.
+ * @returns An object containing a truncated `title` and `preview` string.
+ */
 export function getProjectTitleAndPreview(text: string) {
   const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
   let title = 'Untitled Sandbox';
   if (lines.length > 0) {
-    // Extract first line and remove markdown header syntax
     const firstLine = lines[0];
     title = firstLine.replace(/^#+\s+/, '').trim();
     if (title.length > 50) {
@@ -776,7 +693,6 @@ export function getProjectTitleAndPreview(text: string) {
     }
   }
   
-  // Preview snippet: get next non-empty line or first line if none other exists
   let preview = '';
   const textWithoutTitle = lines.slice(1).join(' ');
   if (textWithoutTitle) {

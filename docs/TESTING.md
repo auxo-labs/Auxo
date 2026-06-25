@@ -12,7 +12,7 @@ The following test cases describe the verification procedures for the core funct
 | **TC-06** | Exporter | Pack Zip Exporter | Click "Compile Agent Pack" | Initiates download of `auxo-blueprint-[roomId].zip` | PASS |
 | **TC-07** | Exporter | Directory Matrix | Extract and inspect the downloaded `.zip` file | Contains root `AGENTS.md`, `CLAUDE.md`, `.windsurfrules`, and folder `.cursor/rules/` | PASS |
 | **TC-08** | Auth | Magic Link Login | Click "SIGN IN" in toolbar, enter email, click send, open OTP link | Redirects back to active room, logs user in, and fetches profile credits | PASS |
-| **TC-09** | Compiler | Basic vs Premium Compile | Click "COMPILE BASIC" (Free) vs "DEEP AI COMPILE" (Premium) | Basic runs instantly. Premium requests Stripe checkout if no credits / not logged in | PASS |
+| **TC-09** | Compiler | Unified AI Compile | Click "COMPILE WITH AI" in room toolbar (with BYOK key or cloud credits configured) | Spinner shows, API calls LLM, compiled files populate the preview pane | PASS |
 | **TC-10** | Stripe | Checkout & Webhooks | Click "DEEP AI COMPILE", complete checkout, run Stripe CLI forwarder | Updates user credits (+15 or +50 depending on tier), auto-compiles and triggers download | PASS |
 | **TC-11** | Security | Supabase RLS | Query profiles table using another user's account credentials | Queries reject or return empty rows; user can only view their own record | PASS |
 | **TC-12** | Security | Stripe Signature Verification | Send mock webhook POST request to `/api/webhooks/stripe` without a signature in production | Server blocks request and returns a 500 error code | PASS |
@@ -23,5 +23,4 @@ The following test cases describe the verification procedures for the core funct
 | **TC-17** | Auth | Email/Password Log In | Click "SIGN IN", choose "LOG IN" tab, input registered email & password, click "LOG IN" | Active session established, user profile credits loaded in workspace header | PASS |
 | **TC-18** | Auth | GitHub OAuth Login | Click "Continue with GitHub" | Redirects to GitHub OAuth consent, redirects back to room ID, session loads credits | PASS |
 | **TC-19** | Auth | Google OAuth Login | Click "Continue with Google" | Redirects to Google OAuth consent, redirects back to room ID, session loads credits | PASS |
-
-
+| **TC-20** | Compiler | Compile Setup Gate | Click "COMPILE WITH AI" with no BYOK key configured and no active session | `CompileSetupModal` opens, allowing inline BYOK key entry (saves to `localStorage`) or "Get Cloud Credits" CTA redirecting to `/pricing` | PASS |

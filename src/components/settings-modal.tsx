@@ -35,9 +35,9 @@ export function SettingsModal({ isOpen, onClose, onSave }: SettingsModalProps) {
   });
   const [anthropicModel, setAnthropicModel] = React.useState(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('auxo-settings-anthropic-model') || 'claude-sonnet-4-5';
+      return localStorage.getItem('auxo-settings-anthropic-model') || 'claude-sonnet-4-6';
     }
-    return 'claude-sonnet-4-5';
+    return 'claude-sonnet-4-6';
   });
   const [geminiModel, setGeminiModel] = React.useState(() => {
     if (typeof window !== 'undefined') {
@@ -155,7 +155,7 @@ export function SettingsModal({ isOpen, onClose, onSave }: SettingsModalProps) {
                   </span>
                 </div>
                 <p className="text-[10px] font-sans text-zinc-500 mt-1.5 leading-relaxed">
-                  No keys needed. Secure, hosted compiles via Claude Sonnet 4.5. Requires cloud compile credits.
+                  No keys needed. Secure, hosted compiles via Claude Sonnet 4.6. Requires cloud compile credits.
                 </p>
               </button>
 
@@ -282,7 +282,8 @@ export function SettingsModal({ isOpen, onClose, onSave }: SettingsModalProps) {
                       onChange={(e) => setAnthropicModel(e.target.value)}
                       className="w-full h-8 px-2 rounded bg-zinc-900 border border-white/5 text-zinc-200 text-xs font-mono focus:outline-none focus:border-white/10"
                     >
-                      <option value="claude-sonnet-4-5">claude-sonnet-4-5 (Recommended)</option>
+                      <option value="claude-sonnet-4-6">claude-sonnet-4-6 (Recommended)</option>
+                      <option value="claude-sonnet-4-5">claude-sonnet-4-5</option>
                       <option value="claude-3-7-sonnet">claude-3.7-sonnet</option>
                       <option value="claude-3-5-sonnet-20241022">claude-3.5-sonnet</option>
                     </select>

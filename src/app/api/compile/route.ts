@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
   try {
 
     const body = await request.json();
-    const { markdownText, roomId, sessionId, compileType, userConfig, powChallenge } = body;
+    const { markdownText, roomId, sessionId, userConfig, powChallenge } = body;
 
     // Cryptographic Proof-of-Work (PoW) bot protection check
     const enforcePoW = process.env.NODE_ENV === 'production' || process.env.ENFORCE_POW === 'true';
@@ -190,7 +190,7 @@ export async function POST(request: NextRequest) {
 
     // Run premium deep compile with live package conventions and versions
     const techSignatures = await resolveTechStack(markdownText);
-    const compiledPack = await compilePromptPack(markdownText, techSignatures, false, userConfig);
+    const compiledPack = await compilePromptPack(markdownText, techSignatures, userConfig);
     
     return NextResponse.json(compiledPack);
 

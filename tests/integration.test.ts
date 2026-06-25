@@ -201,44 +201,6 @@ describe('Batch 2: Webhook and API Integration Tests', () => {
       expect(mockFrom).not.toHaveBeenCalled();
     });
 
-    it('should return compiled pack directly for basic compile calls', async () => {
-      const payload = {
-        markdownText: '# Test Spec',
-        roomId: 'room-uuid',
-        compileType: 'basic'
-      };
-
-      const request = new NextRequest('http://localhost/api/compile', {
-        method: 'POST',
-        body: JSON.stringify(payload)
-      });
-
-      const response = await compilePOST(request);
-      const data = await response.json();
-
-      expect(response.status).toBe(200);
-      expect(data.agentsMd).toBe('# AGENTS TEST');
-    });
-
-    it('should reject basic compile calls exceeding 15,000 characters', async () => {
-      const payload = {
-        markdownText: 'a'.repeat(15001),
-        roomId: 'room-uuid',
-        compileType: 'basic'
-      };
-
-      const request = new NextRequest('http://localhost/api/compile', {
-        method: 'POST',
-        body: JSON.stringify(payload)
-      });
-
-      const response = await compilePOST(request);
-      const data = await response.json();
-
-      expect(response.status).toBe(400);
-      expect(data.error).toContain('exceeds the 15,000 character limit');
-    });
-
     it('should reject BYOK compiles exceeding 30,000 characters', async () => {
       const payload = {
         markdownText: 'a'.repeat(30001),
@@ -338,10 +300,14 @@ describe('Batch 2: Webhook and API Integration Tests', () => {
       const payload = {
         markdownText: '# Test Spec',
         roomId: 'room-uuid',
-        compileType: 'basic'
+        userConfig: {
+          provider: 'gemini',
+          apiKey: 'AIzaSy-TestKey',
+          model: 'gemini-2.5-flash'
+        }
       };
 
-      // Execute 5 standard compile requests (within limits) through proxy
+      // Execute 5 compile requests (within limits) through proxy
       for (let i = 0; i < 5; i++) {
         const req = new NextRequest('http://localhost/api/compile', {
           method: 'POST',
@@ -369,7 +335,11 @@ describe('Batch 2: Webhook and API Integration Tests', () => {
       const payloadWithoutPoW = {
         markdownText: '# Test Spec',
         roomId: 'room-uuid',
-        compileType: 'basic'
+        userConfig: {
+          provider: 'gemini',
+          apiKey: 'AIzaSy-TestKey',
+          model: 'gemini-2.5-flash'
+        }
       };
 
       const request1 = new NextRequest('http://localhost/api/compile', {
@@ -391,7 +361,11 @@ describe('Batch 2: Webhook and API Integration Tests', () => {
       const payloadWithPoW = {
         markdownText: '# Test Spec',
         roomId: 'room-uuid',
-        compileType: 'basic',
+        userConfig: {
+          provider: 'gemini',
+          apiKey: 'AIzaSy-TestKey',
+          model: 'gemini-2.5-flash'
+        },
         powChallenge: {
           salt: challenge.salt,
           timestamp: challenge.timestamp,

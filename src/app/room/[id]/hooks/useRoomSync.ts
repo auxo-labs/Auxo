@@ -64,7 +64,7 @@ export function useRoomSync(roomId: string): RoomSyncResult {
     } else if (provider === 'anthropic') {
       const rawKey = localStorage.getItem('auxo-settings-anthropic-key') || '';
       apiKey = deobfuscateKey(rawKey);
-      model = localStorage.getItem('auxo-settings-anthropic-model') || 'claude-sonnet-4-5';
+      model = localStorage.getItem('auxo-settings-anthropic-model') || 'claude-sonnet-4-6';
     } else if (provider === 'gemini') {
       const rawKey = localStorage.getItem('auxo-settings-gemini-key') || '';
       apiKey = deobfuscateKey(rawKey);

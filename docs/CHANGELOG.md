@@ -2,8 +2,28 @@
 
 All notable changes to the **Auxo** project are documented here.
 
-## [1.9.5] - 2026-06-25
+## [2.0.0] - 2026-06-25
 
+### Added
+
+- **Compile Setup Modal (`compile-setup-modal.tsx`):** New lightweight glassmorphic gate modal that intercepts the "COMPILE WITH AI" action when no BYOK key is configured and no cloud session is active. Provides an inline provider selector and API key input (obfuscated and saved to `localStorage` via the existing XOR encryption pipeline) and a "Get Cloud Credits →" shortcut to `/pricing`. Fires `onConfigureAndCompile(config)` with an `overrideConfig` to avoid React async state timing issues.
+- **Manual Test Case TC-20:** Documents the `CompileSetupModal` gate flow in `docs/TESTING.md`.
+
+### Changed
+
+- **Unified Compile Action:** Replaced the split-button dropdown (COMPILE BASIC / DEEP AI COMPILE) in the room toolbar with a single **"COMPILE WITH AI"** button. All compilations now always route through an LLM — BYOK keys bypass database checks; cloud credits require authentication.
+- **`handleCompile` Refactor:** Collapsed the separate `basic` and `premium` branches into one unified async flow. Extracted the duplicated project-upsert logic into a dedicated `upsertProjectRecord` helper function (DRY). Added `overrideConfig` parameter to allow the caller to pass a freshly saved key without waiting for React state to update.
+- **Claude Sonnet 4.6:** Updated default Anthropic model across the entire codebase — `settings-modal.tsx` (state default, dropdown option, cloud description), `pricing-client.tsx` (tier cards and feature matrix), `faq-client.tsx` ("Is Auxo free?" answer), and `useRoomSync.ts` (localStorage default fallback).
+- **FAQ "Is Auxo free?" Answer:** Removed stale reference to the deleted offline "COMPILE BASIC" fallback parser. Rewritten to accurately describe the unified AI compile + BYOK model, with a link to the pricing page for cloud credits.
+- **Manual Test Case TC-09 Updated:** Updated from "Basic vs Premium Compile" to "Unified AI Compile" to match the new single-action toolbar.
+- **Integration Tests Updated:** Removed 2 Vitest integration test cases that specifically validated the deleted `basic` compile path. Updated the rate-limit (SEC-07) and Proof-of-Work enforcement tests to use a standard BYOK payload instead of the now-removed `compileType: 'basic'` field.
+
+### Fixed
+
+- **`/api/compile` Unused Variable Lint Warning:** Removed the `compileType` field from the route's request body destructuring — it was being read but never used, causing a persistent `@typescript-eslint/no-unused-vars` warning in `npm run lint`.
+- **`compilePromptPack` Stale Argument:** Removed the stale `false` positional argument being passed as the third parameter to `compilePromptPack` in `route.ts` — a leftover from a previous refactor that had the wrong function arity.
+
+## [1.9.5] - 2026-06-25
 ### Added
 
 - **Email Support Option:** Integrated direct support email option (`woo9ine@gmail.com`) using `lucide-react` mail icons and click-to-copy clipboard handlers within the workspace [support-modal.tsx].

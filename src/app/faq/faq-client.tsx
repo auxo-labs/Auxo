@@ -124,10 +124,10 @@ export function FaqClient() {
       answer: (
         <div className="space-y-2">
           <p>
-            Yes. Auxo is fully open-source and provides an unlimited **Free BYOK (Bring Your Own Key) Tier**. You can supply your own developer keys to run deep AI compilations completely for free.
+            Yes. Auxo provides an unlimited <strong>Free BYOK (Bring Your Own Key) Tier</strong>. Supply your own Gemini, OpenAI, or Anthropic API key and run deep AI compilations completely for free — no account required.
           </p>
           <p>
-            We also offer an offline fallback parser (COMPILE BASIC) which is completely free and requires no account. For users looking for convenience, we provide hosted Cloud Credits (Tier 2 and Tier 3) that utilise our internal API keys, though these integrations are currently locked as we focus on the free hosting model.
+            For users who prefer keyless convenience, we offer hosted Cloud Credits (Tier 2 and Tier 3) that route through our internal Claude Sonnet 4.6 keys. These tiers are currently in preview — check the <a href="/pricing" className="text-accent underline underline-offset-2">pricing page</a> for availability.
           </p>
         </div>
       )
