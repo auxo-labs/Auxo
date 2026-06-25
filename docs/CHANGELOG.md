@@ -2,6 +2,13 @@
 
 All notable changes to the **Auxo** project are documented here.
 
+## [1.9.5] - 2026-06-25
+
+### Added
+
+- **Email Support Option:** Integrated direct support email option (`woo9ine@gmail.com`) using `lucide-react` mail icons and mailto protocols within the workspace [support-modal.tsx].
+- **Supabase Email Verification:** Updated the signup flow inside [auth-modal.tsx] to support email confirmation. Added success message guiding users to confirm their account via email.
+
 ## [1.9.4] - 2026-06-22
 
 ### Added
@@ -253,6 +260,7 @@ All notable changes to the **Auxo** project are documented here.
 If you need to re-enable the checkout flows and restore the original styling for Tier 2 (PAYG Credits) and Tier 3 (Developer Pack) inside `src/app/pricing/page.tsx`, follow these steps:
 
 ### 1. Restore the Card Containers
+
 - For **Tier 2 (PAYG Credits)**, locate the container `div` and change it back to the original classes:
   ```tsx
   <div className="flex flex-col p-6 rounded-lg border border-cyan-500/20 bg-cyan-950/[0.01] hover:border-cyan-500/30 transition-all relative overflow-hidden group text-left h-full shadow-[0_0_20px_rgba(6,182,212,0.02)]">
@@ -263,6 +271,7 @@ If you need to re-enable the checkout flows and restore the original styling for
   ```
 
 ### 2. Update Badges and Text Colors
+
 - Restore the top-right badges:
   - Tier 2: `TIER 02 // PAYG`
   - Tier 3: `TIER 03 // PRO`
@@ -274,31 +283,32 @@ If you need to re-enable the checkout flows and restore the original styling for
   - In Tier 3 list, change text colors back to `text-emerald-500` for Check icons, and `text-zinc-500` for list items (removing `text-zinc-600`).
 
 ### 3. Re-enable checkout buttons
+
 - Locate the `<button>` at the bottom of the **Tier 2 card** and replace it with the original action:
   ```tsx
   <button
-    onClick={() => handlePurchase('credits')}
+    onClick={() => handlePurchase("credits")}
     disabled={purchasingTier !== null}
     className="mt-6 w-full h-9 rounded bg-zinc-100 hover:bg-zinc-200 text-zinc-950 text-[10px] font-mono font-semibold tracking-wider transition-all cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50"
   >
-    {purchasingTier === 'credits' ? (
+    {purchasingTier === "credits" ? (
       <Loader2 className="w-3.5 h-3.5 animate-spin" />
     ) : (
-      'BUY BUILDER PACK'
+      "BUY BUILDER PACK"
     )}
   </button>
   ```
 - Locate the `<button>` at the bottom of the **Tier 3 card** and replace it with the original action:
   ```tsx
   <button
-    onClick={() => handlePurchase('lifetime')}
+    onClick={() => handlePurchase("lifetime")}
     disabled={purchasingTier !== null}
     className="mt-6 w-full h-9 rounded bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 text-[10px] font-mono font-semibold tracking-wider text-zinc-300 transition-all cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50"
   >
-    {purchasingTier === 'lifetime' ? (
+    {purchasingTier === "lifetime" ? (
       <Loader2 className="w-3.5 h-3.5 animate-spin" />
     ) : (
-      'BUY DEVELOPER PACK'
+      "BUY DEVELOPER PACK"
     )}
   </button>
   ```

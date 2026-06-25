@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { X, Copy, Check, MessageSquare } from 'lucide-react';
+import { X, Copy, Check, MessageSquare, Mail } from 'lucide-react';
 
 interface SupportModalProps {
   isOpen: boolean;
@@ -57,6 +57,19 @@ export function SupportModal({ isOpen, onClose, roomId }: SupportModalProps) {
                 <p className="text-[8px] font-mono text-zinc-500 uppercase tracking-wider">Direct Message on X</p>
                 <a href="https://x.com/dksosnhejejd" target="_blank" rel="noopener noreferrer" className="text-xs font-mono text-zinc-300 hover:text-zinc-100 transition-colors break-all">
                   @dksosnhejejd
+                </a>
+              </div>
+            </div>
+
+            {/* Contact Method: Email */}
+            <div className="p-3 rounded border border-white/5 bg-white/[0.01] flex items-center gap-3">
+              <div className="flex items-center justify-center w-8 h-8 rounded bg-zinc-900 border border-white/5 text-zinc-400">
+                <Mail className="w-4 h-4" />
+              </div>
+              <div className="flex-grow flex-1 min-w-0">
+                <p className="text-[8px] font-mono text-zinc-500 uppercase tracking-wider">Email Support</p>
+                <a href="mailto:woo9ine@gmail.com?subject=Auxo%20Support" className="text-xs font-mono text-zinc-300 hover:text-zinc-100 transition-colors break-all">
+                  woo9ine@gmail.com
                 </a>
               </div>
             </div>

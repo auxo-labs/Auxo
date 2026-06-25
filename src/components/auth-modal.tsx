@@ -69,7 +69,6 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 
         if (error) throw error;
 
-        // If confirm email is off, Supabase logs user in immediately or they can log in
         if (data.session) {
           setSuccessMsg('Account created successfully! Logging you in...');
           setSuccess(true);
@@ -77,9 +76,8 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
             onClose();
           }, 1500);
         } else {
-          setSuccessMsg('Account created successfully! You can now log in.');
-          setPasswordMode('login');
-          setPassword('');
+          setSuccessMsg('Verification email sent! Please check your inbox and click the confirmation link before logging in.');
+          setSuccess(true);
         }
       } else {
         const { error } = await supabase.auth.signInWithPassword({
