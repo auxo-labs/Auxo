@@ -124,7 +124,7 @@ export function PrivacyClient() {
           </p>
           <ul className="list-disc pl-5 font-mono text-[11px] text-zinc-400 space-y-3">
             <li>
-              <strong>Data Accessed:</strong> Through Google OAuth, we access your basic profile information (specifically: your email address, full name, and profile picture avatar URL). If you configure your personal Google Gemini API key (BYOK mode), your key is processed strictly in-memory to execute the compilation request to Google's API endpoints. We do not store, log, or save your API key on our servers, and we do not access any other Google account data or services.
+              <strong>Data Accessed:</strong> Through Google OAuth, we access your basic profile information (specifically: your email address, full name, and profile picture avatar URL). If you configure your personal Google Gemini API key (BYOK mode), your key is processed strictly in-memory to execute the compilation request to Googles API endpoints. We do not store, log, or save your API key on our servers, and we do not access any other Google account data or services.
             </li>
             <li>
               <strong>Data Usage:</strong> We process your Google profile data solely to authenticate your identity, create your unique user account on Auxo, secure collaborative rooms you belong to, and associate your cloud compilation credit balances with your identity. We do not use this data for any advertising, marketing, or profile-building activities.
@@ -136,9 +136,55 @@ export function PrivacyClient() {
               <strong>Data Storage &amp; Protection:</strong> Your profile data is stored in our database hosted on Supabase, protected by Row-Level Security (RLS) policies. Access is strictly encrypted via SSL/TLS. Any user-supplied API keys (including Gemini API keys) are XOR-obfuscated and stored exclusively in your local browser storage, never sent to or stored on our servers.
             </li>
             <li>
-              <strong>Data Retention &amp; Deletion:</strong> We retain your profile data as long as your account remains active. You can request immediate and permanent deletion of your account and all associated Google user data at any time by contacting our support team at <a href="mailto:woo9ine@gmail.com" className="text-accent underline">woo9ine@gmail.com</a>.
+              <strong>Data Retention &amp; Deletion:</strong> We retain your profile data as long as your account remains active. You can request the permanent deletion of your account and all associated Google user data at any time by contacting our support team at <a href="mailto:woo9ine@gmail.com" className="text-accent underline">woo9ine@gmail.com</a>. We will process and fulfill all deletion requests within 30 days of receipt, in compliance with GDPR and other data protection regulations.
             </li>
           </ul>
+        </section>
+
+        {/* Section 6 */}
+        <section className="mb-10">
+          <h2 className="text-lg font-mono text-zinc-200 uppercase tracking-widest mb-4 border-b border-white/[0.03] pb-2">
+            6. Your Rights Under GDPR
+          </h2>
+          <p className="text-xs leading-relaxed mb-4 text-zinc-400">
+            If you reside in the European Economic Area (EEA), the United Kingdom, or jurisdictions with similar privacy laws, you possess the following rights regarding your personal data under the General Data Protection Regulation (GDPR):
+          </p>
+          <ul className="list-disc pl-5 font-mono text-[11px] text-zinc-400 space-y-2">
+            <li><strong>Right of Access &amp; Portability:</strong> You have the right to request copies of the personal data we hold about you and request its transfer to another service.</li>
+            <li><strong>Right to Rectification:</strong> You can request that we correct any inaccurate or incomplete personal data.</li>
+            <li><strong>Right to Erasure (Deletion):</strong> You can request that we erase your personal data. As stated above, we will fulfill erasure requests within 30 days of receipt.</li>
+            <li><strong>Right to Restrict or Object:</strong> You have the right to object to, or request that we restrict, the processing of your personal data under certain conditions.</li>
+          </ul>
+        </section>
+
+        {/* Section 7 */}
+        <section className="mb-10">
+          <h2 className="text-lg font-mono text-zinc-200 uppercase tracking-widest mb-4 border-b border-white/[0.03] pb-2">
+            7. Children&apos;s Privacy
+          </h2>
+          <p className="text-xs leading-relaxed text-zinc-400">
+            Auxo is a utility tool designed strictly for developers and is not directed at children under the age of 13 (or under the age of 16 in the European Union). We do not knowingly collect or solicit personal data from children. If we discover we have collected data from a child under these limits, we will delete it immediately.
+          </p>
+        </section>
+
+        {/* Section 8 */}
+        <section className="mb-10">
+          <h2 className="text-lg font-mono text-zinc-200 uppercase tracking-widest mb-4 border-b border-white/[0.03] pb-2">
+            8. International Data Transfers
+          </h2>
+          <p className="text-xs leading-relaxed text-zinc-400">
+            We store and process your data using trusted third-party providers (Supabase and Stripe) whose servers may be located outside of your home country, including in the United States. Where personal data is transferred internationally, we ensure that appropriate safeguards (such as Standard Contractual Clauses) are in place with our processors to protect your information.
+          </p>
+        </section>
+
+        {/* Section 9 */}
+        <section className="mb-10">
+          <h2 className="text-lg font-mono text-zinc-200 uppercase tracking-widest mb-4 border-b border-white/[0.03] pb-2">
+            9. Contact &amp; Controller Identity
+          </h2>
+          <p className="text-xs leading-relaxed text-zinc-400">
+            The data controller for Auxo is <strong>Auxo Intellectual Property Labs</strong>. If you have any questions about these specifications, or wish to exercise any of your data protection rights, please contact us at <a href="mailto:woo9ine@gmail.com" className="text-accent underline">woo9ine@gmail.com</a>. We will update the &quot;Published&quot; date at the top of this document whenever updates are made to our privacy practices.
+          </p>
         </section>
 
         {/* Security Summary Matrix */}
