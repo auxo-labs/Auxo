@@ -114,6 +114,33 @@ export function PrivacyClient() {
           </p>
         </section>
 
+        {/* Section 5 */}
+        <section className="mb-10">
+          <h2 className="text-lg font-mono text-zinc-200 uppercase tracking-widest mb-4 border-b border-white/[0.03] pb-2">
+            5. Google API Services User Data Policy
+          </h2>
+          <p className="text-xs leading-relaxed mb-4 text-zinc-400">
+            When you sign in to Auxo using your Google Account (Google OAuth credentials), or utilise Google services (such as Gemini in BYOK mode), we handle your data in strict compliance with the Google API Services User Data Policy:
+          </p>
+          <ul className="list-disc pl-5 font-mono text-[11px] text-zinc-400 space-y-3">
+            <li>
+              <strong>Data Accessed:</strong> Through Google OAuth, we access your basic profile information (specifically: your email address, full name, and profile picture avatar URL). If you configure your personal Google Gemini API key (BYOK mode), your key is processed strictly in-memory to execute the compilation request to Google's API endpoints. We do not store, log, or save your API key on our servers, and we do not access any other Google account data or services.
+            </li>
+            <li>
+              <strong>Data Usage:</strong> We process your Google profile data solely to authenticate your identity, create your unique user account on Auxo, secure collaborative rooms you belong to, and associate your cloud compilation credit balances with your identity. We do not use this data for any advertising, marketing, or profile-building activities.
+            </li>
+            <li>
+              <strong>Data Sharing:</strong> We do not sell, trade, or share your Google user data with any third parties except for our core infrastructure database provider (Supabase) to securely host your profile record, and our payment processor (Stripe) to map credit purchases to your email. We do not share Google user data with any AI model providers.
+            </li>
+            <li>
+              <strong>Data Storage &amp; Protection:</strong> Your profile data is stored in our database hosted on Supabase, protected by Row-Level Security (RLS) policies. Access is strictly encrypted via SSL/TLS. Any user-supplied API keys (including Gemini API keys) are XOR-obfuscated and stored exclusively in your local browser storage, never sent to or stored on our servers.
+            </li>
+            <li>
+              <strong>Data Retention &amp; Deletion:</strong> We retain your profile data as long as your account remains active. You can request immediate and permanent deletion of your account and all associated Google user data at any time by contacting our support team at <a href="mailto:woo9ine@gmail.com" className="text-accent underline">woo9ine@gmail.com</a>.
+            </li>
+          </ul>
+        </section>
+
         {/* Security Summary Matrix */}
         <div className="w-full mt-12 text-left border border-white/5 bg-white/[0.005] rounded-lg p-4 sm:p-6 md:p-8 relative overflow-hidden">
           <div className="absolute top-0 right-0 p-4 text-[9px] font-mono text-zinc-800 uppercase tracking-widest hidden sm:block">
@@ -157,6 +184,11 @@ export function PrivacyClient() {
                   <td className="py-2.5 font-bold text-zinc-300">Saved Projects</td>
                   <td className="py-2.5">Postgres DB (RLS Protected)</td>
                   <td className="py-2.5 text-accent">Persistent (Deletable by user)</td>
+                </tr>
+                <tr>
+                  <td className="py-2.5 font-bold text-zinc-300">Google OAuth Profile</td>
+                  <td className="py-2.5">Postgres DB (RLS Protected)</td>
+                  <td className="py-2.5 text-accent">Persistent (Deletable on request)</td>
                 </tr>
               </tbody>
             </table>
